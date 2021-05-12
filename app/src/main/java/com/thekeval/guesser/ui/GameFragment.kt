@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import com.thekeval.guesser.R
@@ -38,6 +39,11 @@ class GameFragment : Fragment() {
         val btnHinde = binding.btnHide
 
         btnHinde.setOnClickListener {
+            if (etNumber.text.toString().isEmpty()) {
+                Toast.makeText(context, "Pick a 3 digit number", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val btnHide = binding.btnHide
 
             if (btnHide.text.toString().toLowerCase() == "hide") {
@@ -46,7 +52,7 @@ class GameFragment : Fragment() {
                 binding.etNumber.isEnabled = false
 
                 if (!gameStarted) {
-                    pickedNumber = etNumber.text.toString().toInt()
+                    pickedNumber =  etNumber.text.toString().toInt()
                     proceed();
                 }
             }
