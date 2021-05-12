@@ -8,16 +8,16 @@
     <fragment
         android:id="@+id/gameFragment"
         android:name="com.thekeval.guesser.ui.GameFragment"
-        android:label="fragment_game"
+        android:label="Guesser Game"
         tools:layout="@layout/fragment_game" />
     <fragment
         android:id="@+id/rulesFragment"
         android:name="com.thekeval.guesser.ui.RulesFragment"
-        android:label="fragment_rules"
+        android:label="Rules"
         tools:layout="@layout/fragment_rules" />
     <fragment
         android:id="@+id/aboutFragment"
         android:name="com.thekeval.guesser.ui.AboutFragment"
-        android:label="fragment_about"
+        android:label="About"
         tools:layout="@layout/fragment_about" />
 </navigation>

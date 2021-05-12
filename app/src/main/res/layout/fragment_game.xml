@@ -1,14 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.GameFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        tools:context=".ui.GameFragment">
 
-</FrameLayout>
+        <!-- TODO: Update blank fragment layout -->
+
+
+        <TextView
+            android:id="@+id/txt_welcome"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="16dp"
+            android:text="Hi there, welcome to the game.\nGuess the number to start the game."
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/et_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:ems="5"
+            android:hint="Number"
+            android:inputType="number"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="@+id/txt_welcome"
+            app:layout_constraintTop_toBottomOf="@+id/txt_welcome" />
+
+        <Button
+            android:id="@+id/btnHide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="Hide"
+            app:layout_constraintBaseline_toBaselineOf="@+id/et_number"
+            app:layout_constraintStart_toEndOf="@+id/et_number" />
+
+        <View
+            android:id="@+id/view_hide"
+            android:layout_width="150dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="18dp"
+            android:background="@color/teal_700"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/et_number"
+            app:layout_constraintTop_toBottomOf="@+id/txt_welcome" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
