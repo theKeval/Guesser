@@ -65,6 +65,7 @@ class GameFragment : Fragment() {
                 if (!gameStarted) {
                     pickedNumber =  etNumber.text.toString()
                     updateUi();
+                    gameStarted = true
                 }
             }
             else if (btnHide.text.toString().toLowerCase() == "show") {
@@ -91,6 +92,8 @@ class GameFragment : Fragment() {
 
             viewModel.addGuess(guessedNumber, remark)
             adapter?.notifyDataSetChanged()
+
+            binding.etSeekerNumber.setText("")
         }
 
         return binding.root
@@ -126,7 +129,7 @@ class GameFragment : Fragment() {
         }
 
         if (containCount == 0) {
-            remark = "SMYLE!\nSimply Make Your Life Easy"
+            remark = "SMYLE!"   // \nSimply Make Your Life Easy
         }
         else if (rCount == 3) {
             // Winner
