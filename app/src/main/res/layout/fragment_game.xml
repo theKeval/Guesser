@@ -56,6 +56,52 @@
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="@+id/et_number"
             app:layout_constraintTop_toBottomOf="@+id/txt_welcome" />
+
+        <TextView
+            android:id="@+id/txt_instructions"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="16dp"
+            android:text="Now, seeker will start guessing the number. guess the number and hit check!"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/et_number"
+            app:layout_constraintTop_toBottomOf="@+id/et_number" />
+
+        <EditText
+            android:id="@+id/et_seeker_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:ems="5"
+            android:hint="Guess"
+            android:inputType="number"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="@+id/txt_instructions"
+            app:layout_constraintTop_toBottomOf="@+id/txt_instructions" />
+
+        <Button
+            android:id="@+id/btnCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="Check"
+            app:layout_constraintBaseline_toBaselineOf="@+id/et_seeker_number"
+            app:layout_constraintStart_toEndOf="@+id/et_seeker_number" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvGuesses"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_seeker_number" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
