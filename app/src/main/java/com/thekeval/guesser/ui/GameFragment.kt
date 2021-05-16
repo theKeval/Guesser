@@ -59,18 +59,18 @@ class GameFragment : Fragment() {
 
         btnHide.setOnClickListener {
 
-            if (etNumber.text.toString().isEmpty()) {
-                Toast.makeText(context, "Pick a 3 digit number", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            } else if (etNumber.text.toString().toInt() > 999) {
+            if (etNumber.text.toString().isEmpty() ||
+                etNumber.text.toString().toInt() > 999 ||
+                isNotUnique(etNumber.text.toString())) {
                 //  Toast.makeText(context,"Number must be less than 999",Toast.LENGTH_LONG).show()
                 AlertDialog.Builder(context)
                     .setTitle("Oops!")
-                    .setMessage("Number must be a 3 UNIQUE digit number.")
+                    .setMessage("Hey PICKER,\nYou must PICK a number with 3 UNIQUE digits.")
                     .setPositiveButton("Got it", null).show()
                 binding.etNumber.setText("")
                 return@setOnClickListener
             }
+
             val btnHide = binding.btnHide
 
             if (btnHide.text.toString().toLowerCase() == "hide") {
@@ -102,6 +102,16 @@ class GameFragment : Fragment() {
         })
 
         binding.btnCheck.setOnClickListener {
+
+            if (isNotUnique(binding.etSeekerNumber.text.toString())) {
+                AlertDialog.Builder(context)
+                    .setTitle("Oops!")
+                    .setMessage("Hey SEEKER,\nYou must ENTER a number with 3 UNIQUE digits.")
+                    .setPositiveButton("Got it", null).show()
+                binding.etSeekerNumber.setText("")
+                return@setOnClickListener
+            }
+
             val guessedNumber = binding.etSeekerNumber.text.toString()
             val remark = generateRemark(pickedNumber, guessedNumber)
 
@@ -157,6 +167,27 @@ class GameFragment : Fragment() {
         }
 
         return remark
+    }
+
+    fun isNotUnique(guessedNumber: String): Boolean {
+        var a = ""
+        var b = ""
+        var c = ""
+
+        guessedNumber.forEachIndexed { index, char ->
+            if (index == 0)
+                a = char.toString()
+            if (index == 1)
+                b = char.toString()
+            if (index == 2)
+                c = char.toString()
+        }
+
+        if (a == b || b == c || c == a) {
+            return true
+        }
+
+        return false
     }
 
 }
