@@ -1,10 +1,12 @@
 package com.thekeval.guesser.ui
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -36,10 +38,17 @@ class GameFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate<FragmentGameBinding>(inflater, R.layout.fragment_game, container, false)
+        binding = DataBindingUtil.inflate<FragmentGameBinding>(
+            inflater,
+            R.layout.fragment_game,
+            container,
+            false
+        )
         viewModel = ViewModelProvider(this).get(GameViewModel::class.java)
 
         binding.lifecycleOwner = this
@@ -53,8 +62,15 @@ class GameFragment : Fragment() {
             if (etNumber.text.toString().isEmpty()) {
                 Toast.makeText(context, "Pick a 3 digit number", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
+            } else if (etNumber.text.toString().toInt() > 999) {
+                //  Toast.makeText(context,"Number must be less than 999",Toast.LENGTH_LONG).show()
+                AlertDialog.Builder(context)
+                    .setTitle("Oops!")
+                    .setMessage("Number must be a 3 UNIQUE digit number.")
+                    .setPositiveButton("Got it", null).show()
+                binding.etNumber.setText("")
+                return@setOnClickListener
             }
-
             val btnHide = binding.btnHide
 
             if (btnHide.text.toString().toLowerCase() == "hide") {
@@ -63,12 +79,11 @@ class GameFragment : Fragment() {
                 binding.etNumber.isEnabled = false
 
                 if (!gameStarted) {
-                    pickedNumber =  etNumber.text.toString()
+                    pickedNumber = etNumber.text.toString()
                     updateUi();
                     gameStarted = true
                 }
-            }
-            else if (btnHide.text.toString().toLowerCase() == "show") {
+            } else if (btnHide.text.toString().toLowerCase() == "show") {
                 binding.viewHide.visibility = View.GONE
                 btnHide.text = "Hide"
                 binding.etNumber.isEnabled = true
@@ -130,18 +145,14 @@ class GameFragment : Fragment() {
 
         if (containCount == 0) {
             remark = "SMYLE!"   // \nSimply Make Your Life Easy
-        }
-        else if (rCount == 3) {
+        } else if (rCount == 3) {
             // Winner
             remark = "Winner"
-        }
-        else if (rCount == containCount) {
+        } else if (rCount == containCount) {
             remark = rCount.toString() + "R"
-        }
-        else if (rCount == 0 && containCount > 0) {
+        } else if (rCount == 0 && containCount > 0) {
             remark = containCount.toString() + "W"
-        }
-        else {
+        } else {
             remark = rCount.toString() + "R, " + (containCount - rCount).toString() + "W"
         }
 
