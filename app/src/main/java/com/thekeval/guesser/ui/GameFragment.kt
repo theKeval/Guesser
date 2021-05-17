@@ -1,13 +1,12 @@
 package com.thekeval.guesser.ui
 
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -56,18 +55,23 @@ class GameFragment : Fragment() {
 
         val etNumber = binding.etNumber
         val btnHide = binding.btnHide
+        val btnAuto = binding.btnAuto
 
         btnHide.setOnClickListener {
 
             if (etNumber.text.toString().isEmpty() ||
                 etNumber.text.toString().toInt() > 999 ||
-                isNotUnique(etNumber.text.toString())) {
+                isNotUnique3D(etNumber.text.toString())
+            ) {
                 //  Toast.makeText(context,"Number must be less than 999",Toast.LENGTH_LONG).show()
                 AlertDialog.Builder(context)
                     .setTitle("Oops!")
                     .setMessage("Hey PICKER,\nYou must PICK a number with 3 UNIQUE digits.")
-                    .setPositiveButton("Got it", null).show()
-                binding.etNumber.setText("")
+                    .setPositiveButton("Got it", DialogInterface.OnClickListener { dialog, which ->
+                        binding.etNumber.setText("")
+                    }).show()
+                //        .setPositiveButton("Got it", null).show()
+                //    binding.etNumber.setText("")
                 return@setOnClickListener
             }
 
@@ -90,6 +94,13 @@ class GameFragment : Fragment() {
             }
         }
 
+        btnAuto.setOnClickListener {
+            val autoNum = autoGen3D()
+            binding.etNumber.setText(autoNum)
+            btnHide.callOnClick()
+
+        }
+
         var adapter = viewModel.lstGuesses.value?.let { GuessesAdapter(it) }
         binding.rvGuesses.adapter = adapter
 
@@ -103,7 +114,7 @@ class GameFragment : Fragment() {
 
         binding.btnCheck.setOnClickListener {
 
-            if (isNotUnique(binding.etSeekerNumber.text.toString())) {
+            if (isNotUnique3D(binding.etSeekerNumber.text.toString())) {
                 AlertDialog.Builder(context)
                     .setTitle("Oops!")
                     .setMessage("Hey SEEKER,\nYou must ENTER a number with 3 UNIQUE digits.")
@@ -123,6 +134,25 @@ class GameFragment : Fragment() {
 
         return binding.root
     }
+
+    private fun autoGen3D(): String {
+        var a = (0..9).random()
+        var b = (0..9).random()
+        var c = (0..9).random()
+        while (a == b || b == c || c == a) {
+
+            if (a == b) {
+                b = (0..9).random()
+            }
+            if (a == c) {
+                c = (0..9).random()
+            }
+            if (b == c) {
+                c = (0..9).random()
+            }
+        }
+        return a.toString() + b.toString() + c.toString()
+   }
 
     private fun updateUi() {
         binding.txtInstructions.visibility = View.VISIBLE
@@ -169,7 +199,7 @@ class GameFragment : Fragment() {
         return remark
     }
 
-    fun isNotUnique(guessedNumber: String): Boolean {
+    fun isNotUnique3D(guessedNumber: String): Boolean {
         var a = ""
         var b = ""
         var c = ""
@@ -183,7 +213,7 @@ class GameFragment : Fragment() {
                 c = char.toString()
         }
 
-        if (a == b || b == c || c == a) {
+        if (a == b || b == c || c == a || guessedNumber.length != 3) {
             return true
         }
 

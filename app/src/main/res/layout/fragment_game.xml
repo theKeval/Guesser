@@ -28,6 +28,7 @@
             android:layout_marginEnd="16dp"
             android:text="Hi there, welcome to the game.\nPick any number with 3 identical digits, and hide that number to start the game."
             android:textSize="18sp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -36,12 +37,13 @@
             android:id="@+id/et_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
             android:ems="5"
             android:hint="Number"
             android:inputType="number"
             android:textSize="24sp"
-            app:layout_constraintStart_toStartOf="@+id/txt_welcome"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txt_welcome" />
 
         <Button
@@ -113,6 +115,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_seeker_number" />
+
+        <Button
+            android:id="@+id/btnAuto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Auto"
+            app:layout_constraintBaseline_toBaselineOf="@+id/btnHide"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btnHide" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
