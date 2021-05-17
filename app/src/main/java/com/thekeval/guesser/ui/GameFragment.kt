@@ -1,6 +1,7 @@
 package com.thekeval.guesser.ui
 
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -66,8 +67,12 @@ class GameFragment : Fragment() {
                 AlertDialog.Builder(context)
                     .setTitle("Oops!")
                     .setMessage("Hey PICKER,\nYou must PICK a number with 3 UNIQUE digits.")
-                    .setPositiveButton("Got it", null).show()
-                binding.etNumber.setText("")
+                    .setPositiveButton("Got it", DialogInterface.OnClickListener { dialogInterface, i ->
+                        binding.etNumber.setText("")
+                    }).show()
+                // binding.etNumber.setText("")
+
+
                 return@setOnClickListener
             }
 
@@ -189,5 +194,24 @@ class GameFragment : Fragment() {
 
         return false
     }
+
+    fun abc() {
+        var str = ""
+
+        while (str.length <= 3) {
+            val x = xyz(str)
+            str += x
+        }
+    }
+
+    fun xyz(str: String) : String {
+        val a = (0..9).random()
+        if (str.contains(a.toChar())){
+            xyz(str)
+        }
+
+        return a.toString()
+    }
+
 
 }
