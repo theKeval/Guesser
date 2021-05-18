@@ -99,6 +99,7 @@ class GameFragment : Fragment() {
             binding.etNumber.setText(autoNum)
             btnHide.callOnClick()
 
+            binding.txtStatus.setText("Game started, make a guess and press Check!")
         }
 
         var adapter = viewModel.lstGuesses.value?.let { GuessesAdapter(it) }
@@ -155,7 +156,7 @@ class GameFragment : Fragment() {
    }
 
     private fun updateUi() {
-        binding.txtInstructions.visibility = View.VISIBLE
+        //binding.txtInstructions.visibility = View.VISIBLE
         binding.etSeekerNumber.visibility = View.VISIBLE
         binding.btnCheck.visibility = View.VISIBLE
         binding.rvGuesses.visibility = View.VISIBLE
