@@ -11,6 +11,10 @@ class GameViewModel: ViewModel() {
     val lstGuesses: LiveData<MutableList<GuessModel>>
         get() = _lstGuesses
 
+    private var _hideRV = MutableLiveData<Boolean>()
+    val hideRV: LiveData<Boolean>
+        get() = _hideRV
+
     init {
         // var abc = ArrayList<GuessModel>()
 //        abc.add(GuessModel("234", "1R"))
@@ -23,6 +27,12 @@ class GameViewModel: ViewModel() {
 
     fun addGuess(number: String, remark: String) {
         _lstGuesses.value?.add(GuessModel(number, remark))
+        _hideRV.value = false
+    }
+
+    fun resetGuesses() {
+        _lstGuesses.value?.clear()
+        _hideRV.value = true
     }
 
 }

@@ -2,6 +2,7 @@ package com.thekeval.guesser.ui
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.opengl.Visibility
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -27,7 +28,7 @@ class GameFragment : Fragment() {
     private lateinit var binding: FragmentGameBinding
     private lateinit var viewModel: GameViewModel
 
-    var gameStarted = false
+    // var gameStarted = false
     var pickedNumber: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,11 +83,9 @@ class GameFragment : Fragment() {
                 btnHide.text = "Show"
                 binding.etNumber.isEnabled = false
 
-                if (!gameStarted) {
-                    pickedNumber = etNumber.text.toString()
-                    updateUi();
-                    gameStarted = true
-                }
+                pickedNumber = etNumber.text.toString()
+                updateUi();
+
             } else if (btnHide.text.toString().toLowerCase() == "show") {
                 binding.viewHide.visibility = View.GONE
                 btnHide.text = "Hide"
@@ -95,11 +94,44 @@ class GameFragment : Fragment() {
         }
 
         btnAuto.setOnClickListener {
-            val autoNum = autoGen3D()
-            binding.etNumber.setText(autoNum)
-            btnHide.callOnClick()
 
-            binding.txtStatus.setText("Game started, make a guess and press Check!")
+            if (btnAuto.text.toString().toLowerCase() == "auto") {
+                val autoNum = autoGen3D()
+                binding.etNumber.setText(autoNum)
+                btnAuto.setText("Show")
+                // btnHide.callOnClick()
+
+                binding.viewHide.visibility = View.VISIBLE
+                binding.etNumber.isEnabled = false
+                binding.btnReset.isEnabled = true
+
+                pickedNumber = etNumber.text.toString()
+                updateUi();
+
+                binding.txtStatus.setText("Game on, make a guess and press Check!")
+            }
+            else if (btnAuto.text.toString().toLowerCase() == "show") {
+                binding.viewHide.visibility = View.GONE
+                btnAuto.setText("Auto")
+                btnAuto.isEnabled = false
+                binding.txtStatus.setText("Press Reset to continue...")
+                binding.etSeekerNumber.isEnabled = false
+                binding.btnCheck.isEnabled = false
+            }
+        }
+
+        binding.btnReset.setOnClickListener {
+            btnAuto.isEnabled = true
+            binding.txtStatus.setText("Press Auto to Begin...")
+            btnAuto.setText("Auto")
+
+            et_seeker_number.visibility = View.GONE
+            btnCheck.visibility = View.GONE
+            viewModel.resetGuesses()
+            binding.viewHide.visibility = View.GONE
+            etNumber.isEnabled = false
+            etNumber.setText("")
+            binding.btnReset.isEnabled = false
         }
 
         var adapter = viewModel.lstGuesses.value?.let { GuessesAdapter(it) }
@@ -107,9 +139,22 @@ class GameFragment : Fragment() {
 
         viewModel.lstGuesses.observe(viewLifecycleOwner, Observer { guesses ->
             if (guesses.isNotEmpty()) {
+                rvGuesses.visibility = View.VISIBLE
                 adapter?.submitList(guesses.map {
                     DataItem.GuessItem(it)
                 })
+            }
+            else {
+                rvGuesses.visibility = View.GONE
+            }
+        })
+
+        viewModel.hideRV.observe(viewLifecycleOwner, Observer { hideRv ->
+            if (hideRv) {
+                rvGuesses.visibility = View.GONE
+            }
+            else {
+                rvGuesses.visibility = View.VISIBLE
             }
         })
 
@@ -131,6 +176,21 @@ class GameFragment : Fragment() {
             adapter?.notifyDataSetChanged()
 
             binding.etSeekerNumber.setText("")
+
+            rvGuesses.smoothScrollToPosition(viewModel.lstGuesses.value!!.count() - 1)
+        }
+
+        binding.switchMode.setOnClickListener {
+            if (binding.switchMode.isChecked) {
+
+                AlertDialog.Builder(context)
+                    .setTitle("Oops!")
+                    .setMessage("Feature coming soon..")
+                    .setPositiveButton("Got it", null).show()
+
+                binding.switchMode.isChecked = false
+            }
+
         }
 
         return binding.root
@@ -160,6 +220,9 @@ class GameFragment : Fragment() {
         binding.etSeekerNumber.visibility = View.VISIBLE
         binding.btnCheck.visibility = View.VISIBLE
         binding.rvGuesses.visibility = View.VISIBLE
+
+        binding.etSeekerNumber.isEnabled = true
+        binding.btnCheck.isEnabled = true
     }
 
     private fun generateRemark(pickedNumber: String, guessedNumber: String): String {

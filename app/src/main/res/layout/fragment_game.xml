@@ -63,48 +63,48 @@
             android:id="@+id/txtSingle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="Single Player"
+            android:layout_marginEnd="5dp"
+            android:text="Seeker Only"
+            android:textAlignment="center"
             android:textColor="#009688"
             android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/switchMode"
             app:layout_constraintEnd_toStartOf="@+id/switchMode"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/txtPlayMode" />
 
         <TextView
             android:id="@+id/txtTwo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:text="Two Player"
-            app:layout_constraintBottom_toBottomOf="@+id/switchMode"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="20dp"
+            android:text="Picker &amp; Seeker"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/switchMode"
-            app:layout_constraintTop_toTopOf="@+id/switchMode" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Switch
             android:id="@+id/switchMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/txtSingle"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/txtTwo"
             app:layout_constraintEnd_toStartOf="@+id/txtTwo"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/txtSingle"
-            app:layout_constraintTop_toTopOf="@+id/txtSingle" />
+            app:layout_constraintStart_toEndOf="@+id/txtSingle" />
 
         <TextView
             android:id="@+id/txtStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
             android:text="Press Auto to Begin..."
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtSingle" />
+            app:layout_constraintTop_toBottomOf="@+id/txtGameInfo" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -127,6 +127,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|center_vertical"
                     android:ems="4"
+                    android:enabled="false"
                     android:hint="Number"
                     android:inputType="number"
                     android:textSize="16sp" />
@@ -163,8 +164,34 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:enabled="false"
                 android:text="Reset" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtGameInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="20dp"
+            android:text="Find a hidden number with 3 unique digits,\neach guess open clues to solve the puzzle!"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtSingle" />
+
+        <TextView
+            android:id="@+id/txtPlayMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Mode:"
+            app:layout_constraintBaseline_toBaselineOf="@+id/txtSingle"
+            app:layout_constraintEnd_toStartOf="@+id/txtSingle"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
