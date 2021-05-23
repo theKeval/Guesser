@@ -207,8 +207,6 @@ class GameFragment : Fragment() {
         return binding.root
     }
 
-
-
     private fun updateUi() {
         //binding.txtInstructions.visibility = View.VISIBLE
         binding.etSeekerNumber.visibility = View.VISIBLE
@@ -218,27 +216,5 @@ class GameFragment : Fragment() {
         binding.etSeekerNumber.isEnabled = true
         binding.btnCheck.isEnabled = true
     }
-
-
-    fun generate3UniqueDigits(): String {
-        var str = ""
-
-        while (str.length <= 3) {
-            val x = xyz(str)
-            str += x
-        }
-
-        return str
-    }
-
-    fun xyz(str: String) : String {
-        val a = (0..9).random()
-        if (str.contains(a.toChar())){
-            xyz(str)
-        }
-
-        return a.toString()
-    }
-
 
 }
