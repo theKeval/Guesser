@@ -2,13 +2,12 @@ package com.thekeval.guesser.ui
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.opengl.Visibility
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -29,7 +28,7 @@ class GameFragment : Fragment() {
     private lateinit var binding: FragmentGameBinding
     private lateinit var viewModel: GameViewModel
 
-    var gameStarted = false
+    // var gameStarted = false
     var pickedNumber: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,24 +54,28 @@ class GameFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        var adapter = viewModel.lstGuesses.value?.let { GuessesAdapter(it) }
+        binding.rvGuesses.adapter = adapter
+
         val etNumber = binding.etNumber
         val btnHide = binding.btnHide
+        val btnAuto = binding.btnAuto
 
         btnHide.setOnClickListener {
 
             if (etNumber.text.toString().isEmpty() ||
                 etNumber.text.toString().toInt() > 999 ||
-                isNotUnique(etNumber.text.toString())) {
+                viewModel.isNotUnique3D(etNumber.text.toString())
+            ) {
                 //  Toast.makeText(context,"Number must be less than 999",Toast.LENGTH_LONG).show()
                 AlertDialog.Builder(context)
                     .setTitle("Oops!")
                     .setMessage("Hey PICKER,\nYou must PICK a number with 3 UNIQUE digits.")
-                    .setPositiveButton("Got it", DialogInterface.OnClickListener { dialogInterface, i ->
+                    .setPositiveButton("Got it", DialogInterface.OnClickListener { dialog, which ->
                         binding.etNumber.setText("")
                     }).show()
-                // binding.etNumber.setText("")
-
-
+                //        .setPositiveButton("Got it", null).show()
+                //    binding.etNumber.setText("")
                 return@setOnClickListener
             }
 
@@ -83,11 +86,9 @@ class GameFragment : Fragment() {
                 btnHide.text = "Show"
                 binding.etNumber.isEnabled = false
 
-                if (!gameStarted) {
-                    pickedNumber = etNumber.text.toString()
-                    updateUi();
-                    gameStarted = true
-                }
+                pickedNumber = etNumber.text.toString()
+                updateUi();
+
             } else if (btnHide.text.toString().toLowerCase() == "show") {
                 binding.viewHide.visibility = View.GONE
                 btnHide.text = "Hide"
@@ -95,20 +96,50 @@ class GameFragment : Fragment() {
             }
         }
 
-        var adapter = viewModel.lstGuesses.value?.let { GuessesAdapter(it) }
-        binding.rvGuesses.adapter = adapter
+        btnAuto.setOnClickListener {
 
-        viewModel.lstGuesses.observe(viewLifecycleOwner, Observer { guesses ->
-            if (guesses.isNotEmpty()) {
-                adapter?.submitList(guesses.map {
-                    DataItem.GuessItem(it)
-                })
+            if (btnAuto.text.toString().toLowerCase() == "auto") {
+                val autoNum = viewModel.autoGen3D()
+                binding.etNumber.setText(autoNum)
+                btnAuto.setText("Show")
+                // btnHide.callOnClick()
+
+                binding.viewHide.visibility = View.VISIBLE
+                binding.etNumber.isEnabled = false
+                binding.btnReset.isEnabled = true
+
+                pickedNumber = etNumber.text.toString()
+                updateUi();
+
+                binding.txtStatus.setText("Game on, make a guess and press Check!")
             }
-        })
+            else if (btnAuto.text.toString().toLowerCase() == "show") {
+                binding.viewHide.visibility = View.GONE
+                btnAuto.setText("Auto")
+                btnAuto.isEnabled = false
+                binding.txtStatus.setText("Press Reset to play again...")
+                binding.etSeekerNumber.isEnabled = false
+                binding.btnCheck.isEnabled = false
+            }
+        }
+
+        binding.btnReset.setOnClickListener {
+            btnAuto.isEnabled = true
+            binding.txtStatus.setText("Press Auto to Begin...")
+            btnAuto.setText("Auto")
+
+            et_seeker_number.visibility = View.GONE
+            btnCheck.visibility = View.GONE
+            viewModel.resetGuesses()
+            binding.viewHide.visibility = View.GONE
+            etNumber.isEnabled = false
+            etNumber.setText("")
+            binding.btnReset.isEnabled = false
+        }
 
         binding.btnCheck.setOnClickListener {
 
-            if (isNotUnique(binding.etSeekerNumber.text.toString())) {
+            if (viewModel.isNotUnique3D(binding.etSeekerNumber.text.toString())) {
                 AlertDialog.Builder(context)
                     .setTitle("Oops!")
                     .setMessage("Hey SEEKER,\nYou must ENTER a number with 3 UNIQUE digits.")
@@ -118,90 +149,86 @@ class GameFragment : Fragment() {
             }
 
             val guessedNumber = binding.etSeekerNumber.text.toString()
-            val remark = generateRemark(pickedNumber, guessedNumber)
+            val remark = viewModel.generateRemark(pickedNumber, guessedNumber)
 
             viewModel.addGuess(guessedNumber, remark)
             adapter?.notifyDataSetChanged()
 
             binding.etSeekerNumber.setText("")
+
+            rvGuesses.smoothScrollToPosition(viewModel.lstGuesses.value!!.count() - 1)
+
+            if (remark.toLowerCase() == "winner") {
+                AlertDialog.Builder(context)
+                    .setTitle("Winner!")
+                    .setMessage("Well done! You found it!")
+                    .setPositiveButton("Got it", DialogInterface.OnClickListener { dialog, i ->
+                        btnAuto.callOnClick()
+                    }).show()
+            }
         }
+
+        binding.switchMode.setOnCheckedChangeListener { switch, b ->
+            if (b) {
+                AlertDialog.Builder(context)
+                    .setTitle("Oops!")
+                    .setMessage("Feature coming soon..")
+                    .setPositiveButton("Got it", null).show()
+
+                binding.switchMode.isChecked = false
+            }
+            
+        }
+
+
+        viewModel.lstGuesses.observe(viewLifecycleOwner, Observer { guesses ->
+            if (guesses.isNotEmpty()) {
+                rvGuesses.visibility = View.VISIBLE
+                adapter?.submitList(guesses.map {
+                    DataItem.GuessItem(it)
+                })
+            }
+            else {
+                rvGuesses.visibility = View.GONE
+            }
+        })
+
+        viewModel.hideRV.observe(viewLifecycleOwner, Observer { hideRv ->
+            if (hideRv) {
+                rvGuesses.visibility = View.GONE
+            }
+            else {
+                rvGuesses.visibility = View.VISIBLE
+            }
+        })
+
+
 
         return binding.root
     }
 
+
+
     private fun updateUi() {
-        binding.txtInstructions.visibility = View.VISIBLE
+        //binding.txtInstructions.visibility = View.VISIBLE
         binding.etSeekerNumber.visibility = View.VISIBLE
         binding.btnCheck.visibility = View.VISIBLE
         binding.rvGuesses.visibility = View.VISIBLE
+
+        binding.etSeekerNumber.isEnabled = true
+        binding.btnCheck.isEnabled = true
     }
 
-    private fun generateRemark(pickedNumber: String, guessedNumber: String): String {
-        var remark = ""
 
-        val abc = pickedNumber.toCharArray()
-        val xyz = guessedNumber.toCharArray()
-
-        var containCount = 0
-        var rCount = 0
-        var wCount = 0
-
-        for (i in xyz) {
-            if (abc.contains(i)) {
-                containCount++
-            }
-        }
-
-        xyz.forEachIndexed { index, c ->
-            if (abc[index] == c) {
-                rCount++
-            }
-        }
-
-        if (containCount == 0) {
-            remark = "SMYLE!"   // \nSimply Make Your Life Easy
-        } else if (rCount == 3) {
-            // Winner
-            remark = "Winner"
-        } else if (rCount == containCount) {
-            remark = rCount.toString() + "R"
-        } else if (rCount == 0 && containCount > 0) {
-            remark = containCount.toString() + "W"
-        } else {
-            remark = rCount.toString() + "R, " + (containCount - rCount).toString() + "W"
-        }
-
-        return remark
-    }
-
-    fun isNotUnique(guessedNumber: String): Boolean {
-        var a = ""
-        var b = ""
-        var c = ""
-
-        guessedNumber.forEachIndexed { index, char ->
-            if (index == 0)
-                a = char.toString()
-            if (index == 1)
-                b = char.toString()
-            if (index == 2)
-                c = char.toString()
-        }
-
-        if (a == b || b == c || c == a) {
-            return true
-        }
-
-        return false
-    }
-
-    fun abc() {
+    fun generate3UniqueDigits(): String {
         var str = ""
 
         while (str.length <= 3) {
             val x = xyz(str)
             str += x
         }
+
+        return str
     }
 
     fun xyz(str: String) : String {

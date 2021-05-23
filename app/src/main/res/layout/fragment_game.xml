@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.thekeval.guesser.viewmodel.GameViewModel" />
@@ -19,81 +20,25 @@
         <!-- TODO: Update blank fragment layout -->
 
 
-        <TextView
-            android:id="@+id/txt_welcome"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="16dp"
-            android:text="Hi there, welcome to the game.\nPick any number with 3 identical digits, and hide that number to start the game."
-            android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
-            android:id="@+id/et_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:ems="5"
-            android:hint="Number"
-            android:inputType="number"
-            android:textSize="24sp"
-            app:layout_constraintStart_toStartOf="@+id/txt_welcome"
-            app:layout_constraintTop_toBottomOf="@+id/txt_welcome" />
-
-        <Button
-            android:id="@+id/btnHide"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:text="Hide"
-            app:layout_constraintBaseline_toBaselineOf="@+id/et_number"
-            app:layout_constraintStart_toEndOf="@+id/et_number" />
-
-        <View
-            android:id="@+id/view_hide"
-            android:layout_width="150dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="18dp"
-            android:background="@color/teal_700"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="@+id/et_number"
-            app:layout_constraintTop_toBottomOf="@+id/txt_welcome" />
-
-        <TextView
-            android:id="@+id/txt_instructions"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="16dp"
-            android:text="Now, seeker will start seeking the number.\nGuess the number and hit check!"
-            android:textSize="18sp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/et_number"
-            app:layout_constraintTop_toBottomOf="@+id/et_number" />
-
         <EditText
             android:id="@+id/et_seeker_number"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:ems="5"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp"
+            android:ems="4"
             android:hint="Guess"
             android:inputType="number"
-            android:textSize="24sp"
+            android:textSize="16sp"
             android:visibility="gone"
-            app:layout_constraintStart_toStartOf="@+id/txt_instructions"
-            app:layout_constraintTop_toBottomOf="@+id/txt_instructions" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
         <Button
             android:id="@+id/btnCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="43dp"
             android:text="Check"
             android:visibility="gone"
             app:layout_constraintBaseline_toBaselineOf="@+id/et_seeker_number"
@@ -113,6 +58,142 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_seeker_number" />
+
+        <TextView
+            android:id="@+id/txtSingle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:text="Seeker Only"
+            android:textAlignment="center"
+            android:textColor="#009688"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/switchMode"
+            app:layout_constraintEnd_toStartOf="@+id/switchMode"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/txtPlayMode" />
+
+        <TextView
+            android:id="@+id/txtTwo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="20dp"
+            android:text="Picker &amp; Seeker"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/switchMode"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:textOff="Single"
+            android:textOn="Double"
+            app:layout_constraintBaseline_toBaselineOf="@+id/txtTwo"
+            app:layout_constraintEnd_toStartOf="@+id/txtTwo"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/txtSingle" />
+
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="Press Auto to Begin..."
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtGameInfo" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtStatus">
+
+            <FrameLayout
+                android:layout_width="110dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="20dp">
+
+                <EditText
+                    android:id="@+id/et_number"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center_vertical"
+                    android:ems="4"
+                    android:enabled="false"
+                    android:hint="Number"
+                    android:inputType="number"
+                    android:textSize="16sp" />
+
+                <View
+                    android:id="@+id/view_hide"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/teal_700"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/btnAuto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Auto" />
+
+            <Button
+                android:id="@+id/btnHide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:text="Hide"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnReset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:enabled="false"
+                android:text="Reset" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtGameInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="20dp"
+            android:text="Find a hidden number with 3 unique digits,\neach guess open clues to solve the puzzle!"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtSingle" />
+
+        <TextView
+            android:id="@+id/txtPlayMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Mode:"
+            app:layout_constraintBaseline_toBaselineOf="@+id/txtSingle"
+            app:layout_constraintEnd_toStartOf="@+id/txtSingle"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
