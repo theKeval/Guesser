@@ -86,11 +86,13 @@
             app:layout_constraintStart_toEndOf="@+id/switchMode"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Switch
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
+            android:textOff="Single"
+            android:textOn="Double"
             app:layout_constraintBaseline_toBaselineOf="@+id/txtTwo"
             app:layout_constraintEnd_toStartOf="@+id/txtTwo"
             app:layout_constraintHorizontal_bias="0.5"
