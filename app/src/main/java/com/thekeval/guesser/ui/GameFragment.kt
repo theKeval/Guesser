@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.opengl.Visibility
 import android.os.Bundle
+import android.text.Html
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -28,7 +29,7 @@ class GameFragment : Fragment() {
     private lateinit var binding: FragmentGameBinding
     private lateinit var viewModel: GameViewModel
 
-    // var gameStarted = false
+    var gameStarted = false
     var pickedNumber: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +41,7 @@ class GameFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate<FragmentGameBinding>(
             inflater,
@@ -60,6 +60,9 @@ class GameFragment : Fragment() {
         val etNumber = binding.etNumber
         val btnHide = binding.btnHide
         val btnAuto = binding.btnAuto
+
+        val html = "<b>Hide &amp; Seek</b> a number with 3 unique digits, <b>Picker</b> hides it, <b>Seeker</b> finds it by guessing. Each guess opens clues to solve the puzzle!"
+        binding.txtGameInfo.text = Html.fromHtml(html)
 
         btnHide.setOnClickListener {
 
@@ -82,12 +85,15 @@ class GameFragment : Fragment() {
             val btnHide = binding.btnHide
 
             if (btnHide.text.toString().toLowerCase() == "hide") {
+                // game started
                 binding.viewHide.visibility = View.VISIBLE
                 btnHide.text = "Show"
                 binding.etNumber.isEnabled = false
 
                 pickedNumber = etNumber.text.toString()
                 updateUi();
+
+                gameStarted = true
 
             } else if (btnHide.text.toString().toLowerCase() == "show") {
                 binding.viewHide.visibility = View.GONE
@@ -124,17 +130,32 @@ class GameFragment : Fragment() {
         }
 
         binding.btnReset.setOnClickListener {
-            btnAuto.isEnabled = true
-            binding.txtStatus.setText("Press Auto to Begin...")
-            btnAuto.setText("Auto")
 
+            if (binding.switchMode.isChecked) {
+                // picker friend
+                btnHide.text = "Hide"
+                btnAuto.visibility = View.GONE
+                binding.viewHide.visibility = View.GONE
+                etNumber.isEnabled = true
+                binding.txtStatus.setText(R.string.txtGameStatus_double)
+
+            }
+            else {
+                // auto mode
+                btnAuto.isEnabled = true
+                binding.txtStatus.setText(R.string.txtGameStatus)
+                btnAuto.setText("Auto")
+                binding.viewHide.visibility = View.GONE
+                etNumber.isEnabled = false
+            }
+
+            // common things to change
             et_seeker_number.visibility = View.GONE
             btnCheck.visibility = View.GONE
             viewModel.resetGuesses()
-            binding.viewHide.visibility = View.GONE
-            etNumber.isEnabled = false
             etNumber.setText("")
             binding.btnReset.isEnabled = false
+
         }
 
         binding.btnCheck.setOnClickListener {
@@ -168,14 +189,41 @@ class GameFragment : Fragment() {
             }
         }
 
-        binding.switchMode.setOnCheckedChangeListener { switch, b ->
-            if (b) {
-                AlertDialog.Builder(context)
-                    .setTitle("Oops!")
-                    .setMessage("Feature coming soon..")
-                    .setPositiveButton("Got it", null).show()
+        binding.switchMode.setOnCheckedChangeListener { switch, switchOn ->
+            if (switchOn) {
+                if (binding.etSeekerNumber.visibility == View.VISIBLE) {
+                    // game started
+                    AlertDialog.Builder(context)
+                        .setTitle("Warning!")
+                        .setMessage("Game is ON, changing the mode will reset the game. Do you want to switch mode?")
+                        .setPositiveButton("Switch", DialogInterface.OnClickListener { dialogInterface, i ->
+                            // reset everything and change the game mode
+                            binding.btnReset.callOnClick()
 
-                binding.switchMode.isChecked = false
+                            btnAuto.visibility = View.GONE
+                            btnHide.visibility = View.VISIBLE
+                            etNumber.isEnabled = true
+                        })
+                        .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialogInterface, i ->
+                            // do nothing
+
+                        })
+                        .show()
+                }
+                else {
+                    // game not started
+                    binding.btnReset.callOnClick()
+
+                    btnAuto.visibility = View.GONE
+                    btnHide.visibility = View.VISIBLE
+                    etNumber.isEnabled = true
+                }
+
+            }
+            else {
+                btnAuto.visibility = View.VISIBLE
+                btnHide.visibility = View.GONE
+                etNumber.isEnabled = false
             }
             
         }

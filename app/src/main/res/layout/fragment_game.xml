@@ -20,96 +20,85 @@
         <!-- TODO: Update blank fragment layout -->
 
 
-        <EditText
-            android:id="@+id/et_seeker_number"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="8dp"
-            android:ems="4"
-            android:hint="Guess"
-            android:inputType="number"
-            android:textSize="16sp"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
-        <Button
-            android:id="@+id/btnCheck"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="43dp"
-            android:text="Check"
-            android:visibility="gone"
-            app:layout_constraintBaseline_toBaselineOf="@+id/et_seeker_number"
-            app:layout_constraintStart_toEndOf="@+id/et_seeker_number" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvGuesses"
+        <TextView
+            android:id="@+id/txtGameInfo"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_seeker_number" />
-
-        <TextView
-            android:id="@+id/txtSingle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:text="Seeker Only"
-            android:textAlignment="center"
-            android:textColor="#009688"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@+id/switchMode"
-            app:layout_constraintEnd_toStartOf="@+id/switchMode"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/txtPlayMode" />
-
-        <TextView
-            android:id="@+id/txtTwo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="20dp"
-            android:text="Picker &amp; Seeker"
-            android:textAlignment="center"
+            android:background="@drawable/border_black"
+            android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/switchMode"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/txtGameInfo" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchMode"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/linearLayout_pickerMode"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:textOff="Single"
-            android:textOn="Double"
-            app:layout_constraintBaseline_toBaselineOf="@+id/txtTwo"
-            app:layout_constraintEnd_toStartOf="@+id/txtTwo"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/txtSingle" />
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
+            android:paddingTop="7dp"
+            android:paddingBottom="7dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtGameInfo">
+
+            <TextView
+                android:id="@+id/txtPlayMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="start"
+                android:text="@string/txtMode"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/txtSingle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:text="@string/mode_app"
+                android:textAlignment="center"
+                android:textColor="#009688"
+                android:textStyle="bold" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:textOff="Single"
+                android:textOn="Double" />
+
+            <TextView
+                android:id="@+id/txtTwo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mode_friend"
+                android:textAlignment="center" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/txtStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
-            android:text="Press Auto to Begin..."
+            android:text="@string/txtGameStatus"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtGameInfo" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout_pickerMode" />
 
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/linearLayout_viewHide"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -170,30 +159,44 @@
                 android:text="Reset" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/txtGameInfo"
-            android:layout_width="0dp"
+        <EditText
+            android:id="@+id/et_seeker_number"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="20dp"
-            android:text="Find a hidden number with 3 unique digits,\neach guess open clues to solve the puzzle!"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp"
+            android:ems="4"
+            android:hint="Guess"
+            android:inputType="number"
+            android:textSize="16sp"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtSingle" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout_viewHide" />
 
-        <TextView
-            android:id="@+id/txtPlayMode"
+        <Button
+            android:id="@+id/btnCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="43dp"
+            android:text="Check"
+            android:visibility="gone"
+            app:layout_constraintBaseline_toBaselineOf="@+id/et_seeker_number"
+            app:layout_constraintStart_toEndOf="@+id/et_seeker_number" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvGuesses"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="Mode:"
-            app:layout_constraintBaseline_toBaselineOf="@+id/txtSingle"
-            app:layout_constraintEnd_toStartOf="@+id/txtSingle"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_seeker_number" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -4,6 +4,13 @@
     <string name="about">About</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+<!--    <string name="txtGameInfo">Find a hidden number with 3 unique digits,\neach guess opens clues to solve the puzzle!</string>-->
+    <string name="txtGameInfo">Hide &amp; Seek a number with 3 unique digits. Picker hides it, Seeker finds it by guessing. Each guess opens clues to solve the puzzle!</string>
+    <string name="txtGameStatus">Press Auto to hide a number by the App.</string>
+    <string name="txtMode">Select Picker Mode:</string>
+    <string name="mode_app">App</string>
+    <string name="mode_friend">Friend</string>
+    <string name="txtGameStatus_double">Double player mode status string</string>
 
 
 </resources>
