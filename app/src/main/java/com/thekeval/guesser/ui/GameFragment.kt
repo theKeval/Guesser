@@ -5,7 +5,6 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.provider.CalendarContract
 import android.text.Html
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -107,15 +106,13 @@ class GameFragment : Fragment() {
             if (etNumber.text.toString().isEmpty() ||
                 etNumber.text.toString().toInt() > 999 ||
                 viewModel.isNotUnique3D(etNumber.text.toString()) ) {
-                //  Toast.makeText(context,"Number must be less than 999",Toast.LENGTH_LONG).show()
                 AlertDialog.Builder(context)
                     .setTitle("Oops!")
                     .setMessage("Hey PICKER,\nYou must PICK a number with 3 UNIQUE digits.")
                     .setPositiveButton("Got it", DialogInterface.OnClickListener { dialog, which ->
-                        binding.etNumber.setText("")
-                    }).show()
-                //        .setPositiveButton("Got it", null).show()
-                //    binding.etNumber.setText("")
+                        etNumber.setText("")
+                    })
+                    .show()
                 return@setOnClickListener
             }
 
@@ -126,7 +123,7 @@ class GameFragment : Fragment() {
                 etNumber.isEnabled = false
 
                 pickedNumber = etNumber.text.toString()
-                updateUi();
+                setControlsForGameOn();
 
                 gameState = GameState.STARTED
 
@@ -158,18 +155,18 @@ class GameFragment : Fragment() {
 
             if (btnAuto.text.toString().toLowerCase() == "auto") {
                 val autoNum = viewModel.autoGen3D()
-                binding.etNumber.setText(autoNum)
+                etNumber.setText(autoNum)
                 btnAuto.setText("Show")
                 // btnHide.callOnClick()
 
-                binding.viewHide.visibility = View.VISIBLE
-                binding.etNumber.isEnabled = false
-                binding.btnReset.isEnabled = true
+                viewHide.visibility = View.VISIBLE
+                etNumber.isEnabled = false
+                btnReset.isEnabled = true
 
                 pickedNumber = etNumber.text.toString()
-                updateUi();
+                setControlsForGameOn();
 
-                binding.txtStatus.setText(R.string.gameOnStatus)
+                txtStatus.setText(R.string.gameOnStatus)
 
                 gameState = GameState.STARTED
             }
@@ -286,12 +283,12 @@ class GameFragment : Fragment() {
                 // do nothing & return
                 return@setOnCheckedChangeListener
             }
-            
+
             if (gameState == GameState.NOT_STARTED) {
                 // change the game mode without asking
                 isAutoMode = !switchOn      // switch
 
-                setControlsView()
+                setControlsOnSwitch()
             }
             else {
                 AlertDialog.Builder(context)
@@ -352,7 +349,7 @@ class GameFragment : Fragment() {
         return binding.root
     }
 
-    private fun updateUi() {
+    private fun setControlsForGameOn() {
         //binding.txtInstructions.visibility = View.VISIBLE
         etSeekerNumber.visibility = View.VISIBLE
         btnCheck.visibility = View.VISIBLE
@@ -368,10 +365,10 @@ class GameFragment : Fragment() {
         processReset()
         isAutoMode = !isAutoMode
 
-        setControlsView()
+        setControlsOnSwitch()
     }
 
-    fun setControlsView() {
+    fun setControlsOnSwitch() {
         if (isAutoMode) {
             // set the template for App mode
             // this will present the single player mode initial screen
