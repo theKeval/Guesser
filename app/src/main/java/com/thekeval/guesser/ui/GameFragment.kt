@@ -2,16 +2,23 @@ package com.thekeval.guesser.ui
 
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.opengl.Visibility
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.provider.CalendarContract
 import android.text.Html
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.thekeval.guesser.R
 import com.thekeval.guesser.adapters.DataItem
 import com.thekeval.guesser.adapters.GuessesAdapter
@@ -26,10 +33,30 @@ import kotlinx.android.synthetic.main.fragment_game.*
  */
 class GameFragment : Fragment() {
 
+    enum class GameState {
+        NOT_STARTED, STARTED, WON, ABANDONED
+    }
+
     private lateinit var binding: FragmentGameBinding
     private lateinit var viewModel: GameViewModel
 
-    var gameStarted = false
+    lateinit var etNumber: EditText
+    lateinit var btnHide: Button
+    lateinit var btnAuto: Button
+    lateinit var btnReset: Button
+    lateinit var btnCheck: Button
+    lateinit var switchMode: SwitchMaterial
+    lateinit var etSeekerNumber: EditText
+    lateinit var rvGuesses: RecyclerView
+    lateinit var txtGameInfo: TextView
+    lateinit var viewHide: View
+    lateinit var txtStatus: TextView
+    lateinit var switchTxtAppMode: TextView
+    lateinit var switchTxtFriendMode: TextView
+
+
+    var gameState = GameState.NOT_STARTED
+    var isAutoMode = true
     var pickedNumber: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,19 +84,29 @@ class GameFragment : Fragment() {
         var adapter = viewModel.lstGuesses.value?.let { GuessesAdapter(it) }
         binding.rvGuesses.adapter = adapter
 
-        val etNumber = binding.etNumber
-        val btnHide = binding.btnHide
-        val btnAuto = binding.btnAuto
+        etNumber = binding.etNumber
+        btnHide = binding.btnHide
+        btnAuto = binding.btnAuto
+        btnReset = binding.btnReset
+        btnCheck = binding.btnCheck
+        switchMode = binding.switchMode
+        etSeekerNumber = binding.etSeekerNumber
+        rvGuesses = binding.rvGuesses
+        txtGameInfo = binding.txtGameInfo
+        viewHide = binding.viewHide
+        txtStatus = binding.txtStatus
+        switchTxtAppMode = binding.switchTxtAppMode
+        switchTxtFriendMode = binding.switchTxtFriendMode
+
 
         val html = "<b>Hide &amp; Seek</b> a number with 3 unique digits, <b>Picker</b> hides it, <b>Seeker</b> finds it by guessing. Each guess opens clues to solve the puzzle!"
-        binding.txtGameInfo.text = Html.fromHtml(html)
+        txtGameInfo.text = Html.fromHtml(html)
 
         btnHide.setOnClickListener {
 
             if (etNumber.text.toString().isEmpty() ||
                 etNumber.text.toString().toInt() > 999 ||
-                viewModel.isNotUnique3D(etNumber.text.toString())
-            ) {
+                viewModel.isNotUnique3D(etNumber.text.toString()) ) {
                 //  Toast.makeText(context,"Number must be less than 999",Toast.LENGTH_LONG).show()
                 AlertDialog.Builder(context)
                     .setTitle("Oops!")
@@ -82,23 +119,38 @@ class GameFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val btnHide = binding.btnHide
-
             if (btnHide.text.toString().toLowerCase() == "hide") {
                 // game started
-                binding.viewHide.visibility = View.VISIBLE
+                viewHide.visibility = View.VISIBLE
                 btnHide.text = "Show"
-                binding.etNumber.isEnabled = false
+                etNumber.isEnabled = false
 
                 pickedNumber = etNumber.text.toString()
                 updateUi();
 
-                gameStarted = true
+                gameState = GameState.STARTED
 
             } else if (btnHide.text.toString().toLowerCase() == "show") {
-                binding.viewHide.visibility = View.GONE
-                btnHide.text = "Hide"
-                binding.etNumber.isEnabled = true
+                AlertDialog.Builder(context)
+                    .setTitle("Warning!")
+                    .setMessage("Once you see the number, the game will reset.")
+                    .setPositiveButton("Got it", DialogInterface.OnClickListener { dialog, which ->
+                        // let the user see the number and only let user reset the game.
+                        viewHide.visibility = View.GONE
+                        btnHide.text = "Hide"
+                        btnHide.isEnabled = false
+                        etNumber.isEnabled = false
+
+                        txtStatus.setText("Press Reset to play again...")
+                        etSeekerNumber.isEnabled = false
+                        btnCheck.isEnabled = false
+
+                        gameState = GameState.ABANDONED
+
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show()
+
             }
         }
 
@@ -117,48 +169,58 @@ class GameFragment : Fragment() {
                 pickedNumber = etNumber.text.toString()
                 updateUi();
 
-                binding.txtStatus.setText("Game on, make a guess and press Check!")
+                binding.txtStatus.setText(R.string.gameOnStatus)
+
+                gameState = GameState.STARTED
             }
             else if (btnAuto.text.toString().toLowerCase() == "show") {
-                binding.viewHide.visibility = View.GONE
-                btnAuto.setText("Auto")
-                btnAuto.isEnabled = false
-                binding.txtStatus.setText("Press Reset to play again...")
-                binding.etSeekerNumber.isEnabled = false
-                binding.btnCheck.isEnabled = false
+                AlertDialog.Builder(context)
+                    .setTitle("Warning!")
+                    .setMessage("Once you see the number, the game will reset.")
+                    .setPositiveButton("Got it", DialogInterface.OnClickListener { dialog, which ->
+                        // let the user see the number and only let user reset the game.
+                        binding.viewHide.visibility = View.GONE
+                        btnAuto.setText("Auto")
+                        btnAuto.isEnabled = false
+                        binding.txtStatus.setText("Press Reset to play again...")
+                        binding.etSeekerNumber.isEnabled = false
+                        binding.btnCheck.isEnabled = false
+
+                        gameState = GameState.ABANDONED
+
+                    })
+                    .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialogInterface, i ->
+                        // do nothing
+                    })
+                    .show()
+
             }
         }
 
-        binding.btnReset.setOnClickListener {
+        btnReset.setOnClickListener {
 
-            if (binding.switchMode.isChecked) {
-                // picker friend
-                btnHide.text = "Hide"
-                btnAuto.visibility = View.GONE
-                binding.viewHide.visibility = View.GONE
-                etNumber.isEnabled = true
-                binding.txtStatus.setText(R.string.txtGameStatus_double)
-
+            // TODO: add a check when we force user to press reset if the game state is abandoned or won
+            if (gameState == GameState.WON || gameState == GameState.ABANDONED) {
+                processReset()
             }
             else {
-                // auto mode
-                btnAuto.isEnabled = true
-                binding.txtStatus.setText(R.string.txtGameStatus)
-                btnAuto.setText("Auto")
-                binding.viewHide.visibility = View.GONE
-                etNumber.isEnabled = false
-            }
+                AlertDialog.Builder(context)
+                    .setTitle("Warning!")
+                    .setMessage("This will reset the game!")
+                    .setPositiveButton("Got It", DialogInterface.OnClickListener { dialogInterface, i ->
+                        // reset the game for current player mode
+                        processReset()
 
-            // common things to change
-            et_seeker_number.visibility = View.GONE
-            btnCheck.visibility = View.GONE
-            viewModel.resetGuesses()
-            etNumber.setText("")
-            binding.btnReset.isEnabled = false
+                    })
+                    .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialogInterface, i ->
+                        // do nothing
+                    })
+                    .show()
+            }
 
         }
 
-        binding.btnCheck.setOnClickListener {
+        btnCheck.setOnClickListener {
 
             if (viewModel.isNotUnique3D(binding.etSeekerNumber.text.toString())) {
                 AlertDialog.Builder(context)
@@ -184,48 +246,77 @@ class GameFragment : Fragment() {
                     .setTitle("Winner!")
                     .setMessage("Well done! You found it!")
                     .setPositiveButton("Got it", DialogInterface.OnClickListener { dialog, i ->
-                        btnAuto.callOnClick()
+                        // btnAuto.callOnClick()
+
+                        // ------------ todo: make a common method which reveals the number and shift below code in that method.
+
+                        if (isAutoMode) {
+                            // winning situation in single player
+                            viewHide.visibility = View.GONE
+                            btnAuto.setText("Auto")
+                            btnAuto.isEnabled = false
+                            txtStatus.setText("Press Reset to play again.")
+                            etSeekerNumber.isEnabled = false
+                            btnCheck.isEnabled = false
+
+                            gameState = GameState.WON
+                        }
+                        else {
+                            // winning situationin double player
+                            viewHide.visibility = View.GONE
+                            btnHide.setText("Hide")
+                            btnHide.isEnabled = false
+                            txtStatus.setText("Press Reset to play again.")
+                            etSeekerNumber.isEnabled = false
+                            btnCheck.isEnabled = false
+
+                            gameState = GameState.WON
+                        }
+
+
+
+                        // ------------------------------------------------
+
                     }).show()
             }
         }
 
-        binding.switchMode.setOnCheckedChangeListener { switch, switchOn ->
-            if (switchOn) {
-                if (binding.etSeekerNumber.visibility == View.VISIBLE) {
-                    // game started
-                    AlertDialog.Builder(context)
-                        .setTitle("Warning!")
-                        .setMessage("Game is ON, changing the mode will reset the game. Do you want to switch mode?")
-                        .setPositiveButton("Switch", DialogInterface.OnClickListener { dialogInterface, i ->
-                            // reset everything and change the game mode
-                            binding.btnReset.callOnClick()
-
-                            btnAuto.visibility = View.GONE
-                            btnHide.visibility = View.VISIBLE
-                            etNumber.isEnabled = true
-                        })
-                        .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialogInterface, i ->
-                            // do nothing
-
-                        })
-                        .show()
-                }
-                else {
-                    // game not started
-                    binding.btnReset.callOnClick()
-
-                    btnAuto.visibility = View.GONE
-                    btnHide.visibility = View.VISIBLE
-                    etNumber.isEnabled = true
-                }
-
-            }
-            else {
-                btnAuto.visibility = View.VISIBLE
-                btnHide.visibility = View.GONE
-                etNumber.isEnabled = false
+        switchMode.setOnCheckedChangeListener { switch, switchOn ->
+            if (isAutoMode == !switchOn) {
+                // do nothing & return
+                return@setOnCheckedChangeListener
             }
             
+            if (gameState == GameState.NOT_STARTED) {
+                // change the game mode without asking
+                isAutoMode = !switchOn      // switch
+
+                setControlsView()
+            }
+            else {
+                AlertDialog.Builder(context)
+                    .setTitle("Warning!")
+                    .setMessage("Game is ON, changing the mode will reset the game. Do you want to switch mode?")
+                    .setPositiveButton("Switch", DialogInterface.OnClickListener { dialogInterface, i ->
+                        // reset everything and change the game mode
+                        // binding.btnReset.callOnClick()
+
+                        // isAutoMode = !switchOn
+                        processSwitch()
+
+//                        gameState = GameState.NOT_STARTED
+//
+//                        btnAuto.visibility = View.GONE
+//                        btnHide.visibility = View.VISIBLE
+//                        etNumber.isEnabled = true
+                    })
+                    .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialogInterface, i ->
+                        switchMode.isChecked = !switchOn
+                        // isAutoMode = !isAutoMode
+                    })
+                    .show()
+            }
+
         }
 
 
@@ -250,19 +341,111 @@ class GameFragment : Fragment() {
             }
         })
 
+        switchTxtAppMode.setOnClickListener {
+            switchMode.isChecked = false
+        }
 
+        switchTxtFriendMode.setOnClickListener {
+            switchMode.isChecked = true
+        }
 
         return binding.root
     }
 
     private fun updateUi() {
         //binding.txtInstructions.visibility = View.VISIBLE
-        binding.etSeekerNumber.visibility = View.VISIBLE
-        binding.btnCheck.visibility = View.VISIBLE
-        binding.rvGuesses.visibility = View.VISIBLE
+        etSeekerNumber.visibility = View.VISIBLE
+        btnCheck.visibility = View.VISIBLE
+        rvGuesses.visibility = View.VISIBLE
 
-        binding.etSeekerNumber.isEnabled = true
-        binding.btnCheck.isEnabled = true
+        etSeekerNumber.isEnabled = true
+        btnCheck.isEnabled = true
+        btnReset.isEnabled = true
+    }
+
+    fun processSwitch() {
+
+        processReset()
+        isAutoMode = !isAutoMode
+
+        setControlsView()
+    }
+
+    fun setControlsView() {
+        if (isAutoMode) {
+            // set the template for App mode
+            // this will present the single player mode initial screen
+            btnAuto.visibility = View.VISIBLE
+            btnHide.visibility = View.GONE
+            etNumber.isEnabled = false
+            txtStatus.setText(R.string.initialStatusAppMode)
+
+            switchTxtAppMode.setTextColor(resources.getColor(R.color.colorPrimary))
+            switchTxtAppMode.setTypeface(null, Typeface.BOLD)
+            switchTxtFriendMode.setTextColor(Color.GRAY)
+            switchTxtFriendMode.setTypeface(null, Typeface.NORMAL)
+        }
+        else {
+            // set the template for Friend mode
+            // this will present the double player mode initial screen
+            btnAuto.visibility = View.GONE
+            btnHide.visibility = View.VISIBLE
+            etNumber.isEnabled = true
+            txtStatus.setText(R.string.initialStatusFriendMode)
+
+            switchTxtAppMode.setTextColor(Color.GRAY)
+            switchTxtAppMode.setTypeface(null, Typeface.NORMAL)
+            switchTxtFriendMode.setTextColor(resources.getColor(R.color.colorPrimary))
+            switchTxtFriendMode.setTypeface(null, Typeface.BOLD)
+        }
+    }
+
+    fun processReset() {
+        if (isAutoMode) {
+            // reset single player mode
+            singleModeReset()
+        }
+        else {
+            // reset double player mode
+            doubleModeReset()
+        }
+
+        gameState = GameState.NOT_STARTED
+    }
+
+    fun doubleModeReset() {
+        btnHide.text = "Hide"
+        btnHide.isEnabled = true
+        btnAuto.visibility = View.GONE
+        viewHide.visibility = View.GONE
+        etNumber.isEnabled = true
+        txtStatus.setText(R.string.initialStatusFriendMode)
+
+        // common things to change
+        etSeekerNumber.visibility = View.GONE
+        btnCheck.visibility = View.GONE
+        viewModel.resetGuesses()
+        etNumber.setText("")
+        btnReset.isEnabled = false
+        etSeekerNumber.setText("")
+        etSeekerNumber.isEnabled = false
+    }
+
+    fun singleModeReset() {
+        btnAuto.isEnabled = true
+        txtStatus.setText(R.string.initialStatusAppMode)
+        btnAuto.setText("Auto")
+        viewHide.visibility = View.GONE
+        etNumber.isEnabled = false
+
+        // common things to change
+        etSeekerNumber.visibility = View.GONE
+        btnCheck.visibility = View.GONE
+        viewModel.resetGuesses()
+        etNumber.setText("")
+        btnReset.isEnabled = false
+        etSeekerNumber.setText("")
+        etSeekerNumber.isEnabled = false
     }
 
 }
