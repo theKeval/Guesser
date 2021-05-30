@@ -128,7 +128,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="8dp"
-                    android:background="@color/teal_700"
+                    android:background="@drawable/view_hide_bg"
                     android:visibility="gone" />
             </FrameLayout>
 
