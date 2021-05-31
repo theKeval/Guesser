@@ -1,6 +1,7 @@
 package com.thekeval.guesser.ui
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Typeface
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -349,6 +351,7 @@ class GameFragment : Fragment() {
         return binding.root
     }
 
+
     private fun setControlsForGameOn() {
         //binding.txtInstructions.visibility = View.VISIBLE
         etSeekerNumber.visibility = View.VISIBLE
@@ -358,6 +361,12 @@ class GameFragment : Fragment() {
         etSeekerNumber.isEnabled = true
         btnCheck.isEnabled = true
         btnReset.isEnabled = true
+
+        etSeekerNumber.requestFocus()
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.showSoftInput(yourEditText, InputMethodManager.SHOW_IMPLICIT);
+        val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(etSeekerNumber, InputMethodManager.SHOW_FORCED)
     }
 
     fun processSwitch() {

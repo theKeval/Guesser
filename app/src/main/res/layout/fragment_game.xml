@@ -39,11 +39,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:orientation="horizontal"
-            android:paddingTop="7dp"
-            android:paddingBottom="7dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtGameInfo">
@@ -54,7 +53,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
                 android:gravity="start"
                 android:text="@string/txtMode"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -92,7 +90,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
             android:text="@string/initialStatusAppMode"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout_pickerMode" />
@@ -101,7 +98,7 @@
             android:id="@+id/linearLayout_viewHide"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -109,7 +106,7 @@
 
             <FrameLayout
                 android:layout_width="110dp"
-                android:layout_height="60dp"
+                android:layout_height="50dp"
                 android:layout_marginStart="20dp">
 
                 <EditText
@@ -127,7 +124,6 @@
                     android:id="@+id/view_hide"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
                     android:background="@drawable/view_hide_bg"
                     android:visibility="gone" />
             </FrameLayout>
@@ -136,16 +132,16 @@
                 android:id="@+id/btnAuto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="8dp"
                 android:text="Auto" />
 
             <Button
                 android:id="@+id/btnHide"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="8dp"
                 android:text="Hide"
                 android:visibility="gone" />
 
@@ -153,8 +149,8 @@
                 android:id="@+id/btnReset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
                 android:enabled="false"
                 android:text="Reset" />
         </LinearLayout>

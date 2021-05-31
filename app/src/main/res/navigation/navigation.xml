@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/gameFragment"
         android:name="com.thekeval.guesser.ui.GameFragment"
-        android:label="Guesser Game"
+        android:label="Picker 'n Seeker"
         tools:layout="@layout/fragment_game" />
     <fragment
         android:id="@+id/rulesFragment"
