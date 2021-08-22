@@ -127,9 +127,12 @@ class GameFragment : Fragment() {
                 pickedNumber = etNumber.text.toString()
                 setControlsForGameOn();
 
+                txtStatus.setText(R.string.gameOnStatus)
+
                 gameState = GameState.STARTED
 
-            } else if (btnHide.text.toString().toLowerCase() == "show") {
+            }
+            else if (btnHide.text.toString().toLowerCase() == "show") {
                 AlertDialog.Builder(context)
                     .setTitle("Warning!")
                     .setMessage("Once you see the number, the game will reset.")
