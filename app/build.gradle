@@ -1,14 +1,10 @@
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
-    id 'kotlin-kapt'
-    id 'androidx.navigation.safeargs'
-    id 'kotlin-android-extensions'
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    namespace "com.thekeval.guesser"
+    compileSdk 36
 
     buildFeatures {
         dataBinding true
@@ -16,8 +12,8 @@ android {
 
     defaultConfig {
         applicationId "com.thekeval.guesser"
-        minSdkVersion 19
-        targetSdkVersion 30
+        minSdk 21
+        targetSdk 36
         vectorDrawables.useSupportLibrary = true
         versionCode 1
         versionName "1.0"
@@ -32,11 +28,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 
@@ -55,30 +48,21 @@ dependencies {
     implementation "com.google.android.material:material:$version_material"
 
     // Navigation
-    implementation "android.arch.navigation:navigation-fragment-ktx:$version_navigation"
-    implementation "android.arch.navigation:navigation-ui-ktx:$version_navigation"
+    implementation "androidx.navigation:navigation-fragment-ktx:$version_navigation"
+    implementation "androidx.navigation:navigation-ui-ktx:$version_navigation"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
 
     // Lifecycle
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$version_lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$version_lifecycle"
     // implementation 'androidx.navigation:navigation-compose:1.0.0-alpha04'
-
-    // Room and Lifecycle dependencies
-    implementation "androidx.room:room-runtime:$version_room"
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
-    kapt "androidx.room:room-compiler:$version_room"
-    implementation "androidx.lifecycle:lifecycle-extensions:$version_lifecycle_extensions"
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_coroutine"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version_coroutine"
 
 
-    // Kotlin Extensions and Coroutines support for Room
-    implementation "androidx.room:room-ktx:$version_room"
 
 
     implementation 'androidx.appcompat:appcompat:1.2.0'

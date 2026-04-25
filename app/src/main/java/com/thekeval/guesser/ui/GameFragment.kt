@@ -25,7 +25,6 @@ import com.thekeval.guesser.adapters.DataItem
 import com.thekeval.guesser.adapters.GuessesAdapter
 import com.thekeval.guesser.databinding.FragmentGameBinding
 import com.thekeval.guesser.viewmodel.GameViewModel
-import kotlinx.android.synthetic.main.fragment_game.*
 
 /**
  * A simple [Fragment] subclass.
@@ -118,7 +117,7 @@ class GameFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            if (btnHide.text.toString().toLowerCase() == "hide") {
+            if (btnHide.text.toString().lowercase() == "hide") {
                 // game started
                 viewHide.visibility = View.VISIBLE
                 btnHide.text = "Show"
@@ -132,7 +131,7 @@ class GameFragment : Fragment() {
                 gameState = GameState.STARTED
 
             }
-            else if (btnHide.text.toString().toLowerCase() == "show") {
+            else if (btnHide.text.toString().lowercase() == "show") {
                 AlertDialog.Builder(context)
                     .setTitle("Warning!")
                     .setMessage("Once you see the number, the game will reset.")
@@ -158,7 +157,7 @@ class GameFragment : Fragment() {
 
         btnAuto.setOnClickListener {
 
-            if (btnAuto.text.toString().toLowerCase() == "auto") {
+            if (btnAuto.text.toString().lowercase() == "auto") {
                 val autoNum = viewModel.autoGen3D()
                 etNumber.setText(autoNum)
                 btnAuto.setText("Show")
@@ -175,7 +174,7 @@ class GameFragment : Fragment() {
 
                 gameState = GameState.STARTED
             }
-            else if (btnAuto.text.toString().toLowerCase() == "show") {
+            else if (btnAuto.text.toString().lowercase() == "show") {
                 AlertDialog.Builder(context)
                     .setTitle("Warning!")
                     .setMessage("Once you see the number, the game will reset.")
@@ -243,7 +242,7 @@ class GameFragment : Fragment() {
 
             rvGuesses.smoothScrollToPosition(viewModel.lstGuesses.value!!.count() - 1)
 
-            if (remark.toLowerCase() == "winner") {
+            if (remark.lowercase() == "winner") {
                 AlertDialog.Builder(context)
                     .setTitle("Winner!")
                     .setMessage("Well done! You found it!")

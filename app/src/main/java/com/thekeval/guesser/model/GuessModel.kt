@@ -1,14 +1,9 @@
 package com.thekeval.guesser.model
 
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
-
-
-@Parcelize
 class GuessModel (
     val guessedNumber: String,
     val remark: String
-    ) : Parcelable {
+    ) {
 
     private var _id: Long = 0L
     val id: Long
