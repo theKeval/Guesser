@@ -2,21 +2,79 @@
     <string name="app_name">Guesser</string>
     <string name="rules">Rules</string>
     <string name="about">About</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-<!--    <string name="txtGameInfo">Find a hidden number with 3 unique digits,\neach guess opens clues to solve the puzzle!</string>-->
-    <string name="txtGameInfo">Hide &amp; Seek a number with 3 unique digits. Picker hides it, Seeker finds it by guessing. Each guess opens clues to solve the puzzle!</string>
+    <string name="settings">Settings</string>
 
-    <string name="txtMode">Select Picker Mode:</string>
+    <string name="txt_game_info">Hide and seek a 3-digit secret number with unique digits. Each guess is scored as R (right place) and W (wrong place). Crack the pattern before your friends do.</string>
+    <string name="txt_mode">Mode:</string>
     <string name="mode_app">App</string>
     <string name="mode_friend">Friend</string>
 
-    <!-- App Mode initial status -->
-    <string name="initialStatusAppMode">Press Auto to hide a number by the App.</string>
-    <!-- Friend Mode initial status -->
-    <string name="initialStatusFriendMode">Let a friend enter a number and press Hide</string>
-    <!-- Game on status -->
-    <string name="gameOnStatus">Game on, make a guess and press Check!</string>
+    <string name="hint_secret_number">Secret number</string>
+    <string name="hint_guess_number">Enter your guess</string>
+    <string name="secret_hidden_mask">***</string>
 
+    <string name="action_auto">Auto</string>
+    <string name="action_hide">Hide</string>
+    <string name="action_show">Show</string>
+    <string name="action_reset">Reset</string>
+    <string name="action_check">Check</string>
+    <string name="action_keyboard_back">Back</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_delete">Delete</string>
+    <string name="digit_0">0</string>
+    <string name="digit_1">1</string>
+    <string name="digit_2">2</string>
+    <string name="digit_3">3</string>
+    <string name="digit_4">4</string>
+    <string name="digit_5">5</string>
+    <string name="digit_6">6</string>
+    <string name="digit_7">7</string>
+    <string name="digit_8">8</string>
+    <string name="digit_9">9</string>
+
+    <string name="initial_status_app_mode">Tap Auto to generate and hide a number.</string>
+    <string name="initial_status_friend_mode">Friend mode: enter a number, then tap Hide.</string>
+    <string name="game_on_status">Game on. Enter a guess and tap Check.</string>
+    <string name="status_play_again">Round over. Tap Reset to play again.</string>
+
+    <string name="invalid_secret_title">Oops</string>
+    <string name="invalid_secret_message">The secret must be exactly 3 unique digits.</string>
+    <string name="invalid_guess_title">Try again</string>
+    <string name="invalid_guess_message">Your guess must be exactly 3 unique digits.</string>
+
+    <string name="winner_title">Winner</string>
+    <string name="winner_message">Great job. You cracked the secret number.</string>
+    <string name="winner_remark">Winner</string>
+
+    <string name="reveal_title">Reveal the secret?</string>
+    <string name="reveal_message">Revealing the number ends this round. You can start a fresh game with Reset.</string>
+    <string name="reveal_positive">Reveal</string>
+
+    <string name="reset_title">Reset game?</string>
+    <string name="reset_message">This will clear all guesses and start over.</string>
+    <string name="reset_positive">Reset</string>
+
+    <string name="switch_mode_title">Switch mode?</string>
+    <string name="switch_mode_message">Switching mode will reset the current round.</string>
+    <string name="switch_mode_positive">Switch</string>
+
+    <string name="got_it">Got it</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="rules_title">Game Rules</string>
+    <string name="rules_subtitle">Quick, fair, and fun for one or two players.</string>
+    <string name="rules_body">1) The secret number always has exactly 3 unique digits.\n\n2) The seeker also enters a 3-digit guess with unique digits.\n\n3) R means a guessed digit exists and is in the correct position.\n\n4) W means a guessed digit exists but is in a different position.\n\n5) If no guessed digit exists in the secret, the remark is SMYLE (Simply Make Your Life Easy).\n\n6) 3R means Winner.</string>
+    <string name="rules_tips">Example:\nSecret = 245\nGuess = 325 -> 1R, 1W\n(5 is right position, 2 exists but wrong position)\n\nTry to use each remark to eliminate impossible combinations and solve faster.</string>
+
+    <string name="about_title">About Guesser</string>
+    <string name="about_body">Guesser is a logic puzzle game inspired by classic number deduction challenges. It started as a personal Android project and has now been modernized with updated libraries, cleaner architecture, and a refreshed design.</string>
+    <string name="about_how_to_play_fast">Play solo with auto-generated secrets or pass the phone to a friend in versus mode. Every round trains pattern recognition, memory, and reasoning while keeping gameplay quick and playful.</string>
+
+    <string name="settings_feedback_title">Feedback &amp; Feel</string>
+    <string name="settings_feedback_description">Tune how the game responds to each guess.</string>
+    <string name="settings_sound_label">Sound effects</string>
+    <string name="settings_guess_sound_label">Guess result sounds</string>
+    <string name="settings_keypad_sound_label">Keypad tap sounds</string>
+    <string name="settings_vibration_label">Vibration feedback</string>
 
 </resources>

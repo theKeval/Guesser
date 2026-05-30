@@ -34,39 +34,19 @@ android {
 }
 
 dependencies {
-
-    // kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$version_kotlin"
-
-    // Core
     implementation "androidx.core:core-ktx:$version_core"
-
-    // Constraint Layout
+    implementation "androidx.appcompat:appcompat:1.7.1"
     implementation "androidx.constraintlayout:constraintlayout:$version_constraint_layout"
-
-    // Material Design
     implementation "com.google.android.material:material:$version_material"
-
-    // Navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$version_navigation"
     implementation "androidx.navigation:navigation-ui-ktx:$version_navigation"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-
-
-    // Lifecycle
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$version_lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$version_lifecycle"
-    // implementation 'androidx.navigation:navigation-compose:1.0.0-alpha04'
 
-    // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_coroutine"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version_coroutine"
 
-
-
-
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 }
