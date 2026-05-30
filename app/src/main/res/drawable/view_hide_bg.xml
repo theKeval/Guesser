@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:drawable="@drawable/gray_scratch"
-        android:bottom="5dp"
-        android:left="5dp"
-        android:right="5dp"
-        android:top="5dp" />
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/secret_field_corner_radius" />
+            <solid android:color="#FFD4D7E1" />
+        </shape>
+    </item>
 
     <item>
-        <shape
-            android:padding="10dp"
-            android:shape="rectangle">
-            <corners android:radius="10dp" />
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/secret_field_corner_radius" />
             <stroke
-                android:width="5dp"
-                android:color="@color/white" />
+                android:width="1dp"
+                android:color="#FFB3BACB" />
         </shape>
-
     </item>
+
 </layer-list>
