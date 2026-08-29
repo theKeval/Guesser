@@ -1,0 +1,10 @@
+<resources>
+    <string name="cd_start_game">Start game</string>
+    <string name="cd_tutorial">Tutorial</string>
+    <string name="cd_gameplay">Gameplay</string>
+    <string name="cd_about">About</string>
+    <string name="cd_player_mode_selector">Player mode selector</string>
+    <string name="cd_single_player">Single player mode</string>
+    <string name="cd_double_player">Double player mode</string>
+    <string name="friend_secret_hint">3 unique digit number</string>
+</resources>
