@@ -1,116 +1,146 @@
 # Architecture
 
-## Overview
+## Repository Shape
 
-Guesser is a single-module, single-activity Android application. Its current
-design is a small MVVM-style separation rather than a full clean-architecture
-stack: pure rules live in a domain object, mutable round state lives in a
-ViewModel, and one fragment coordinates most UI and platform behavior.
+Guesser is now a multi-module Android repository with two independent
+applications. The Compose revamp is the primary product direction; Guesser V1
+is retained as an isolated reference and playable fallback.
 
 ```mermaid
 flowchart TD
-    A[MainActivity] --> N[Navigation graph]
-    N --> G[GameFragment]
-    N --> R[RulesFragment]
-    N --> B[AboutFragment]
-    N --> S[SettingsFragment]
-    G --> VM[GameViewModel]
-    VM --> GR[GameRules]
-    VM --> M[GuessModel]
-    G --> AD[GuessesAdapter]
-    AD --> M
-    G --> P[UserPreferences]
-    S --> P
-    G --> X[Android sound, vibration, animation, and insets APIs]
+    A[":guesser\nCompose application"] --> G[":gameplay\nFeature UI"]
+    A --> D[":data\nRepository implementations"]
+    A --> O[":domain\nContracts and use cases"]
+    A --> C[":core-ui\nCompose theme"]
+    G --> O
+    G --> C
+    D --> O
+    V[":guesser_v1\nLegacy application"]:::legacy
+
+    classDef legacy fill:#eee,stroke:#777,color:#222
 ```
 
-## Component Responsibilities
+There is deliberately no dependency edge between the revamp modules and
+`:guesser_v1`.
 
-| Component | Responsibility |
-| --- | --- |
-| `MainActivity` | Hosts the navigation fragment and drawer; locks the drawer outside the game destination |
-| `GameFragment` | Binds controls, observes state, renders screens, handles dialogs and keypad input, and produces audio/haptic/visual feedback |
-| `GameViewModel` | Owns the secret, guess history, stable guess IDs, and round state |
-| `GameRules` | Validates codes, generates secrets, and computes remarks without Android dependencies |
-| `GuessModel` | Immutable row data: stable ID, guessed number, and output remark |
-| `GuessesAdapter` | Renders immutable guess rows with `ListAdapter` and `DiffUtil` |
-| `UserPreferences` | Reads and writes feedback options through private `SharedPreferences` |
-| `RulesFragment` / `AboutFragment` | Render static resource-backed content |
-| `SettingsFragment` | Binds preference values to three switches |
+## Module Responsibilities
 
-## State Ownership
-
-`GameViewModel` is scoped to `GameFragment`. It survives view recreation while
-that fragment instance remains in the navigation stack, but it does not use
-`SavedStateHandle` or other process-death persistence.
-
-| State | Owner | Persistence |
+| Module | Type | Responsibility |
 | --- | --- | --- |
-| Current secret | `GameViewModel.currentSecret` | In memory |
-| Round status | `GameViewModel.gameState` | `LiveData`, in memory |
-| Guess history | `GameViewModel.guesses` | `LiveData`, in memory |
-| Next guess ID | `GameViewModel.nextGuessId` | In memory |
-| App/Friend mode | `GameFragment.isAutoMode` | Fragment field only |
-| Sound and vibration settings | `UserPreferences` | `SharedPreferences` |
+| `:guesser` | Android application | Application object, activity, composition root, and Navigation Compose host |
+| `:gameplay` | Android library | Home UI/state plus Game, Tutorial, Gameplay, and About destinations |
+| `:domain` | Kotlin/JVM library | Repository interfaces and thin application use cases |
+| `:data` | Android library | Concrete app-info and in-memory game-session repositories |
+| `:core-ui` | Android library | Material 3 colors, typography, and `GuesserTheme` |
+| `:guesser_v1` | Android application | Complete legacy XML/View game, physically located in `app/` |
 
-This split has one important implication: mode is UI-owned while the active
-round is ViewModel-owned. A future state refactor should place both in one
-immutable screen state so configuration and process restoration cannot make
-them disagree.
+`settings.gradle` maps project `:guesser_v1` to directory `app`; directory and
+Gradle project names therefore differ intentionally.
 
-## Data Flow
+## Revamp Runtime Assembly
 
 ```mermaid
-sequenceDiagram
-    participant Player
-    participant Fragment as GameFragment
-    participant ViewModel as GameViewModel
-    participant Rules as GameRules
-    participant Adapter as GuessesAdapter
-
-    Player->>Fragment: Enter three unique digits and tap Check
-    Fragment->>ViewModel: isValidUnique3Digits(guess)
-    ViewModel->>Rules: isValidUniqueThreeDigitNumber(guess)
-    Rules-->>Fragment: valid / invalid
-    Fragment->>ViewModel: submitGuess(guess)
-    ViewModel->>Rules: buildRemark(secret, guess)
-    Rules-->>ViewModel: remark
-    ViewModel->>ViewModel: append GuessModel; update state if winner
-    ViewModel-->>Fragment: LiveData updates
-    Fragment->>Adapter: submit reversed guess list
-    Fragment-->>Player: row, sound, vibration, and animation
+flowchart TD
+    APP[GuesserApplication] --> CONTAINER[AppContainer]
+    ACT[MainActivity] --> COMPOSE[GuesserTheme + GuesserApp]
+    COMPOSE --> NAV[GuesserNavHost]
+    NAV --> HOME[HomeRoute]
+    NAV --> GAME[GameScreen]
+    NAV --> TUTORIAL[TutorialScreen]
+    NAV --> INFO[GameplayInfoScreen]
+    NAV --> ABOUT[AboutScreen]
+    CONTAINER --> AI[GetWelcomeMessageUseCase]
+    CONTAINER --> SAVE[SaveFriendSecretUseCase]
+    CONTAINER --> GET[GetFriendSecretUseCase]
+    SAVE --> SESSION[InMemoryGameSessionRepository]
+    GET --> SESSION
 ```
 
-The domain and ViewModel layers do not depend on views. The reverse is not
-true: `GameFragment` currently combines presentation, input policy, device
-services, animation, and layout calculations.
+`GuesserApplication` lazily creates one `AppContainer`. The container performs
+manual dependency injection by obtaining repositories from `RepositoryModule`
+and constructing use cases. `MainActivity` enables edge-to-edge drawing and
+sets Compose content. `GuesserApp` creates the navigation controller.
+
+No dependency-injection framework is used.
 
 ## Navigation
 
-`MainActivity` hosts one `NavHostFragment` and a drawer with Rules, About, and
-Settings destinations. The game is the start destination. The drawer can open
-only on that start destination; secondary screens use Up navigation.
+`GuesserNavHost` owns five string routes:
 
-## UI and Resources
+| Route | Destination | Current status |
+| --- | --- | --- |
+| `home` | `HomeRoute` | Implemented |
+| `game` | `GameScreen` | Placeholder with setup-type acknowledgement |
+| `tutorial` | `TutorialScreen` | Placeholder |
+| `gameplay_info` | `GameplayInfoScreen` | Placeholder |
+| `about` | `AboutScreen` | Placeholder |
 
-- Layouts use XML, Material components, view binding, and data binding.
-- `guess_view.xml` binds `GuessModel.number` and `GuessModel.output`.
-- The game screen uses a `NestedScrollView`, a nested `RecyclerView`, and a
-  custom keypad card.
-- Window insets resize scroll and list areas around system bars and the keypad.
-- The app is portrait-only.
-- Day and night themes derive from Material 3 with project color resources.
-- Sound effects are packaged in `res/raw`; no runtime download is required.
+Forward and backward navigation use 320 ms horizontal slide transitions. The
+home Start handler saves either the valid Double Player secret or `null` for
+Single Player before navigating to `game`.
 
-## Storage and External Boundaries
+## Revamp State Ownership
 
-There is no network, database, account, or analytics layer. The only durable
-data is three feedback settings in the private `guesser_prefs` preference
-file. The older aggregate `sound_enabled` key remains as a migration fallback
-for the two newer sound categories.
+| State | Owner | Lifetime |
+| --- | --- | --- |
+| Selected player mode | `HomeViewModel` / `HomeUiState` | Home navigation entry/ViewModel |
+| Friend secret input | `HomeViewModel` / `HomeUiState` | Home navigation entry/ViewModel |
+| Validation message | `HomeViewModel` / `HomeUiState` | Home navigation entry/ViewModel |
+| Handed-off friend secret | `InMemoryGameSessionRepository` | `AppContainer` / application process |
+| Navigation back stack | `NavHostController` | Compose activity instance |
 
-## Build Boundaries
+`HomeUiState` is exposed as a read-only `StateFlow` and collected with
+lifecycle awareness. There is no `SavedStateHandle`, database, DataStore use,
+or persistent game session. Although `:data` declares a DataStore dependency,
+current production code does not use it.
 
-The repository has one `app` module and one application ID:
-`com.thekeval.guesser`. It targets Android SDK 36, supports API 21 and later,
-and compiles for Java 17. The build still uses Groovy Gradle files.
+The app-info repository and welcome-message use case are wired and invoked
+during `HomeViewModel` initialization, but the returned string is not currently
+stored or rendered.
+
+## Home UI
+
+The home screen:
+
+- uses full-screen Compose with edge-to-edge system bar padding;
+- draws production artwork from `gameplay/res/drawable-nodpi`;
+- scales control widths from the current screen width with upper/lower bounds;
+- scrolls vertically and applies IME padding for compact displays;
+- constrains mode interaction to two selectable radio-button regions;
+- masks Double Player secret input;
+- uses scale feedback instead of separate pressed artwork at runtime.
+
+Original design files are preserved under `design_assets/raw_assets`. Runtime
+resources are copied and normalized separately so source artwork is not a
+module dependency.
+
+## Shared UI
+
+`:core-ui` supplies a Material 3 theme with static light/dark fallback schemes
+and Android 12+ dynamic color enabled by default. `GuesserScreenScaffold`
+provides the wood background and safe-area padding for secondary destinations.
+`GuesserBackButton` supplies a 48 dp circular target and an auto-mirrored icon.
+
+## Application Boundaries
+
+The revamp application ID is `io.keval.apps.guesser`; the V1 application ID is
+`com.thekeval.guesser`. Both target SDK 36, require API 21 or later, use Java
+17, and are locked to portrait orientation.
+
+## Guesser V1 Architecture
+
+V1 remains a single-activity, fragment-based MVVM-style application:
+
+```mermaid
+flowchart TD
+    MA[MainActivity + XML navigation] --> GF[GameFragment]
+    GF --> VM[GameViewModel]
+    VM --> RULES[GameRules]
+    VM --> MODEL[GuessModel]
+    GF --> ADAPTER[GuessesAdapter]
+    GF --> PREFS[UserPreferences]
+```
+
+It retains XML layouts, LiveData, ViewModel, `SharedPreferences`, custom keypad
+logic, audio/haptic feedback, and the complete scoring loop. This code should
+remain isolated unless a change is specifically intended for V1.

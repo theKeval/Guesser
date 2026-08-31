@@ -1,147 +1,157 @@
 # Implementation Guide
 
-## Rules Engine
+## Revamp Startup
 
-`GameRules` is the smallest and most reusable part of the app.
+The new application starts through four small composition layers:
 
-### Validation
+1. Android creates `GuesserApplication`.
+2. Its lazy `AppContainer` creates repository implementations and use cases.
+3. `MainActivity` enables edge-to-edge rendering and applies `GuesserTheme`.
+4. `GuesserApp` creates a `NavHostController` and calls `GuesserNavHost`.
 
-`isValidUniqueThreeDigitNumber` checks length, digit-only content, and set
-cardinality. It deliberately operates on a `String`, which preserves leading
-zeros.
+The application layer depends on all four support modules and is the only
+place that assembles concrete `:data` repositories with `:domain` use cases.
 
-### Secret Generation
+## Manual Dependency Container
 
-`generateSecretNumber` shuffles the ten decimal digits, takes the first three,
-and joins them. Sampling without replacement guarantees uniqueness without a
-retry loop. A `Random` argument can be supplied for deterministic tests.
+`RepositoryModule` constructs:
 
-### Remark Calculation
+- `DefaultAppInfoRepository`, which returns `"Welcome"`;
+- `InMemoryGameSessionRepository`, which holds one nullable friend secret.
 
-`buildRemark` calculates:
+`AppContainer` exposes:
 
-1. `right`: equal characters at equal indexes.
-2. `overlap`: guessed characters contained anywhere in the secret.
-3. `wrong`: `overlap - right`.
+- `GetWelcomeMessageUseCase`;
+- `SaveFriendSecretUseCase`;
+- `GetFriendSecretUseCase`.
 
-This is correct under the enforced unique-digit invariant. If repeated digits
-are ever allowed, the overlap algorithm must change before validation changes,
-or repeated values could be overcounted.
+These abstractions establish replaceable boundaries but are intentionally
+minimal. The welcome result is currently discarded, and the session
+repository has no clear/consume operation beyond saving `null`.
 
-`buildRemark` assumes both inputs already satisfy the three-character contract;
-it does not validate lengths itself. Generated secrets and Friend-mode secrets
-are validated before play, and `submitGuess` validates every guess.
+## Home State and Validation
 
-## Round State
+`HomeUiState` contains:
 
-`GameViewModel` exposes two read-only `LiveData` streams:
+```text
+playerMode: SINGLE | DOUBLE
+friendSecretNumber: String
+secretValidationMessage: String?
+```
 
-- `guesses: LiveData<List<GuessModel>>`
-- `gameState: LiveData<GameState>`
+`HomeViewModel` owns a `MutableStateFlow` internally and exposes an immutable
+`StateFlow`.
 
-The fragment sends commands rather than mutating those streams.
+### Mode Changes
+
+Selecting Single Player clears the friend secret and any validation message.
+Selecting Double Player preserves a previously entered secret and clears the
+message.
+
+### Secret Input
+
+`onFriendSecretNumberChanged` filters input through `Char.isDigit` and keeps
+at most three characters. Empty input shows no live error. Non-empty values
+are validated with duplicate detection before length detection, so `11`
+reports `Digits must be unique`.
 
 ### Starting
 
-- `startAutoGame()` generates a secret, clears guesses, and enters `STARTED`.
-- `startFriendGame(secret)` validates first. On success it stores the secret,
-  clears guesses, enters `STARTED`, and returns `true`.
+`canStartGame` always accepts Single Player and clears validation. Double
+Player calls the same validator used during typing and accepts only three
+unique digits.
 
-### Guessing
+`HomeRoute` invokes the outer Start callback only after `canStartGame` returns
+true.
 
-`submitGuess` rejects calls unless the state is `STARTED` and the guess is
-valid. A valid guess is scored, appended with a monotonically increasing ID,
-and returned to the UI. A `Winner` remark also transitions the state to
-`WON`.
+## Home Compose UI
 
-### Ending and Resetting
+`HomeScreen` is stateless: it renders `HomeUiState` and emits callbacks.
+`HomeRoute` is the stateful boundary that creates the ViewModel and collects
+state with `collectAsStateWithLifecycle`.
 
-- `revealAndAbandon()` transitions only `STARTED` to `ABANDONED`.
-- `resetGame()` clears guesses and enters `NOT_STARTED`.
-- The old secret remains in memory after reset but is hidden and replaced by
-  the next start action.
+Notable implementation details:
 
-## Game Screen
+- screen-width-derived dimensions keep artwork proportional;
+- `verticalScroll`, status/navigation bar padding, and `imePadding` support
+  compact layouts;
+- the mode image is decorative while two transparent `selectable` regions
+  expose radio-button semantics;
+- the friend secret uses `BasicTextField`, numeric-password keyboard options,
+  and `PasswordVisualTransformation`;
+- image buttons collect press state and scale to 95 percent without a ripple;
+- accessibility descriptions for home controls come from string resources.
 
-`GameFragment` performs setup in this order:
+## Session Handoff
 
-1. Inflate binding and obtain the fragment-scoped ViewModel.
-2. Disable the system keyboard for the seeker field.
-3. load four short effects into `SoundPool`.
-4. Capture baseline padding and margins.
-5. Attach the guess adapter.
-6. Configure inset and scroll behavior.
-7. Attach control and keypad listeners.
-8. Observe ViewModel streams.
-9. Render the selected mode and current state.
+The home destination does not pass a secret in a navigation route:
 
-### Rendering
+```mermaid
+sequenceDiagram
+    participant Home as HomeRoute
+    participant Nav as GuesserNavHost
+    participant Save as SaveFriendSecretUseCase
+    participant Repo as InMemoryGameSessionRepository
+    participant Game as GameScreen
 
-`renderModeOnly` toggles Auto/Hide controls, secret-field editability, and
-mode-label colors. `renderState` is the central state-to-view mapping for
-status copy, control enablement, secret masking, guess input, and keypad
-visibility.
+    Home->>Nav: Valid HomeUiState
+    Nav->>Save: friend secret or null
+    Save->>Repo: saveFriendSecret(value)
+    Nav->>Game: navigate("game")
+    Game->>Repo: via GetFriendSecretUseCase
+    Repo-->>Game: String? secret
+```
 
-The secret is not removed from the text field when hidden. A full-size overlay
-view covers it. Reveal and win remove that overlay.
+Single Player stores `null`; Double Player stores the validated secret. The
+Game placeholder receives the value only to choose its explanatory copy and
+never displays the secret. The repository is process-memory only.
 
-### Guess History
+## Navigation and Placeholder Screens
 
-The ViewModel stores guesses in submission order. The fragment reverses the
-list before passing it to `GuessesAdapter`, so the newest result appears at
-position zero. The adapter uses stable model IDs for identity and full data
-class equality for content changes.
+`GuesserNavHost` declares Home, Game, Tutorial, Gameplay, and About routes
+with horizontal slide transitions. The four secondary screens use
+`GuesserScreenScaffold` and `GuesserBackButton`.
 
-### Custom Keypad
+Game distinguishes Single from Double Player by whether the retrieved secret
+is null/blank. It does not generate a secret or implement a round. Tutorial,
+Gameplay, and About delegate to a common `PlaceholderScreen` with temporary
+hardcoded text.
 
-Digit listeners reject input after three characters and reject a digit already
-present in the current entry. Rejected keys use the wrong-result feedback.
-Delete, clear, and keypad-hide actions operate directly on the seeker field.
+## Theme and Assets
 
-The system input method is explicitly hidden whenever the custom keypad opens.
-Inset listeners and computed list heights keep the active controls visible on
-different screen sizes.
+`:core-ui` defines `GuesserTheme`, colors, and default Material typography.
+Android 12+ dynamic color is enabled unless a caller opts out. The wood-screen
+foreground color is explicit white so placeholder content remains legible
+regardless of the dynamic scheme.
 
-## Device Feedback
+Source artwork lives in `design_assets/raw_assets`. Runtime-sized copies live
+in `gameplay/src/main/res/drawable-nodpi`. The runtime UI uses a scale press
+effect and does not currently switch to the preserved `*.1` pressed images.
 
-Four bundled effects are loaded:
+## Revamp Tests
 
-| Resource | Trigger |
-| --- | --- |
-| `sfx_key.wav` | Digit, delete, clear, or keypad-hide tap |
-| `sfx_right.wav` | Non-winning remark containing at least one `R` |
-| `sfx_wrong.wav` | `W`-only/`SMYLE` result or rejected keypad digit |
-| `sfx_win.wav` | Winning guess |
+- `HomeViewModelTest` covers duplicate-message consistency, empty-on-type
+  versus required-on-start behavior, and valid Double Player setup.
+- `GetWelcomeMessageUseCaseTest` verifies repository delegation.
 
-Result sounds and keypad sounds have separate preferences. Vibration is also
-independent. The implementation handles the vibrator API split at Android 12
-and the one-shot effect split at Android 8.
+There are no current Compose UI, navigation, repository, instrumentation, or
+process-restoration tests.
 
-Visual feedback includes key scaling, input scaling for an `R`, a horizontal
-shake for other results, status/card animation on win, and a generated
-36-piece confetti burst.
+## Guesser V1 Implementation
 
-## Preferences
+The complete game remains under `app/` as `:guesser_v1`:
 
-`UserPreferences` uses a private `SharedPreferences` file. New installs default
-all feedback to enabled. If category-specific sound keys do not exist, reads
-fall back to the legacy aggregate `sound_enabled` key, preserving an older
-preference value during migration.
+- `GameRules` validates codes, generates unique secrets, and produces remarks.
+- `GameViewModel` owns the secret, guess history, and four-state round machine.
+- `GameFragment` handles rendering, dialogs, custom keypad input, layout,
+  sound, vibration, animations, and confetti.
+- `GuessesAdapter` renders newest-first immutable guess rows.
+- `UserPreferences` persists result sound, keypad sound, and vibration options.
 
-## Non-Game Screens
+V1's scoring computes right-position matches, total overlap, and then
+wrong-position matches as `overlap - right`. That implementation assumes both
+inputs already satisfy the unique-three-digit contract.
 
-- Rules and About are static fragments whose text comes from string resources.
-- Settings uses view binding and writes preference changes immediately.
-- MainActivity wires the drawer and Navigation Component.
-
-## Testing
-
-Current JVM tests cover:
-
-- valid unique code acceptance;
-- duplicate and non-digit rejection;
-- winning, mixed `R`/`W`, `W`-only, and `SMYLE` remarks.
-
-The instrumented test is still the generated application-context smoke test.
-ViewModel transitions, random-generation invariants, UI flows, preferences,
-restoration, and accessibility are not yet covered.
+V1 is not a shared library and is not imported by the revamp. Reusing its
+rules requires intentionally porting the behavior into the new domain model,
+not depending on `:guesser_v1`.

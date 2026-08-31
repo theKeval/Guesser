@@ -2,121 +2,142 @@
 
 ## Project Eras
 
-### 2021 Prototype
+### 2021: Original Prototype
 
-The first implementation established the core hide-and-seek game, App and
-Friend modes, navigation, and a RecyclerView guess log. Most behavior lived in
-`GameFragment`; strings were frequently hardcoded, game state was duplicated
-between fragment fields and the ViewModel, and rule helpers mixed validation,
-generation, and mutable list management.
+The original application established the hidden-number game, App and Friend
+modes, `R`/`W`/`SMYLE` scoring, XML navigation, and a RecyclerView guess log.
+Most interaction and state logic lived in `GameFragment`, and the build used
+Android 30-era plugins and dependencies.
 
-The build targeted Android 30 and Java 8 and included obsolete or unused
-technology such as Kotlin Android synthetics, `kotlin-android-extensions`,
-KAPT, Room, legacy lifecycle extensions, and duplicate Navigation
-dependencies.
+### April 2026: Compatibility Pass
 
-### April 2026 Compatibility Pass
+Commit `c6fc98b` updated the original project for modern Gradle and Android
+tooling and removed obsolete build configuration.
 
-Commit `c6fc98b` made the old project buildable with contemporary tooling. It
-updated the Gradle wrapper and Android build configuration, removed obsolete
-plugins and dependencies, and adjusted code for the modern Android toolchain.
+### May 2026: V1 Gameplay and UX Modernization
 
-### May 2026 Gameplay and UX Pass
+Commit `5b7cecd` substantially improved the original application:
 
-Commit `5b7cecd` is the major current revamp baseline. It:
+- extracted pure `GameRules`;
+- centralized round state in `GameViewModel`;
+- modernized the guess model and adapter;
+- refreshed Material layouts, themes, copy, and navigation;
+- added a custom keypad, sound, vibration, animation, and confetti;
+- added feedback settings and focused rule tests.
 
-- extracted validation, generation, and scoring into `GameRules`;
-- moved the secret, guesses, and lifecycle state into `GameViewModel`;
-- replaced the mutable legacy guess adapter/model path with immutable
-  `GuessModel`, `ListAdapter`, and `DiffUtil`;
-- refreshed the Material 3 layouts, themes, copy, and navigation content;
-- added a custom numeric keypad and responsive inset/scroll handling;
-- added newest-first guess history;
-- added sound, vibration, animation, and confetti feedback;
-- added persistent feedback settings;
-- added focused rule tests and expanded the README.
+This version remains in `app/` and is now registered as `:guesser_v1`.
 
-The revamp preserved the original rules and both game modes while replacing
-most of the original implementation.
+### August 2026: Documentation Baseline
+
+PR #2 added the first comprehensive gameplay, architecture, implementation,
+development, and roadmap documentation. Those documents originally described
+the V1 application as the repository's only app.
+
+### August 2026: Separate Modular Compose Revamp
+
+PR #3, merged as `9288a48`, changed the project boundary rather than
+incrementally rewriting V1. It:
+
+- preserved `app/` as the independent `:guesser_v1` application;
+- introduced the new `:guesser` Compose application with application ID
+  `io.keval.apps.guesser`;
+- added `:gameplay`, `:domain`, `:data`, and `:core-ui`;
+- implemented the artwork-driven Home screen and player-mode selection;
+- added masked, validated Double Player secret setup;
+- handed friend secrets to Game through an in-memory repository and use cases;
+- added animated navigation and shared secondary-screen scaffolding;
+- preserved original design artwork separately from runtime drawables;
+- added Home ViewModel and domain use-case tests;
+- improved secret privacy, selector accessibility, validation consistency, and
+  wood-background contrast during review.
 
 ## Current Baseline
 
-The code is functional and intentionally small. The domain rules are isolated
-and unit-testable, but the presentation layer is only partially decomposed.
-`GameFragment` remains the integration point for state rendering, dialogs,
-keypad policy, audio, haptics, animation, insets, and scroll sizing.
+The primary revamp is a scalable application foundation, not yet a complete
+game. Its Home screen and setup handoff are implemented. Game, Tutorial,
+Gameplay, and About are placeholders.
 
-Known characteristics are not necessarily defects:
+The repository therefore has two valid but different baselines:
 
-- rounds and mode are not persisted across process death;
-- there is no guess limit, score, timer, daily challenge, hint system, or
-  online service;
-- the app is portrait-only;
-- Rules and About are static resource-backed screens;
-- only feedback preferences survive app restarts.
+| Concern | Revamp `:guesser` | V1 `:guesser_v1` |
+| --- | --- | --- |
+| UI toolkit | Jetpack Compose | XML Views |
+| Architecture | Multi-module, contracts/use cases, manual container | Single app module, MVVM-style |
+| Home/setup | Implemented | Implemented within game screen |
+| Complete guessing loop | Not implemented | Implemented |
+| Rules/scoring engine | Not implemented | Implemented |
+| Feedback/settings | Not implemented | Implemented |
+| Session persistence | In memory only | Round in memory; feedback preferences persisted |
+| Package | `io.keval.apps.guesser` | `com.thekeval.guesser` |
 
-## Risks and Maintenance Gaps
+## Current Risks and Gaps
 
-1. **Split state ownership.** Mode lives in the fragment while round state
-   lives in the ViewModel, making restoration harder to reason about.
-2. **Stringly typed results.** UI behavior detects a positive guess with
-   `remark.contains("R")`; structured counts and a result type would be safer
-   than parsing display text.
-3. **Large UI controller.** `GameFragment` has platform services, layout math,
-   animations, and game interactions in one class.
-4. **Limited tests.** Rules have basic unit coverage, but state transitions,
-   generated-code invariants, preferences, and UI flows do not.
-5. **Accessibility and localization.** The custom keypad, dynamic effects, and
-   symbolic results need focused TalkBack, reduced-motion, contrast, and
-   translation review.
-6. **No automated delivery pipeline.** The repository currently contains no
-   CI workflow, release automation, or documented signing process.
-7. **Legacy compatibility surface.** The aggregate sound preference methods
-   remain only as fallback infrastructure, and coroutine dependencies are
-   present even though current production code does not launch coroutines.
+1. **No revamp game domain yet.** The new `:domain` module has session and app
+   info contracts but no secret generator, scoring model, round state, or
+   guess history.
+2. **Session-only handoff.** A friend secret is lost on process death and has no
+   explicit consume lifecycle.
+3. **Scaffold abstractions are ahead of use.** The welcome use case result is
+   discarded, and DataStore is declared but unused.
+4. **Temporary copy.** Secondary screens use hardcoded placeholder text rather
+   than finalized resource-backed content.
+5. **Limited test depth.** ViewModel validation and one use case are covered,
+   but Compose behavior, navigation, repository lifetime, and future gameplay
+   have no tests.
+6. **Parallel app maintenance.** Build and documentation changes must avoid
+   accidentally coupling or confusing V1 with the revamp.
+7. **No automated delivery pipeline.** CI, signing, release automation, and
+   store publishing remain undocumented/unimplemented.
 
 ## Recommended Next Phases
 
-These are recommendations, not committed product scope.
+These phases describe a technically coherent path, not committed product
+scope.
 
-### Phase 1: Lock Down Current Behavior
+### Phase 1: Establish the Revamp Game Domain
 
-- Expand `GameRules` tests into a complete result table, including leading
-  zero and deterministic generation.
-- Add ViewModel tests for every state transition and rejected action.
-- Add instrumented flows for both modes, reveal, reset, and settings.
-- Add CI that builds and runs JVM tests on pull requests.
+- Port the established rules into pure `:domain` models and use cases without
+  importing V1.
+- Model player mode, round status, secret, guess, and structured `R`/`W`
+  results explicitly.
+- Test leading zeroes, unique-digit validation, generation, the full scoring
+  table, and invalid transitions.
+- Define when the friend secret is consumed or cleared.
 
-### Phase 2: Consolidate State
+### Phase 2: Implement the Compose Game Loop
 
-- Introduce one immutable `GameUiState` containing mode, round state, secret
-  visibility, and guesses.
-- Replace nullable/string command results with explicit sealed outcomes.
-- Decide whether rounds should survive configuration only, process death, or
-  full app restarts; then implement that policy deliberately.
+- Replace `GameScreen` with a stateful route and stateless screen.
+- Support Single Player generation and Double Player setup from the session.
+- Add guess input, history, reveal, reset, win, and back-navigation semantics.
+- Keep display strings separate from structured scoring decisions.
+- Add ViewModel and Compose UI tests for both modes.
 
-### Phase 3: Decompose the Game Screen
+### Phase 3: Finish Product Content and Settings
 
-- Move audio/haptic behavior behind a feedback controller.
-- Isolate custom-keypad input policy and animations.
-- Move viewport/inset calculations into a small UI helper or a simpler layout.
-- Keep `GameFragment` focused on binding state and forwarding user events.
+- Replace Tutorial, Gameplay, and About placeholders with resource-backed
+  final content.
+- Decide which V1 sound, vibration, motion, and accessibility behaviors belong
+  in the revamp.
+- Introduce settings storage only after its required lifetime and migration
+  behavior are defined.
 
-### Phase 4: Product and Accessibility Work
+### Phase 4: Expand Product Capabilities Deliberately
 
-- Validate TalkBack labels, focus order, touch targets, and symbolic feedback.
-- Respect reduced-motion and device haptic capabilities.
-- Review whether attempt counts, statistics, difficulty, or daily play fit the
-  product before adding storage or backend complexity.
-- Establish versioning, release notes, signing, and store metadata.
+- Decide whether rounds should survive configuration, process death, or full
+  restarts.
+- Evaluate profiles, scoreboards, statistics, and Google Play Games against
+  concrete product requirements.
+- Add CI, versioning, release notes, signing, and store metadata.
 
 ## Revamp Guardrails
 
-- Preserve three distinct digits and leading-zero behavior unless the game
-  rules are intentionally changed.
-- Keep scoring pure and covered by JVM tests.
-- Do not add persistence implicitly; document exactly when a round ends.
-- Keep display copy in resources and avoid making game decisions by parsing
-  localized strings.
-- Treat App and Friend modes as two secret-selection paths into one shared
-  guessing loop.
+- Keep `:guesser_v1` independent; do not use the application module as a
+  library.
+- Preserve established rules unless a product decision intentionally changes
+  them.
+- Represent secrets as strings so leading zeroes remain valid.
+- Keep domain decisions free of Compose and Android dependencies.
+- Pass sensitive setup through typed state/repositories, not navigation route
+  text or logs.
+- Distinguish implemented behavior from intended behavior in code, UI copy,
+  tests, and documentation.

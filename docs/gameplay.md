@@ -1,57 +1,32 @@
-# Gameplay and Rules
+# Gameplay and Implementation Status
 
-## Objective
+## Product Rule Set
 
-The seeker tries to identify a hidden code by submitting guesses and using the
-feedback from each attempt. A round ends when the seeker finds the code or
-chooses to reveal it.
+Guesser is a deduction game in which a seeker identifies a hidden
+three-character digit code. Each guess returns positional information that
+narrows the remaining possibilities.
 
-The UI calls the value a "3-digit number," but the implementation treats it as
-a string of three digits. Consequently, `012` is valid and must remain intact
-as three characters.
+These rules are fully implemented in Guesser V1. They are the established
+product contract for the revamp, but the revamp Game screen does not implement
+them yet.
 
-## Roles and Terms
+### Valid Codes
 
-- **Secret**: the hidden three-digit code.
-- **Picker**: the app or friend that chooses the secret.
-- **Seeker**: the player entering guesses.
-- **Guess**: one proposed three-digit code.
-- **Remark**: the result shown beside a guess.
+A secret or guess is valid when it:
 
-## Valid Codes
+1. contains exactly three characters;
+2. contains only characters recognized as digits by Kotlin's `Char.isDigit`;
+3. contains three different digits.
 
-Both secrets and guesses must satisfy all of these conditions:
+Codes are strings, not integers, so a leading zero is preserved. Examples:
+`358`, `907`, and `012` are valid; `33`, `331`, and `3a1` are invalid.
 
-1. Exactly three characters.
-2. Every character is recognized as a digit by Kotlin's `Char.isDigit`.
-3. All three digits are different.
+### Remarks
 
-Valid examples include `358`, `907`, and `012`. Invalid examples include `33`,
-`331`, and `3a1`.
-
-## Feedback
-
-Each digit is evaluated against the secret:
-
-- Count one `R` when the digit and its position both match.
-- Count one `W` when the digit occurs in the secret at another position.
-- Because repeated digits are forbidden, each overlap is counted once.
-
-The displayed remark is selected in this order:
-
-| Condition | Remark |
-| --- | --- |
-| Three positions match | `Winner` |
-| No digits overlap | `SMYLE` |
-| Only right-position matches exist | `<count>R` |
-| Only wrong-position matches exist | `<count>W` |
-| Both kinds exist | `<right>R, <wrong>W` |
-
-`SMYLE` expands to "Simply Make Your Life Easy." The in-app rules use the
-phrase "3R means Winner," while the implementation displays the word
-`Winner` rather than the literal string `3R`.
-
-### Examples
+- Count one `R` when a digit and its position match the secret.
+- Count one `W` when a digit is present in the secret at a different position.
+- Display `SMYLE` when no guessed digit is present.
+- Display `Winner` when all three positions match.
 
 | Secret | Guess | Result | Explanation |
 | --- | --- | --- | --- |
@@ -60,58 +35,91 @@ phrase "3R means Winner," while the implementation displays the word
 | `358` | `147` | `SMYLE` | No digit appears in the secret |
 | `245` | `245` | `Winner` | Every digit and position matches |
 
-## Game Modes
+`SMYLE` expands to "Simply Make Your Life Easy." V1's in-app rules say "3R
+means Winner," while its scoring engine displays the word `Winner`.
 
-### App Mode
+## Revamp Behavior Today
 
-1. The player taps **Auto**.
-2. The app shuffles digits `0` through `9`, takes three, stores that secret,
-   and covers the secret field.
-3. The seeker enters guesses with the custom keypad and taps **Check**.
-4. Tapping **Show** asks for confirmation. Confirming reveals the secret and
-   abandons the round.
+The new `:guesser` application currently implements round setup, not the round
+itself.
 
-### Friend Mode
+### Single Player
 
-1. The player switches to **Friend** mode.
-2. The picker enters a valid secret and taps **Hide**.
-3. The secret field is covered, and the device can be passed to the seeker.
-4. The seeker plays the same guessing flow as App mode.
-5. Tapping **Show** confirms and then abandons the round.
+1. Single Player is selected by default.
+2. Tapping **Start** clears any previously held friend secret.
+3. Navigation opens the Game destination.
+4. The destination displays a Single Player placeholder.
 
-Switching modes during an active round requires confirmation and resets the
-round. Switching before a round begins resets immediately.
+No random secret is generated and no guesses can be submitted yet.
 
-## Round States
+### Double Player
 
-| State | Meaning | Available actions |
-| --- | --- | --- |
-| `NOT_STARTED` | No active secret | Generate or enter a secret; switch mode |
-| `STARTED` | Secret is hidden and guesses are accepted | Check guesses, reveal, reset, or request a mode change |
-| `WON` | The latest guess matched the secret | Review the revealed secret and guess history; reset |
-| `ABANDONED` | The player revealed the secret | Review the revealed secret and guess history; reset |
+1. Selecting Double Player reveals a masked friend-secret field.
+2. Input is filtered to digit characters and truncated to three characters.
+3. Duplicate digits show `Digits must be unique`.
+4. A non-empty short value shows `Enter exactly 3 digits`.
+5. An empty field remains quiet while typing but shows the length message when
+   Start is pressed.
+6. A three-unique-digit value is saved to an in-memory repository.
+7. Navigation opens the Game destination, which acknowledges Double Player
+   setup without displaying the secret.
 
-The game has unlimited guesses. It does not currently track attempts as a
-score, impose a timer, provide hints, or choose a shared daily secret.
+The secret is not placed in a route argument, log, or visible placeholder
+copy. It remains available through `GetFriendSecretUseCase` only while the
+application process and `AppContainer` live.
 
-## Input and Feedback
+### Other Destinations
 
-- The seeker uses an on-screen numeric keypad.
-- The keypad refuses a fourth digit and refuses a duplicate digit.
-- **Delete** removes the last digit; **Clear** removes all entered digits.
-- Invalid submissions show a dialog and clear the entry.
-- Guess history is displayed newest first.
-- A winning guess triggers a win sound, vibration, status animation, and
-  confetti.
-- A guess containing at least one `R` uses the positive-result effect.
-- Other non-winning remarks use the wrong-result effect.
-- Settings independently control guess-result sounds, keypad sounds, and
-  vibration. All three default to enabled.
+Tutorial, Gameplay, and About are navigable placeholder screens. They share
+the wood background and back control, but they do not contain final product
+content.
 
-## Reset and Reveal Semantics
+## Guesser V1 Behavior
 
-Reset clears the guess list and returns to `NOT_STARTED`. It does not switch
-the selected mode. Starting the next round replaces the previous secret.
+Guesser V1 remains playable and has two equivalent setup modes:
 
-Reveal changes an active round to `ABANDONED`; it does not silently start a
-new round. The player must tap **Reset** before playing again.
+- **App mode** generates and hides a random unique three-digit code.
+- **Friend mode** lets one player enter and hide a valid secret before passing
+  the device to the seeker.
+
+### V1 Round Flow
+
+1. Start App mode with **Auto**, or enter a Friend-mode secret and tap
+   **Hide**.
+2. Enter a valid guess with the custom keypad.
+3. Tap **Check** to append the guess and its remark to newest-first history.
+4. Continue without a guess limit until the result is `Winner`.
+5. Optionally tap **Show**; confirmation reveals the secret and abandons the
+   round.
+6. Tap **Reset** to clear history and return the selected mode to its initial
+   state.
+
+Switching modes during an active round requires confirmation and resets that
+round.
+
+### V1 States
+
+| State | Meaning |
+| --- | --- |
+| `NOT_STARTED` | No active secret |
+| `STARTED` | Secret is hidden and guesses are accepted |
+| `WON` | The latest guess matched the secret |
+| `ABANDONED` | The player revealed the secret |
+
+### V1 Feedback
+
+- The keypad refuses a fourth digit and a repeated digit.
+- Invalid submissions display a dialog and clear the guess field.
+- Winning triggers sound, vibration, status/card animation, and confetti.
+- A non-winning result containing `R` uses the positive-result effect.
+- Other results use the wrong-result effect.
+- Settings independently control result sounds, keypad sounds, and vibration.
+
+The revamp has not carried these feedback systems forward yet.
+
+## Scope Not Yet Implemented in the Revamp
+
+The Compose app currently has no secret generation, scoring engine, guesses,
+round state machine, win/reveal/reset flow, attempt history, sound, haptics,
+settings, persistence, profiles, scoreboard, Play Games integration, timer,
+hints, or daily puzzle.
