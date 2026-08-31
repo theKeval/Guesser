@@ -1,2 +1,10 @@
-include ':app'
 rootProject.name = "Guesser"
+
+include ':guesser_v1'
+project(':guesser_v1').projectDir = file('app')
+
+include ':guesser'
+include ':core-ui'
+include ':domain'
+include ':data'
+include ':gameplay'

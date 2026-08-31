@@ -9,6 +9,11 @@ buildscript {
         version_navigation = "2.9.0"
         version_coroutine = "1.10.2"
         version_lifecycle = "2.9.1"
+        version_activity_compose = "1.9.0"
+        version_compose_ui = "1.6.8"
+        version_compose_material3 = "1.2.1"
+        version_navigation_compose = "2.7.7"
+        version_datastore = "1.1.1"
     }
 
     repositories {
@@ -18,6 +23,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:9.0.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$version_kotlin"
+        classpath "org.jetbrains.kotlin:compose-compiler-gradle-plugin:$version_kotlin"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -31,6 +37,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
 }
