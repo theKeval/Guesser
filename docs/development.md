@@ -12,92 +12,151 @@ Set `ANDROID_HOME`, or create an untracked `local.properties`:
 sdk.dir=/absolute/path/to/Android/sdk
 ```
 
-## Common Commands
+## Understand the Module Names
 
-Run these from the repository root:
+The new application lives in `guesser/` and is Gradle project `:guesser`.
+The legacy source remains in `app/`, but `settings.gradle` registers that
+directory as `:guesser_v1`; there is no `:app` project.
+
+List the configured projects with:
 
 ```bash
-./gradlew testDebugUnitTest
-./gradlew assembleDebug
-./gradlew installDebug
+./gradlew projects
 ```
 
-Launch an installed debug build:
+## Build and Test
+
+Primary revamp:
 
 ```bash
+./gradlew :guesser:assembleDebug
+./gradlew :guesser:lintDebug
+./gradlew :gameplay:testDebugUnitTest
+./gradlew :domain:test
+```
+
+Guesser V1:
+
+```bash
+./gradlew :guesser_v1:assembleDebug
+./gradlew :guesser_v1:testDebugUnitTest
+./gradlew :guesser_v1:lintDebug
+```
+
+Combined local verification:
+
+```bash
+./gradlew --no-daemon \
+  :guesser:assembleDebug \
+  :guesser:lintDebug \
+  :gameplay:testDebugUnitTest \
+  :domain:test \
+  :guesser_v1:assembleDebug \
+  :guesser_v1:testDebugUnitTest \
+  :guesser_v1:lintDebug
+```
+
+Connected Android tests require a running emulator or device and can be
+selected per application:
+
+```bash
+./gradlew :guesser:connectedDebugAndroidTest
+./gradlew :guesser_v1:connectedDebugAndroidTest
+```
+
+## Install and Launch
+
+Revamp:
+
+```bash
+./gradlew :guesser:installDebug
+adb shell am start -n io.keval.apps.guesser/.MainActivity
+```
+
+V1:
+
+```bash
+./gradlew :guesser_v1:installDebug
 adb shell am start -n com.thekeval.guesser/.MainActivity
 ```
 
-Run connected instrumentation tests:
+The different application IDs allow both builds to be installed together.
 
-```bash
-./gradlew connectedDebugAndroidTest
-```
+## Changing the Revamp
 
-The last command requires a running emulator or connected device.
+### Domain and Data
 
-## Changing Gameplay
+- Put platform-independent contracts, models, and use cases in `:domain`.
+- Implement repository contracts in `:data`.
+- Assemble concrete dependencies only at the `:guesser` application boundary.
+- Keep secrets and domain decisions out of navigation route strings and logs.
+- Add Kotlin/JVM tests for pure logic before wiring UI.
 
-For a rules change:
+### Gameplay UI
 
-1. Update `GameRules` first.
-2. Add or update focused tests in `GameRulesTest`.
-3. Update `GameViewModel` only if the action or state transition changes.
-4. Update `strings.xml`, the Rules screen, and `docs/gameplay.md`.
-5. Verify both App and Friend mode use the same resulting behavior.
+- Use a stateful `*Route` composable to create/collect state and a stateless
+  `*Screen` composable to render it.
+- Keep destination route names in `gameplay/navigation/GameplayRoutes.kt`.
+- Put shared feature UI in `gameplay/common`; put cross-feature theme tokens in
+  `:core-ui`.
+- Put player-visible production copy in resources. Existing placeholder copy
+  is temporary, not a convention to extend.
+- Preserve lifecycle-aware collection and accessible control semantics.
 
-Avoid duplicating scoring or validation in the fragment. UI validation may
-improve feedback, but `GameViewModel` and `GameRules` must remain the final
-guard.
+### State and Persistence
 
-## Changing State
+The current friend secret is process-memory only. Before introducing
+persistence, define:
 
-The state machine currently has four values: `NOT_STARTED`, `STARTED`, `WON`,
-and `ABANDONED`. When adding a state or transition:
+- whether a secret survives process death;
+- when it is consumed or cleared;
+- whether it may be backed up;
+- how sensitive values are excluded from logs and navigation arguments.
 
-- define which commands are valid in that state;
-- update every branch in `GameFragment.renderState`;
-- cover accepted and rejected transitions in unit tests;
-- document reset, reveal, and mode-switch behavior.
+Do not use the existing DataStore dependency as an implicit design decision;
+it is not used by production code today.
 
-## Changing Feedback
+### Artwork
 
-Result effects are selected in `GameFragment` and preferences are stored by
-`UserPreferences`. Keep guess-result and keypad channels independent. If a
-new feedback type is persisted, provide a safe default and consider migration
-from existing preference keys.
+- Preserve original supplied files in `design_assets/raw_assets`.
+- Put runtime-ready copies in the owning module's Android resources.
+- Avoid runtime dependencies on source-design directories.
+- Maintain content descriptions for interactive image controls; decorative
+  images should remain hidden from accessibility semantics.
 
-Always preserve a non-audio, non-haptic way to understand the result.
+## Changing Guesser V1
 
-## Resource and UI Conventions
+V1 changes belong under `app/` and use Gradle prefix `:guesser_v1`.
 
-- Put player-visible copy in `res/values/strings.xml`.
-- Use theme colors and dimensions rather than duplicating literals where
-  reuse is meaningful.
-- Maintain day and night theme behavior.
-- Keep new keypad controls accessible by label and focus order.
-- Test compact screens because the game combines a scroll view, guess list,
-  and bottom keypad.
+For a V1 rules change:
+
+1. Update `GameRules`.
+2. Update `GameRulesTest`.
+3. Update `GameViewModel` if state transitions change.
+4. Update V1 string resources, its Rules screen, and `docs/gameplay.md`.
+5. Verify App and Friend modes.
+
+Do not duplicate new V1 logic in `GameFragment`, and do not make the revamp
+depend on the V1 application module.
 
 ## Test Scope
 
-Use JVM tests for pure rules and ViewModel behavior. Use instrumentation tests
-only for Android-specific behavior such as navigation, dialogs, preferences,
-view state, accessibility, and device feedback integration.
-
-Before submitting a gameplay change, the minimum local check is:
-
-```bash
-./gradlew testDebugUnitTest assembleDebug
-```
+- Use `:domain` JVM tests for new pure game rules and use cases.
+- Use `:gameplay` JVM tests for ViewModel state transitions and validation.
+- Use Compose UI/instrumentation tests for semantics, rendering, input, and
+  navigation.
+- Use V1 JVM tests for its existing `GameRules` and ViewModel behavior.
+- Test compact screens because the artwork-driven Home screen scrolls and
+  responds to the IME.
 
 ## Documentation Maintenance
 
-The implementation is the final authority. When it changes, keep these
-documents aligned:
+Keep these documents synchronized:
 
-- rules or round flow: `docs/gameplay.md`;
-- ownership or dependencies: `docs/architecture.md`;
-- code-level behavior: `docs/implementation.md`;
-- completed or planned modernization: `docs/revamp.md`;
-- setup or commands: this guide and the root `README.md`.
+- behavior and implementation status: `docs/gameplay.md`;
+- modules, dependencies, state, or navigation: `docs/architecture.md`;
+- code-level runtime flow: `docs/implementation.md`;
+- completed phases and future direction: `docs/revamp.md`;
+- setup and commands: this guide and the root `README.md`.
+
+Always state whether behavior belongs to the revamp or V1.
