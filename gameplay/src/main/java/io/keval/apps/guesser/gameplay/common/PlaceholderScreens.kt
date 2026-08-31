@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import io.keval.apps.guesser.core.ui.theme.GuesserOnWood
 
 @Composable
 fun PlaceholderScreen(
@@ -34,7 +35,7 @@ fun PlaceholderScreen(
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = GuesserOnWood,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             )
@@ -44,7 +45,7 @@ fun PlaceholderScreen(
                     .fillMaxWidth()
                     .padding(top = 16.dp),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = GuesserOnWood,
                 textAlign = TextAlign.Center,
             )
         }

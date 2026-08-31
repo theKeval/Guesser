@@ -40,5 +40,7 @@ dependencies {
     implementation "androidx.compose.material3:material3:$version_compose_material3"
     implementation "androidx.compose.material:material-icons-extended:$version_compose_ui"
 
+    testImplementation 'junit:junit:4.13.2'
+
     debugImplementation "androidx.compose.ui:ui-tooling:$version_compose_ui"
 }

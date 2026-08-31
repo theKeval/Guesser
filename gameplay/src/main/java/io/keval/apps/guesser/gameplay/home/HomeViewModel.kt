@@ -31,7 +31,9 @@ class HomeViewModel(
         val sanitized = value.filter(Char::isDigit).take(3)
         _uiState.value = _uiState.value.copy(
             friendSecretNumber = sanitized,
-            secretValidationMessage = buildValidationMessage(sanitized),
+            secretValidationMessage = sanitized
+                .takeIf(String::isNotEmpty)
+                ?.let(::validateSecret),
         )
     }
 
@@ -42,18 +44,13 @@ class HomeViewModel(
             return true
         }
 
-        val validationMessage = when {
-            currentState.friendSecretNumber.length < 3 -> "Enter exactly 3 digits"
-            currentState.friendSecretNumber.toSet().size != currentState.friendSecretNumber.length -> "Digits must be unique"
-            else -> null
-        }
+        val validationMessage = validateSecret(currentState.friendSecretNumber)
         _uiState.value = currentState.copy(secretValidationMessage = validationMessage)
         return validationMessage == null
     }
 
-    private fun buildValidationMessage(secret: String): String? {
+    private fun validateSecret(secret: String): String? {
         return when {
-            secret.isEmpty() -> null
             secret.toSet().size != secret.length -> "Digits must be unique"
             secret.length < 3 -> "Enter exactly 3 digits"
             else -> null

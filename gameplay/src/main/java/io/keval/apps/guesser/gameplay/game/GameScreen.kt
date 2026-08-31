@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import io.keval.apps.guesser.core.ui.theme.GuesserOnWood
 import io.keval.apps.guesser.gameplay.common.GuesserBackButton
 import io.keval.apps.guesser.gameplay.common.GuesserScreenScaffold
 
@@ -35,7 +36,7 @@ fun GameScreen(
             Text(
                 text = "Game",
                 style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = GuesserOnWood,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             )
@@ -43,13 +44,13 @@ fun GameScreen(
                 text = if (friendSecretNumber.isNullOrBlank()) {
                     "Single-player placeholder screen. Gameplay UI will be designed next."
                 } else {
-                    "Double-player placeholder screen. Secret number saved for later validation: $friendSecretNumber"
+                    "Double-player placeholder screen. Secret number saved for later validation."
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = GuesserOnWood,
                 textAlign = TextAlign.Center,
             )
         }

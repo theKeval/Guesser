@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -40,6 +42,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.platform.LocalConfiguration
@@ -235,20 +238,29 @@ private fun PlayerModeToggle(
         Row(
             modifier = Modifier
                 .fillMaxSize()
+                .selectableGroup()
                 .padding(horizontal = 6.dp, vertical = 4.dp),
         ) {
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
-                    .clickable(role = Role.RadioButton) { onPlayerModeSelected(PlayerMode.SINGLE) }
+                    .selectable(
+                        selected = playerMode == PlayerMode.SINGLE,
+                        role = Role.RadioButton,
+                        onClick = { onPlayerModeSelected(PlayerMode.SINGLE) },
+                    )
                     .semantics { contentDescription = singleDescription },
             )
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
-                    .clickable(role = Role.RadioButton) { onPlayerModeSelected(PlayerMode.DOUBLE) }
+                    .selectable(
+                        selected = playerMode == PlayerMode.DOUBLE,
+                        role = Role.RadioButton,
+                        onClick = { onPlayerModeSelected(PlayerMode.DOUBLE) },
+                    )
                     .semantics { contentDescription = doubleDescription },
             )
         }
@@ -262,7 +274,7 @@ private fun FriendSecretInput(
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = modifier.aspectRatio(500f / 100f),
+        modifier = modifier.height(48.dp),
         contentAlignment = Alignment.Center,
     ) {
         Image(
@@ -277,6 +289,7 @@ private fun FriendSecretInput(
             onValueChange = { onValueChange(it.filter(Char::isDigit)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+            visualTransformation = PasswordVisualTransformation(),
             textStyle = TextStyle(
                 color = Color(0xFF6B3B13),
                 fontSize = 16.sp,
@@ -284,8 +297,8 @@ private fun FriendSecretInput(
                 textAlign = TextAlign.Center,
             ),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 16.dp),
+                .fillMaxSize()
+                .padding(horizontal = 24.dp, vertical = 8.dp),
             decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier.fillMaxWidth(),
