@@ -38,6 +38,19 @@
     </plurals>
     <string name="win_play_again">PLAY AGAIN</string>
     <string name="win_home">HOME</string>
+    <string name="cd_remark_info">What does %1$s mean?</string>
+    <string name="remark_info_dismiss">GOT IT</string>
+    <string name="remark_info_winner">All 3 digits are correct and in the right place. You cracked the code!</string>
+    <string name="remark_info_smyle">None of your digits are in the secret. Simply Make Your Life Easy: rule all three out.</string>
+    <string name="remark_info_counts">%1$s %2$s</string>
+    <plurals name="remark_info_right">
+        <item quantity="one">%1$d digit is correct and in the right place.</item>
+        <item quantity="other">%1$d digits are correct and in the right place.</item>
+    </plurals>
+    <plurals name="remark_info_wrong">
+        <item quantity="one">%1$d digit is in the secret but in the wrong place.</item>
+        <item quantity="other">%1$d digits are in the secret but in the wrong places.</item>
+    </plurals>
     <!-- Learning screens -->
     <string name="guide_back">Go back</string>
     <string name="guide_guess_description">Guess %1$s. Remark: %2$s. %3$s</string>
@@ -49,7 +62,7 @@
     <string name="rules_goal_body">Crack the hidden code by finding all three digits in the right order. Each guess gives you clues. There is no guess limit: take your time and let logic lead.</string>
     <string name="rules_code_body">Use exactly 3 different digits from 0 to 9. No repeats, in the secret or your guesses. Zero can come first: 012 is a valid code.</string>
     <string name="rules_clues_title">Read the clues</string>
-    <string name="rules_clues_body">R counts digits in the correct place. W counts digits in the secret that belong somewhere else. Winner means all three digits are correctly placed.\n\nIn real rounds, every tile stays gray. Use the remark counts to deduce the code; gray does not mean a digit is absent.\n\nOnly the learning examples use colors: green for a correct place, orange for a wrong place, and gray for an absent digit.</string>
+    <string name="rules_clues_body">R counts digits in the correct place. W counts digits in the secret that belong somewhere else. Winner means all three digits are correctly placed.\n\nIn real rounds, every checked tile turns gray. Use the remark counts to deduce the code; gray does not mean a digit is absent.\n\nOnly the learning examples use colors: green for a correct place, orange for a wrong place, and gray for an absent digit.</string>
     <string name="rules_smyle_body">SMYLE means none of your digits are in the secret. It stands for Simply Make Your Life Easy: three digits you can rule out!</string>
     <string name="rules_examples_title">A clue book, in color</string>
     <string name="rules_example_secret">For these examples only, the secret is %1$s. In a real game, it stays hidden until you win.</string>
@@ -61,9 +74,9 @@
     <string name="rules_single_body">Single Player\nThe app picks a random secret. You do the detective work.</string>
     <string name="rules_double_body">Double Player\nA friend enters a secret on Home. The input is masked. Hand the phone to the seeker, who guesses the code using the same rules. Both players share one device.</string>
     <string name="rules_controls_title">Your detective tools</string>
-    <string name="rules_controls_body">Tap digits on the keypad. A digit already in your current guess is disabled. DELETE removes the last digit; ENTER checks a complete three-digit guess.\n\nAll tiles stay gray, even after you submit. Read the R/W/SMYLE/Winner remark and scroll the board to compare earlier guesses.\n\nThe ? button opens this guide without ending your round. Go back to resume. Leaving an unfinished game asks you to confirm quitting.\n\nAfter winning, HOME returns to setup. Single Player also offers PLAY AGAIN with a new random secret.</string>
+    <string name="rules_controls_body">Tap digits on the keypad. A digit already in your current guess is disabled. DELETE removes the last digit; ENTER checks a complete three-digit guess.\n\nAfter ENTER, the checked tiles turn gray instead of showing colors. Read the R/W/SMYLE/Winner remark and scroll the board to compare earlier guesses.\n\nThe ? button opens this guide without ending your round. Go back to resume. Leaving an unfinished game asks you to confirm quitting.\n\nAfter winning, HOME returns to setup. Single Player also offers PLAY AGAIN with a new random secret.</string>
     <string name="rules_strategy_title">Think like a codebreaker</string>
-    <string name="rules_strategy_body">Compare the R and W counts across several guesses, not just the last one. Rearrange the same digits to explore positions, or change digits to narrow down which ones belong in the code.\n\nReal game tiles are all gray, so they do not identify which digits earned R or W. Use the remark counts and earlier guesses together.\n\nA SMYLE row is useful, not a setback. It eliminates three digits. You have unlimited guesses, so experiment at your own pace.</string>
+    <string name="rules_strategy_body">Compare the R and W counts across several guesses, not just the last one. Rearrange the same digits to explore positions, or change digits to narrow down which ones belong in the code.\n\nChecked tiles in a real game are all gray, so they do not identify which digits earned R or W. Use the remark counts and earlier guesses together.\n\nA SMYLE row is useful, not a setback. It eliminates three digits. You have unlimited guesses, so experiment at your own pace.</string>
     <string name="tutorial_progress">Step %1$d of %2$d</string>
     <string name="tutorial_goal_title">Meet your first mystery</string>
     <string name="tutorial_goal_body">Your mission: find a hidden three-digit code. We will show the practice secret so you can learn how each clue works. In a real round, you will not see it.</string>
@@ -75,7 +88,7 @@
     <string name="tutorial_practice_win">You cracked the practice code! Ready for a hidden one?</string>
     <string name="tutorial_practice_retry">Compare the colors with the practice secret. Try another guess whenever you are ready.</string>
     <string name="tutorial_ready_title">Your next mystery awaits</string>
-    <string name="tutorial_ready_body">You know the code rules, the clues and the keypad. Unlike these practice examples, real rounds keep every tile gray. Use the R/W/SMYLE/Winner remarks to solve the code.\n\nPlay solo now, or go back to Home to set up a game with a friend.</string>
+    <string name="tutorial_ready_body">You know the code rules, the clues and the keypad. Unlike these practice examples, real rounds turn every checked tile gray. Use the R/W/SMYLE/Winner remarks to solve the code.\n\nPlay solo now, or go back to Home to set up a game with a friend.</string>
     <string name="tutorial_next">NEXT</string>
     <string name="tutorial_finish">CONTINUE</string>
     <string name="tutorial_play">PLAY NOW</string>

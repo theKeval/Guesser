@@ -71,15 +71,20 @@ process and `AppContainer` live.
 - A header shows a back button, the Guesser title, and a help (`?`) button,
   followed by a Single/Double Player mode badge.
 - The guess board lists numbered rows of three digit tiles plus a remark box.
+  Each submitted row has a small gold **i** beside its remark. Tapping the
+  remark or the **i** opens an iOS-style popup (zoom/fade in, fade/shrink out) with a one-line
+  meaning of that remark; tap **GOT IT**, outside the card, or Back to close.
   Guesses are unlimited; the board scrolls and keeps the active row visible.
-- The custom keypad has digits 0–9, **ENTER**, and **DELETE**. Digits already
+- The custom keypad has digits 0–9, with **DELETE** bottom-left and **ENTER** bottom-right. Digits already
   in the current guess are disabled, so duplicates are impossible. ENTER is
   enabled only after three digits.
-- All game-board tiles stay gray, including empty, typed, and submitted tiles.
-  On ENTER, tiles still flip in sequence, but per-digit color feedback is
-  disabled to increase difficulty. Deduction uses the V1 remark
+- Empty and typed tiles use the original yellowish wood color. On ENTER, the
+  tiles flip in sequence and every analysed tile turns gray: per-digit
+  green/orange feedback is disabled to increase difficulty. Deduction uses the V1 remark
   (`1R, 1W`, `SMYLE`, `Winner`), not individual tile colors.
   The original green/orange/gray feedback logic is retained for reuse.
+- A `SMYLE` remark box is teal and plays a single heartbeat pulse when it is
+  first revealed.
 - A winning guess disables the keypad and opens a win dialog showing the
   secret and guess count. Single Player offers **PLAY AGAIN** and **HOME**;
   Double Player offers **HOME**.
