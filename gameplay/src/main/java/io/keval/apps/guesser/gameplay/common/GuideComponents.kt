@@ -45,6 +45,9 @@ import androidx.compose.ui.semantics.selectableGroup
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
@@ -201,6 +204,29 @@ internal fun GuideHeading(text: String, modifier: Modifier = Modifier) {
     )
 }
 
+private val ClueRightColor = Color(0xFF8EE06A)
+private val ClueWrongColor = Color(0xFFFF7A66)
+private val RightClueWords = Regex("\\b(RIGHT|1R|2R)\\b")
+private val WrongClueWords = Regex("\\b(WRONG|1W|2W|3W)\\b")
+
+/**
+ * Makes the clue words stand out: RIGHT, 1R and 2R in bold green; WRONG, 1W, 2W and 3W in bold
+ * red. Only styling is added; the text is unchanged.
+ */
+internal fun highlightClueWords(text: String): AnnotatedString = buildAnnotatedString {
+    append(text)
+    listOf(RightClueWords to ClueRightColor, WrongClueWords to ClueWrongColor).forEach { (words, color) ->
+        words.findAll(text).forEach { match ->
+            addStyle(SpanStyle(color = color, fontWeight = FontWeight.Bold), match.range.first, match.range.last + 1)
+        }
+    }
+}
+
+@Composable
+internal fun GuideBody(text: AnnotatedString, modifier: Modifier = Modifier) {
+    Text(text, modifier, color = GuesserGoldCream, fontSize = 16.sp, lineHeight = 24.sp)
+}
+
 @Composable
 internal fun GuideBody(text: String, modifier: Modifier = Modifier) {
     Text(text, modifier, color = GuesserGoldCream, fontSize = 16.sp, lineHeight = 24.sp)
@@ -211,7 +237,7 @@ internal fun GuideBody(text: String, modifier: Modifier = Modifier) {
  * inset card. The pair is read as a single item by accessibility services.
  */
 @Composable
-internal fun GuideNumberedRule(number: Int, text: String, modifier: Modifier = Modifier) {
+internal fun GuideNumberedRule(number: Int, text: AnnotatedString, modifier: Modifier = Modifier) {
     val cardShape = RoundedCornerShape(14.dp)
     Row(
         modifier
