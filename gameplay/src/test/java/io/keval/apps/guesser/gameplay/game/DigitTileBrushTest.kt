@@ -7,26 +7,30 @@ import org.junit.Test
 
 class DigitTileBrushTest {
 
-    @Test
-    fun `disabled color feedback keeps every tile gray on both sides of the flip`() {
-        val grayBrush = digitTileBrush(
-            TileState.Revealed('3', DigitFeedback.ABSENT),
-            showFront = false,
-            colorFeedbackEnabled = true,
-        )
-        val states = listOf(TileState.Empty, TileState.Pending('2')) +
-            DigitFeedback.entries.map { TileState.Revealed('5', it) }
+    private val neutralBrush = digitTileBrush(TileState.Empty, showFront = true, colorFeedbackEnabled = true)
+    private val grayBrush = digitTileBrush(
+        TileState.Revealed('3', DigitFeedback.ABSENT),
+        showFront = false,
+        colorFeedbackEnabled = true,
+    )
 
-        states.forEach { state ->
+    @Test
+    fun `disabled color feedback keeps unanalysed tiles neutral and analysed tiles gray`() {
+        listOf(TileState.Empty, TileState.Pending('2')).forEach { state ->
             listOf(true, false).forEach { showFront ->
-                assertSame(grayBrush, digitTileBrush(state, showFront, colorFeedbackEnabled = false))
+                assertSame(neutralBrush, digitTileBrush(state, showFront, colorFeedbackEnabled = false))
             }
+        }
+        DigitFeedback.entries.forEach { feedback ->
+            val state = TileState.Revealed('5', feedback)
+            assertSame(neutralBrush, digitTileBrush(state, showFront = true, colorFeedbackEnabled = false))
+            assertSame(grayBrush, digitTileBrush(state, showFront = false, colorFeedbackEnabled = false))
         }
     }
 
     @Test
     fun `enabled color feedback preserves neutral fronts and distinct revealed colors`() {
-        val neutralBrush = digitTileBrush(TileState.Empty, showFront = true, colorFeedbackEnabled = true)
+        assertNotSame(neutralBrush, grayBrush)
         assertSame(
             neutralBrush,
             digitTileBrush(TileState.Pending('2'), showFront = true, colorFeedbackEnabled = true),

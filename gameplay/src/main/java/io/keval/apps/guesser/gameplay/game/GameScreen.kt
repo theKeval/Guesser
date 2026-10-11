@@ -387,6 +387,7 @@ private fun GuessRow(
             isWinner = evaluation?.isWin == true,
             height = tile * 0.74f,
             modifier = Modifier.width(tile * REMARK_UNITS),
+            animateHeartbeat = animateReveal,
         )
         Box(
             modifier = Modifier

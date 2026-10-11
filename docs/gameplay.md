@@ -78,11 +78,13 @@ process and `AppContainer` live.
 - The custom keypad has digits 0–9, **ENTER**, and **DELETE**. Digits already
   in the current guess are disabled, so duplicates are impossible. ENTER is
   enabled only after three digits.
-- All game-board tiles stay gray, including empty, typed, and submitted tiles.
-  On ENTER, tiles still flip in sequence, but per-digit color feedback is
-  disabled to increase difficulty. Deduction uses the V1 remark
+- Empty and typed tiles use the original yellowish wood color. On ENTER, the
+  tiles flip in sequence and every analysed tile turns gray: per-digit
+  green/orange feedback is disabled to increase difficulty. Deduction uses the V1 remark
   (`1R, 1W`, `SMYLE`, `Winner`), not individual tile colors.
   The original green/orange/gray feedback logic is retained for reuse.
+- A `SMYLE` remark box is teal and plays a single heartbeat pulse when it is
+  first revealed.
 - A winning guess disables the keypad and opens a win dialog showing the
   secret and guess count. Single Player offers **PLAY AGAIN** and **HOME**;
   Double Player offers **HOME**.

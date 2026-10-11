@@ -58,9 +58,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -76,6 +78,7 @@ import io.keval.apps.guesser.core.ui.theme.GuesserOrangeTop
 import io.keval.apps.guesser.core.ui.theme.GuesserWoodBottom
 import io.keval.apps.guesser.core.ui.theme.GuesserWoodTop
 import io.keval.apps.guesser.domain.game.DigitFeedback
+import io.keval.apps.guesser.domain.game.GuessRules
 
 private val GoldFrameBrush = Brush.verticalGradient(listOf(GuesserGoldBorder, GuesserBronzeDark, GuesserGoldBorder))
 private val TileEmptyBrush = Brush.verticalGradient(listOf(Color(0xFFE2BC86), Color(0xFFCD9D62), Color(0xFFBE8A50)))
@@ -85,6 +88,8 @@ private val TileAbsentBrush = Brush.verticalGradient(listOf(Color(0xFF7A746E), C
 private val KeyDeleteBrush = Brush.verticalGradient(listOf(Color(0xFFF2734F), Color(0xFFD9472A), Color(0xFFB2301A)))
 private val KeySecondaryBrush = Brush.verticalGradient(listOf(GuesserWoodTop, GuesserWoodBottom))
 private val RemarkFill = Color(0xE62A170D)
+private val SmyleRemarkFill = Color(0xF0128A84)
+private val SmyleRemarkBorder = Color(0xFF4FD1C5)
 private val RowNumberColor = Color(0xFFE6BE80)
 private val WinnerGreen = Color(0xFF9BDC62)
 private val LightDigitColor = Color(0xFFFFF8EC)
@@ -227,8 +232,9 @@ internal fun digitTileBrush(
     showFront: Boolean,
     colorFeedbackEnabled: Boolean,
 ): Brush = when {
-    !colorFeedbackEnabled -> TileAbsentBrush
     showFront || state !is TileState.Revealed -> TileEmptyBrush
+    // Without color feedback, every analysed (flipped) tile shows the neutral gray.
+    !colorFeedbackEnabled -> TileAbsentBrush
     state.feedback == DigitFeedback.EXACT -> TileExactBrush
     state.feedback == DigitFeedback.CLOSE -> TileCloseBrush
     else -> TileAbsentBrush
@@ -298,7 +304,7 @@ fun DigitTile(
         contentAlignment = Alignment.Center,
     ) {
         if (digit != null) {
-            val light = !colorFeedbackEnabled || !showFront
+            val light = !showFront
             Text(
                 text = digit.toString(),
                 style = TextStyle(
@@ -319,15 +325,31 @@ fun RemarkBox(
     isWinner: Boolean,
     height: Dp,
     modifier: Modifier = Modifier,
+    animateHeartbeat: Boolean = false,
 ) {
     val corner = height * 0.16f
     val goldDash = GuesserGoldBorder.copy(alpha = 0.55f)
+    val isSmyle = remark == GuessRules.SMYLE_REMARK
+    val beat = remember(remark) { Animatable(1f) }
+    LaunchedEffect(remark, animateHeartbeat) {
+        if (isSmyle && animateHeartbeat) {
+            // One "lub-dub" heartbeat: two quick pulses, then settle.
+            beat.animateTo(1.14f, tween(120, easing = FastOutSlowInEasing))
+            beat.animateTo(0.97f, tween(110))
+            beat.animateTo(1.09f, tween(110))
+            beat.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = 400f))
+        }
+    }
     BoxWithConstraints(
         modifier = modifier
             .height(height)
+            .graphicsLayer {
+                scaleX = beat.value
+                scaleY = beat.value
+            }
             .clip(RoundedCornerShape(corner))
-            .background(RemarkFill)
-            .border(1.5.dp, Color(0xFF8A5A2B), RoundedCornerShape(corner))
+            .background(if (isSmyle) SmyleRemarkFill else RemarkFill)
+            .border(1.5.dp, if (isSmyle) SmyleRemarkBorder else Color(0xFF8A5A2B), RoundedCornerShape(corner))
             .drawBehind {
                 val inset = 5.dp.toPx()
                 drawRoundRect(
@@ -391,14 +413,25 @@ fun RemarkInfoButton(
                 .background(Brush.verticalGradient(listOf(Color(0xFF6B3E1F), GuesserChocolateDark)), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
+            val fontSize = with(LocalDensity.current) { (size * 0.56f).toSp() }
             Text(
                 text = "i",
                 color = GuesserGoldBorder,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Black,
-                fontSize = with(LocalDensity.current) { (size * 0.56f).toSp() },
+                fontSize = fontSize,
                 maxLines = 1,
                 softWrap = false,
+                textAlign = TextAlign.Center,
+                // Trim font padding so the glyph is centered in the circle rather than the line box.
+                style = TextStyle(
+                    platformStyle = PlatformTextStyle(includeFontPadding = false),
+                    lineHeight = fontSize,
+                    lineHeightStyle = LineHeightStyle(
+                        alignment = LineHeightStyle.Alignment.Center,
+                        trim = LineHeightStyle.Trim.Both,
+                    ),
+                ),
             )
         }
     }

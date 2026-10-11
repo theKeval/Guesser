@@ -131,9 +131,14 @@ the round is won. The repository is process-memory only.
   and `GuesserDialogFrame`. These reuse the Home palette.
   `DigitTile` retains the original feedback-to-color mapping behind
   `colorFeedbackEnabled` (true by default for learning examples).
-  `GameScreen` passes false so every game-board tile stays gray before,
-  during, and after reveal, with light digits for contrast. Evaluations,
-  remarks, and win detection are unchanged.
+  `GameScreen` passes false: tile fronts (empty, typed, and the first half
+  of the reveal flip) keep the neutral yellowish brush, and every flipped
+  (analysed) tile shows gray with light digits. Evaluations, remarks, and win
+  detection are unchanged.
+- `RemarkBox` renders `SMYLE` with a teal fill and border. With
+  `animateHeartbeat` (set for the just-revealed row) it scales through a
+  one-time "lub-dub" pulse. `RemarkInfoButton` trims font padding so the "i"
+  is optically centered.
 - `RemarkInfoButton` sits in a reserved `INFO_UNITS` column beside each
   remark. `GameScreen` holds the selected `GuessEvaluation` and shows
   `RemarkInfoPopup`, an in-window overlay animated with `AnimatedVisibility`
