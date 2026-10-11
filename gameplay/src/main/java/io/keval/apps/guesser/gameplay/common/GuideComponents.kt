@@ -235,24 +235,36 @@ internal fun GuideAction(
     }
 }
 
+/**
+ * A scored guess row. With [colorFeedbackEnabled] false it matches real rounds: every tile is
+ * gray and only the remark is announced, so no per-digit hint is given.
+ */
 @Composable
-internal fun GuideGuess(evaluation: GuessEvaluation, announce: Boolean = false) {
-    val description = stringResource(
-        R.string.guide_guess_description, evaluation.guess, evaluation.remark,
-        evaluation.digits.mapIndexed { index, feedback ->
-            stringResource(
-                R.string.guide_digit_description, evaluation.guess[index].toString(),
+internal fun GuideGuess(
+    evaluation: GuessEvaluation,
+    announce: Boolean = false,
+    colorFeedbackEnabled: Boolean = true,
+) {
+    val description = if (colorFeedbackEnabled) {
+        stringResource(
+            R.string.guide_guess_description, evaluation.guess, evaluation.remark,
+            evaluation.digits.mapIndexed { index, feedback ->
                 stringResource(
-                    when (feedback) {
-                        DigitFeedback.EXACT -> R.string.clue_exact
-                        DigitFeedback.CLOSE -> R.string.clue_close
-                        DigitFeedback.ABSENT -> R.string.clue_absent
-                    },
-                ),
-            )
-        }.joinToString("; "),
-    )
-    // A spoken clue for each digit conveys the same information as the tile colors.
+                    R.string.guide_digit_description, evaluation.guess[index].toString(),
+                    stringResource(
+                        when (feedback) {
+                            DigitFeedback.EXACT -> R.string.clue_exact
+                            DigitFeedback.CLOSE -> R.string.clue_close
+                            DigitFeedback.ABSENT -> R.string.clue_absent
+                        },
+                    ),
+                )
+            }.joinToString("; "),
+        )
+    } else {
+        stringResource(R.string.guide_guess_remark_description, evaluation.guess, evaluation.remark)
+    }
+    // With colors on, a spoken clue for each digit conveys the same information as the tile colors.
     Column(
         Modifier.fillMaxWidth().clearAndSetSemantics {
             contentDescription = description
@@ -263,7 +275,13 @@ internal fun GuideGuess(evaluation: GuessEvaluation, announce: Boolean = false) 
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             evaluation.guess.forEachIndexed { index, digit ->
-                DigitTile(TileState.Revealed(digit, evaluation.digits[index]), 56.dp, false, null)
+                DigitTile(
+                    TileState.Revealed(digit, evaluation.digits[index]),
+                    56.dp,
+                    false,
+                    null,
+                    colorFeedbackEnabled = colorFeedbackEnabled,
+                )
             }
         }
         RemarkBox(evaluation.remark, evaluation.isWin, 52.dp, Modifier.fillMaxWidth())

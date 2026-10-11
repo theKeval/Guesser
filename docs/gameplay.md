@@ -107,20 +107,23 @@ process and `AppContainer` live.
 
 ### Other Destinations
 
-- **Tutorial:** on first launch, four swipeable steps introduce the shown
-  practice secret `245`, explain a scored clue row, offer an interactive
-  practice keypad, and introduce both modes. Progress dots and Back/Next buttons
+- **Tutorial:** on first launch, three swipeable steps explain the game and
+  both modes, explain the R/W/SMYLE clues in text, and offer an interactive
+  practice keypad against the shown practice secret `245`. Like a real round,
+  practice guesses show gray tiles and only the remark (no per-digit colors).
+  The practice step is the last; it offers **GET STARTED** on first run and
+  **PLAY NOW** otherwise. Progress dots and Back/Next buttons
   provide alternate navigation. Skip, Get Started, or system Back from the
   first step completes onboarding and opens Home; completion is saved across
   restarts. Tutorial remains available from Home. Practice accepts any valid
-  guess and displays the latest evaluation; it is independent of real rounds.
+  guess and displays the latest remark; it is independent of real rounds.
   Manual Tutorial Back returns through the steps and then to Home. **PLAY NOW**
   clears any friend secret and replaces Tutorial with a new Single Player game.
 - **Gameplay:** a scrollable reference explains code constraints (including
   leading zero), unlimited guesses, tile colors, R/W/SMYLE/Winner, both modes,
   controls, and strategy. Four examples use `GuessRules` against secret `245`.
-  Tutorial and Gameplay examples retain per-digit colors for teaching; the
-  guide distinguishes these examples from the gray tiles used in real rounds.
+  Gameplay examples retain per-digit colors for teaching; the guide
+  distinguishes these examples from the gray tiles used in real rounds.
   Returning from in-game help preserves the existing Game entry.
 - **Settings:** opened from the Home gear or the in-game gear. Toggles for
   background music and sound effects are saved in Preferences DataStore and

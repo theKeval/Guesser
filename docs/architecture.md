@@ -78,7 +78,7 @@ No dependency-injection framework is used.
 | `settings` | `SettingsRoute` | Music and sound-effect toggles, opened from Home or Game |
 | `home` | `HomeRoute` | Implemented |
 | `game` | `GameRoute` | Implemented: keypad, guess board, scoring, leave/quit-reveal/win dialogs, help, settings, sound and confetti |
-| `tutorial?firstRun={firstRun}` | `TutorialScreen` | Four swipeable steps, isolated practice, onboarding or manual entry |
+| `tutorial?firstRun={firstRun}` | `TutorialScreen` | Three swipeable steps, isolated practice, onboarding or manual entry |
 | `gameplay_info` | `GameplayInfoScreen` | Visual rules, examples, modes, controls, strategy |
 | `about` | `AboutScreen` | Story, credits, runtime version, public source/license links |
 

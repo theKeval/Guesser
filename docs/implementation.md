@@ -183,10 +183,12 @@ each digit's feedback as well as the remark. Static examples reveal immediately,
 without entrance animations or repeated motion.
 
 `LearningExamples` evaluates the reference guesses through `GuessRules`.
-`TutorialScreen` uses a horizontally swipeable pager with four accessible
+`TutorialScreen` uses a horizontally swipeable pager with three accessible
 progress dots and explicit Back/Next actions. Practice state is saved with
 `rememberSaveable`; practice uses the existing keypad and digit tiles but no
-real round state. First-run Skip/Get Started/system Back completion is stored
+real round state. It shows submitted guesses with
+`GuideGuess(colorFeedbackEnabled = false)`: gray tiles and a remark-only
+announcement, matching real rounds. Gameplay examples keep the default colors. First-run Skip/Get Started/system Back completion is stored
 through `TutorialRepository` and `PreferencesTutorialRepository`. Manual
 Tutorial Back moves through pages and then returns Home. **PLAY NOW** saves a
 null friend secret and replaces Tutorial with Game, starting Single Player.

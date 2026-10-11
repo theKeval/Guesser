@@ -72,6 +72,7 @@
     <!-- Learning screens -->
     <string name="guide_back">Go back</string>
     <string name="guide_guess_description">Guess %1$s. Remark: %2$s. %3$s</string>
+    <string name="guide_guess_remark_description">Guess %1$s. Remark: %2$s.</string>
     <string name="guide_digit_description">Digit %1$s: %2$s</string>
     <string name="clue_exact">correct digit, correct place</string>
     <string name="clue_close">correct digit, wrong place</string>
@@ -108,9 +109,7 @@
     <string name="tutorial_practice_body">Practice secret: %1$s. Enter any three different digits and tap ENTER. Try a few guesses, or enter the secret to see Winner. This practice does not affect a real game.</string>
     <string name="tutorial_input_description">Practice guess: %1$s. %2$d of 3 digits entered.</string>
     <string name="tutorial_practice_win">You cracked the practice code! Ready for a hidden one?</string>
-    <string name="tutorial_practice_retry">Compare the colors with the practice secret. Try another guess whenever you are ready.</string>
-    <string name="tutorial_ready_title">Your next mystery awaits</string>
-    <string name="tutorial_ready_body">You know the code rules, the clues and the keypad. Unlike these practice examples, real rounds turn every checked tile gray. Use the R/W/SMYLE/Winner remarks to solve the code.\n\nPlay solo now, or go back to Home to set up a game with a friend.</string>
+    <string name="tutorial_practice_retry">Just like a real game, the tiles stay gray. Use the remark to decide your next guess and try again whenever you are ready.</string>
     <string name="tutorial_next">NEXT</string>
     <string name="tutorial_finish">CONTINUE</string>
     <string name="tutorial_play">PLAY NOW</string>

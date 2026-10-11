@@ -52,7 +52,7 @@ import io.keval.apps.guesser.gameplay.game.TileState
 import io.keval.apps.guesser.gameplay.info.LearningExamples
 import kotlinx.coroutines.launch
 
-private const val TUTORIAL_PAGE_COUNT = 4
+private const val TUTORIAL_PAGE_COUNT = 3
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
@@ -258,17 +258,13 @@ private fun TutorialPage(
                 )
             }
             if (evaluation != null) {
-                GuideGuess(evaluation, announce = true)
+                // Like a real round: gray tiles, so only the remark guides the next guess.
+                GuideGuess(evaluation, announce = true, colorFeedbackEnabled = false)
                 GuideBody(
                     stringResource(if (evaluation.isWin) R.string.tutorial_practice_win else R.string.tutorial_practice_retry),
                     Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                 )
             }
-        }
-        3 -> GuidePanel(stringResource(R.string.tutorial_ready_title)) {
-            GuideBody(stringResource(R.string.tutorial_ready_body))
-            GuideBody(stringResource(R.string.rules_single_body))
-            GuideBody(stringResource(R.string.rules_double_body))
         }
     }
 }
