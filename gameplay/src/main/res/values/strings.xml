@@ -6,5 +6,11 @@
     <string name="cd_player_mode_selector">Player mode selector</string>
     <string name="cd_single_player">Single player mode</string>
     <string name="cd_double_player">Double player mode</string>
-    <string name="friend_secret_hint">3 unique digit number</string>
+    <string name="friend_secret_hint">enter 3 digit number</string>
+    <string name="label_start">Start</string>
+    <string name="label_tutorial">TUTORIAL</string>
+    <string name="label_gameplay">GAME PLAY</string>
+    <string name="label_about">ABOUT</string>
+    <string name="label_single_player">Single\nplayer</string>
+    <string name="label_double_player">Double\nplayer</string>
 </resources>

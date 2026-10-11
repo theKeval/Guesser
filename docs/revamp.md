@@ -42,14 +42,16 @@ incrementally rewriting V1. It:
 - introduced the new `:guesser` Compose application with application ID
   `io.keval.apps.guesser`;
 - added `:gameplay`, `:domain`, `:data`, and `:core-ui`;
-- implemented the artwork-driven Home screen and player-mode selection;
+- implemented the Compose Home screen and player-mode selection;
 - added masked, validated Double Player secret setup;
 - handed friend secrets to Game through an in-memory repository and use cases;
 - added animated navigation and shared secondary-screen scaffolding;
 - preserved original design artwork separately from runtime drawables;
 - added Home ViewModel and domain use-case tests;
 - improved secret privacy, selector accessibility, validation consistency, and
-  wood-background contrast during review.
+  wood-background contrast during review;
+- redesigned Home controls to be Compose-drawn and screen-size independent
+  while retaining the background/title artwork.
 
 ## Current Baseline
 

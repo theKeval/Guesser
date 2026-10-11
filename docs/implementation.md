@@ -72,14 +72,18 @@ state with `collectAsStateWithLifecycle`.
 
 Notable implementation details:
 
-- screen-width-derived dimensions keep artwork proportional;
+- `BoxWithConstraints` drives width fractions, tablet caps, and proportional
+  down-scaling for short-height screens;
 - `verticalScroll`, status/navigation bar padding, and `imePadding` support
   compact layouts;
-- the mode image is decorative while two transparent `selectable` regions
-  expose radio-button semantics;
+- player mode, Start, and secondary buttons are drawn in Compose with gradients
+  and rounded-pill borders (only background/title remain image assets);
+- the mode selector uses an animated selected segment and two `selectable`
+  radio-button regions;
 - the friend secret uses `BasicTextField`, numeric-password keyboard options,
   and `PasswordVisualTransformation`;
-- image buttons collect press state and scale to 95 percent without a ripple;
+- buttons collect press state and scale/darken to pressed feedback without a
+  ripple;
 - accessibility descriptions for home controls come from string resources.
 
 ## Session Handoff
@@ -125,8 +129,9 @@ foreground color is explicit white so placeholder content remains legible
 regardless of the dynamic scheme.
 
 Source artwork lives in `design_assets/raw_assets`. Runtime-sized copies live
-in `gameplay/src/main/res/drawable-nodpi`. The runtime UI uses a scale press
-effect and does not currently switch to the preserved `*.1` pressed images.
+in `gameplay/src/main/res/drawable-nodpi` for the background and title only.
+Home controls are now vector-like Compose components, so they stay crisp across
+screen sizes and densities.
 
 ## Revamp Tests
 

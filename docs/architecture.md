@@ -103,12 +103,13 @@ stored or rendered.
 The home screen:
 
 - uses full-screen Compose with edge-to-edge system bar padding;
-- draws production artwork from `gameplay/res/drawable-nodpi`;
-- scales control widths from the current screen width with upper/lower bounds;
+- keeps only the wood background and title as drawable assets;
+- draws buttons, mode toggle, and secret input with Compose gradients/borders;
+- uses `BoxWithConstraints` width fractions with tablet caps and height scaling;
 - scrolls vertically and applies IME padding for compact displays;
 - constrains mode interaction to two selectable radio-button regions;
 - masks Double Player secret input;
-- uses scale feedback instead of separate pressed artwork at runtime.
+- uses pressed scale/darken feedback at runtime.
 
 Original design files are preserved under `design_assets/raw_assets`. Runtime
 resources are copied and normalized separately so source artwork is not a
