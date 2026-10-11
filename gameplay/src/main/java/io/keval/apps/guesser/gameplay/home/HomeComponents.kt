@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -75,6 +76,7 @@ fun HomePrimaryButton(
         text = text,
         contentDescription = contentDescription,
         style = HomeButtonStyle.Primary,
+        visualAspectRatio = 3.3f,
         modifier = modifier,
         onClick = onClick,
     )
@@ -91,6 +93,7 @@ fun HomeSecondaryButton(
         text = text,
         contentDescription = contentDescription,
         style = HomeButtonStyle.Secondary,
+        visualAspectRatio = 4.8f,
         modifier = modifier,
         onClick = onClick,
     )
@@ -101,6 +104,7 @@ private fun HomePillButton(
     text: String,
     contentDescription: String,
     style: HomeButtonStyle,
+    visualAspectRatio: Float,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
@@ -131,21 +135,30 @@ private fun HomePillButton(
     BoxWithConstraints(
         modifier = modifier
             .heightIn(min = 48.dp)
-            .shadow(
-                elevation = 10.dp,
-                shape = PillShape,
-                clip = false,
-                ambientColor = Color.Black.copy(alpha = 0.45f),
-                spotColor = Color.Black.copy(alpha = 0.45f),
-            ),
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                role = Role.Button,
+                onClick = onClick,
+            )
+            .semantics { this.contentDescription = contentDescription },
         contentAlignment = Alignment.Center,
     ) {
-        val labelSize = if (style == HomeButtonStyle.Primary) maxHeight * 0.38f else maxHeight * 0.36f
+        val visualHeight = (maxWidth / visualAspectRatio).coerceAtMost(maxHeight)
+        val labelSize = if (style == HomeButtonStyle.Primary) visualHeight * 0.38f else visualHeight * 0.36f
         val letterSpacing = if (style == HomeButtonStyle.Primary) 0.sp else 0.8.sp
 
         Box(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .height(visualHeight)
+                .shadow(
+                    elevation = 10.dp,
+                    shape = PillShape,
+                    clip = false,
+                    ambientColor = Color.Black.copy(alpha = 0.45f),
+                    spotColor = Color.Black.copy(alpha = 0.45f),
+                )
                 .border(width = 2.dp, brush = Brush.verticalGradient(listOf(GuesserBronzeDark, GuesserGoldBorder)), shape = PillShape)
                 .padding(2.dp)
                 .border(width = 1.2.dp, color = GuesserGoldBorder.copy(alpha = 0.95f), shape = PillShape)
@@ -153,14 +166,7 @@ private fun HomePillButton(
                 .graphicsLayer {
                     scaleX = buttonScale
                     scaleY = buttonScale
-                }
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null,
-                    role = Role.Button,
-                    onClick = onClick,
-                )
-                .semantics { this.contentDescription = contentDescription },
+                },
             contentAlignment = Alignment.Center,
         ) {
             Text(

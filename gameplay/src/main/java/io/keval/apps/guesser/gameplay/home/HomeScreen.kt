@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -100,10 +99,10 @@ fun HomeScreen(
             val secondaryWidthBase = maxContentWidth * 0.51f
 
             val titleHeightBase = titleWidthBase / titleAspectRatio
-            val toggleHeightBase = toggleWidthBase / 3.4f
-            val inputHeightBase = toggleWidthBase / 4.8f
-            val startHeightBase = startWidthBase / 3.3f
-            val secondaryHeightBase = secondaryWidthBase / 4.8f
+            val toggleHeightBase = (toggleWidthBase / 3.4f).coerceAtLeast(48.dp)
+            val inputHeightBase = (toggleWidthBase / 4.8f).coerceAtLeast(48.dp)
+            val startHeightBase = (startWidthBase / 3.3f).coerceAtLeast(48.dp)
+            val secondaryHeightBase = (secondaryWidthBase / 4.8f).coerceAtLeast(48.dp)
 
             val topGapBase = 16.dp
             val betweenControlsBase = if (uiState.playerMode == PlayerMode.DOUBLE) 8.dp else 14.dp
@@ -133,7 +132,7 @@ fun HomeScreen(
             val startWidth = startWidthBase * scale
             val secondaryWidth = secondaryWidthBase * scale
             val titleHeight = titleHeightBase * scale
-            val inputHeight = inputHeightBase * scale
+            val inputHeight = (inputHeightBase * scale).coerceAtLeast(48.dp)
             val gapBeforeTitle = topGapBase * scale + verticalHeadroom * 0.1f
             val gapAfterTitle = 8.dp + verticalHeadroom * 0.35f
             val gapAfterControls = bottomPaddingBase * scale + verticalHeadroom * 0.55f
@@ -217,7 +216,7 @@ private fun ControlsSection(
         doubleDescription = stringResource(R.string.cd_double_player),
         modifier = Modifier
             .width(toggleWidth)
-            .aspectRatio(3.4f),
+            .height((toggleWidth / 3.4f).coerceAtLeast(48.dp)),
         onPlayerModeSelected = onPlayerModeSelected,
     )
 
@@ -252,9 +251,7 @@ private fun ControlsSection(
     HomePrimaryButton(
         text = stringResource(R.string.label_start),
         contentDescription = stringResource(R.string.cd_start_game),
-        modifier = Modifier
-            .width(startWidth)
-            .aspectRatio(3.3f),
+        modifier = Modifier.width(startWidth),
         onClick = onStartClick,
     )
 
@@ -263,9 +260,7 @@ private fun ControlsSection(
     HomeSecondaryButton(
         text = stringResource(R.string.label_tutorial),
         contentDescription = stringResource(R.string.cd_tutorial),
-        modifier = Modifier
-            .width(secondaryWidth)
-            .aspectRatio(4.8f),
+        modifier = Modifier.width(secondaryWidth),
         onClick = onTutorialClick,
     )
 
@@ -274,9 +269,7 @@ private fun ControlsSection(
     HomeSecondaryButton(
         text = stringResource(R.string.label_gameplay),
         contentDescription = stringResource(R.string.cd_gameplay),
-        modifier = Modifier
-            .width(secondaryWidth)
-            .aspectRatio(4.8f),
+        modifier = Modifier.width(secondaryWidth),
         onClick = onGameplayClick,
     )
 
@@ -285,9 +278,7 @@ private fun ControlsSection(
     HomeSecondaryButton(
         text = stringResource(R.string.label_about),
         contentDescription = stringResource(R.string.cd_about),
-        modifier = Modifier
-            .width(secondaryWidth)
-            .aspectRatio(4.8f),
+        modifier = Modifier.width(secondaryWidth),
         onClick = onAboutClick,
     )
 }
