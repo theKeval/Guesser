@@ -186,21 +186,25 @@ private fun TutorialPage(
     when (page) {
         0 -> GuidePanel(stringResource(R.string.tutorial_goal_title)) {
             GuideBody(stringResource(R.string.tutorial_goal_body))
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            ) {
-                LearningExamples.SECRET.forEach {
-                    DigitTile(TileState.Pending(it), 64.dp, false, null)
-                }
-            }
-            GuideBody(stringResource(R.string.rules_code_body))
+//            Row(
+//                Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+//            ) {
+//                LearningExamples.SECRET.forEach {
+//                    DigitTile(TileState.Pending(it), 64.dp, false, null)
+//                }
+//            }
+//            GuideBody(stringResource(R.string.rules_code_body))
         }
         1 -> GuidePanel(stringResource(R.string.tutorial_clues_title)) {
-            GuideBody(stringResource(R.string.rules_clues_body))
-            GuideGuess(LearningExamples.evaluations.first())
-            GuideBody(stringResource(R.string.example_mixed))
-            GuideBody(stringResource(R.string.tutorial_deduction))
+            GuideBody(stringResource(R.string.rules_clues_title_main_1))
+            GuideBody(stringResource(R.string.rules_clues_title_main_2))
+            GuideBody(stringResource(R.string.rules_clues_title_main_3))
+            GuideBody(stringResource(R.string.rules_clues_title_main_4))
+//            GuideBody(stringResource(R.string.rules_clues_body))
+//            GuideGuess(LearningExamples.evaluations.first())
+//            GuideBody(stringResource(R.string.example_mixed))
+//            GuideBody(stringResource(R.string.tutorial_deduction))
         }
         2 -> GuidePanel(stringResource(R.string.tutorial_practice_title)) {
             GuideBody(stringResource(R.string.tutorial_practice_body, LearningExamples.SECRET))
