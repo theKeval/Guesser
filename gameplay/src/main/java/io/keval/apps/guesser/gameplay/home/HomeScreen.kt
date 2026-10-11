@@ -1,16 +1,14 @@
 package io.keval.apps.guesser.gameplay.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -18,38 +16,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.keval.apps.guesser.core.ui.theme.GuesserGoldCream
 import io.keval.apps.guesser.core.ui.theme.GuesserTheme
 import io.keval.apps.guesser.domain.usecase.GetWelcomeMessageUseCase
 import io.keval.apps.guesser.gameplay.R
@@ -97,264 +82,274 @@ fun HomeScreen(
 ) {
     Surface(modifier = modifier.fillMaxSize()) {
         val scrollState = rememberScrollState()
-        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-        val titleWidth = (screenWidth * 0.82f).coerceAtMost(340.dp)
-        val selectorWidth = (screenWidth * 0.69f).coerceAtMost(285.dp)
-        val inputWidth = (screenWidth * 0.47f).coerceAtLeast(188.dp).coerceAtMost(224.dp)
-        val startButtonWidth = (screenWidth * 0.80f).coerceAtMost(332.dp)
-        val secondaryButtonWidth = (screenWidth * 0.71f).coerceAtMost(296.dp)
-        val validationWidth = (screenWidth * 0.60f).coerceAtMost(240.dp)
+        val titlePainter = painterResource(id = R.drawable.home_title)
+        val intrinsicSize = titlePainter.intrinsicSize
+        val titleAspectRatio = if (intrinsicSize.height > 0f) {
+            intrinsicSize.width / intrinsicSize.height
+        } else {
+            450f / 107f
+        }
 
-        Image(
-            painter = painterResource(id = R.drawable.home_background),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-        )
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val systemBars = WindowInsets.systemBars.asPaddingValues()
+            val availableHeight = maxHeight - systemBars.calculateTopPadding() - systemBars.calculateBottomPadding()
+            val maxContentWidth = minOf(maxWidth, 460.dp)
+            val titleWidthBase = maxContentWidth * 0.72f
+            val toggleWidthBase = maxContentWidth * 0.6f
+            val startWidthBase = maxContentWidth * 0.53f
+            val secondaryWidthBase = maxContentWidth * 0.51f
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .imePadding()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Spacer(modifier = Modifier.height(10.dp))
+            val titleHeightBase = titleWidthBase / titleAspectRatio
+            val toggleHeightBase = toggleWidthBase / 3.4f
+            val inputHeightBase = toggleWidthBase / 4.8f
+            val startHeightBase = startWidthBase / 3.3f
+            val secondaryHeightBase = secondaryWidthBase / 4.8f
 
-            Image(
-                painter = painterResource(id = R.drawable.home_title),
-                contentDescription = null,
-                modifier = Modifier
-                    .width(titleWidth)
-                    .aspectRatio(1.25f),
-                contentScale = ContentScale.Fit,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            PlayerModeToggle(
-                playerMode = uiState.playerMode,
-                modifier = Modifier.width(selectorWidth),
-                onPlayerModeSelected = onPlayerModeSelected,
-            )
-
-            if (uiState.playerMode == PlayerMode.DOUBLE) {
-                Spacer(modifier = Modifier.height(10.dp))
-                FriendSecretInput(
-                    value = uiState.friendSecretNumber,
-                    onValueChange = onFriendSecretNumberChanged,
-                    modifier = Modifier.width(inputWidth),
-                )
-
-                if (uiState.secretValidationMessage != null) {
-                    Text(
-                        text = uiState.secretValidationMessage,
-                        modifier = Modifier
-                            .width(validationWidth)
-                            .padding(top = 6.dp),
-                        color = Color(0xFFFFE4CA),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center,
-                    )
-                }
+            val topGapBase = 16.dp
+            val betweenControlsBase = if (uiState.playerMode == PlayerMode.DOUBLE) 8.dp else 14.dp
+            val controlSpacingBase = maxContentWidth * 0.035f
+            val bottomPaddingBase = 12.dp
+            val validationHeightBase = if (uiState.playerMode == PlayerMode.DOUBLE && uiState.secretValidationMessage != null) 24.dp else 0.dp
+            val inputSectionHeight = if (uiState.playerMode == PlayerMode.DOUBLE) {
+                inputHeightBase + controlSpacingBase + validationHeightBase
+            } else {
+                0.dp
             }
 
-            Spacer(modifier = Modifier.height(if (uiState.playerMode == PlayerMode.DOUBLE) 14.dp else 22.dp))
+            val controlsHeightBase =
+                toggleHeightBase +
+                    betweenControlsBase +
+                    inputSectionHeight +
+                    startHeightBase +
+                    (secondaryHeightBase * 3f) +
+                    (controlSpacingBase * 4f)
 
-            HomeImageButton(
-                imageRes = R.drawable.home_button_start,
-                contentDescription = stringResource(R.string.cd_start_game),
-                aspectRatio = 500f / 120f,
-                modifier = Modifier.width(startButtonWidth),
-                onClick = onStartClick,
+            val staticHeight = topGapBase + titleHeightBase + bottomPaddingBase + controlsHeightBase
+            val verticalHeadroom = (availableHeight - staticHeight).coerceAtLeast(0.dp)
+            val scale = (availableHeight / staticHeight).coerceAtMost(1f)
+
+            val titleWidth = titleWidthBase * scale
+            val toggleWidth = toggleWidthBase * scale
+            val startWidth = startWidthBase * scale
+            val secondaryWidth = secondaryWidthBase * scale
+            val titleHeight = titleHeightBase * scale
+            val inputHeight = inputHeightBase * scale
+            val gapBeforeTitle = topGapBase * scale + verticalHeadroom * 0.1f
+            val gapAfterTitle = 8.dp + verticalHeadroom * 0.35f
+            val gapAfterControls = bottomPaddingBase * scale + verticalHeadroom * 0.55f
+            val controlSpacing = controlSpacingBase * scale
+            val betweenControls = betweenControlsBase * scale
+
+            Image(
+                painter = painterResource(id = R.drawable.home_background),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
             )
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .imePadding()
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(modifier = Modifier.height(gapBeforeTitle))
 
-            HomeImageButton(
-                imageRes = R.drawable.home_button_tutorial,
-                contentDescription = stringResource(R.string.cd_tutorial),
-                aspectRatio = 5f,
-                modifier = Modifier.width(secondaryButtonWidth),
-                onClick = onTutorialClick,
-            )
+                Image(
+                    painter = titlePainter,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .width(titleWidth)
+                        .height(titleHeight),
+                    contentScale = ContentScale.Fit,
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(gapAfterTitle))
 
-            HomeImageButton(
-                imageRes = R.drawable.home_button_gameplay,
-                contentDescription = stringResource(R.string.cd_gameplay),
-                aspectRatio = 5f,
-                modifier = Modifier.width(secondaryButtonWidth),
-                onClick = onGameplayClick,
-            )
+                ControlsSection(
+                    uiState = uiState,
+                    toggleWidth = toggleWidth,
+                    inputHeight = inputHeight,
+                    startWidth = startWidth,
+                    secondaryWidth = secondaryWidth,
+                    controlSpacing = controlSpacing,
+                    betweenControls = betweenControls,
+                    onPlayerModeSelected = onPlayerModeSelected,
+                    onFriendSecretNumberChanged = onFriendSecretNumberChanged,
+                    onStartClick = onStartClick,
+                    onTutorialClick = onTutorialClick,
+                    onGameplayClick = onGameplayClick,
+                    onAboutClick = onAboutClick,
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            HomeImageButton(
-                imageRes = R.drawable.home_button_about,
-                contentDescription = stringResource(R.string.cd_about),
-                aspectRatio = 5f,
-                modifier = Modifier.width(secondaryButtonWidth),
-                onClick = onAboutClick,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(gapAfterControls))
+            }
         }
     }
 }
 
 @Composable
-private fun PlayerModeToggle(
-    playerMode: PlayerMode,
-    modifier: Modifier = Modifier,
+private fun ControlsSection(
+    uiState: HomeUiState,
+    toggleWidth: Dp,
+    inputHeight: Dp,
+    startWidth: Dp,
+    secondaryWidth: Dp,
+    controlSpacing: Dp,
+    betweenControls: Dp,
     onPlayerModeSelected: (PlayerMode) -> Unit,
+    onFriendSecretNumberChanged: (String) -> Unit,
+    onStartClick: () -> Unit,
+    onTutorialClick: () -> Unit,
+    onGameplayClick: () -> Unit,
+    onAboutClick: () -> Unit,
 ) {
-    val singleDescription = stringResource(R.string.cd_single_player)
-    val doubleDescription = stringResource(R.string.cd_double_player)
-    val selectorDescription = stringResource(R.string.cd_player_mode_selector)
+    PlayerModeToggle(
+        playerMode = uiState.playerMode,
+        singleLabel = stringResource(R.string.label_single_player),
+        doubleLabel = stringResource(R.string.label_double_player),
+        selectorDescription = stringResource(R.string.cd_player_mode_selector),
+        singleDescription = stringResource(R.string.cd_single_player),
+        doubleDescription = stringResource(R.string.cd_double_player),
+        modifier = Modifier
+            .width(toggleWidth)
+            .aspectRatio(3.4f),
+        onPlayerModeSelected = onPlayerModeSelected,
+    )
 
-    Box(
-        modifier = modifier.aspectRatio(500f / 120f),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(
-            painter = painterResource(
-                id = if (playerMode == PlayerMode.SINGLE) {
-                    R.drawable.home_player_mode_single
-                } else {
-                    R.drawable.home_player_mode_double
-                },
-            ),
-            contentDescription = selectorDescription,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds,
+    Spacer(modifier = Modifier.height(betweenControls))
+
+    if (uiState.playerMode == PlayerMode.DOUBLE) {
+        FriendSecretInput(
+            value = uiState.friendSecretNumber,
+            placeholder = stringResource(R.string.friend_secret_hint),
+            modifier = Modifier
+                .width(toggleWidth)
+                .height(inputHeight),
+            onValueChange = onFriendSecretNumberChanged,
         )
 
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .selectableGroup()
-                .padding(horizontal = 6.dp, vertical = 4.dp),
-        ) {
-            Box(
+        if (uiState.secretValidationMessage != null) {
+            Text(
+                text = uiState.secretValidationMessage,
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize()
-                    .selectable(
-                        selected = playerMode == PlayerMode.SINGLE,
-                        role = Role.RadioButton,
-                        onClick = { onPlayerModeSelected(PlayerMode.SINGLE) },
-                    )
-                    .semantics { contentDescription = singleDescription },
-            )
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize()
-                    .selectable(
-                        selected = playerMode == PlayerMode.DOUBLE,
-                        role = Role.RadioButton,
-                        onClick = { onPlayerModeSelected(PlayerMode.DOUBLE) },
-                    )
-                    .semantics { contentDescription = doubleDescription },
+                    .width(toggleWidth)
+                    .padding(top = 6.dp),
+                color = GuesserGoldCream,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center,
             )
         }
+
+        Spacer(modifier = Modifier.height(controlSpacing))
     }
-}
 
-@Composable
-private fun FriendSecretInput(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier.height(48.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.home_secret_input_background),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds,
-        )
+    HomePrimaryButton(
+        text = stringResource(R.string.label_start),
+        contentDescription = stringResource(R.string.cd_start_game),
+        modifier = Modifier
+            .width(startWidth)
+            .aspectRatio(3.3f),
+        onClick = onStartClick,
+    )
 
-        BasicTextField(
-            value = value,
-            onValueChange = { onValueChange(it.filter(Char::isDigit)) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-            visualTransformation = PasswordVisualTransformation(),
-            textStyle = TextStyle(
-                color = Color(0xFF6B3B13),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-            ),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 8.dp),
-            decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    if (value.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.friend_secret_hint),
-                            style = LocalTextStyle.current.copy(
-                                color = Color(0xFF9A7C52),
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Medium,
-                                textAlign = TextAlign.Center,
-                            ),
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                    innerTextField()
-                }
-            },
-        )
-    }
-}
+    Spacer(modifier = Modifier.height(controlSpacing))
 
-@Composable
-private fun HomeImageButton(
-    imageRes: Int,
-    contentDescription: String,
-    aspectRatio: Float,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+    HomeSecondaryButton(
+        text = stringResource(R.string.label_tutorial),
+        contentDescription = stringResource(R.string.cd_tutorial),
+        modifier = Modifier
+            .width(secondaryWidth)
+            .aspectRatio(4.8f),
+        onClick = onTutorialClick,
+    )
 
-    Image(
-        painter = painterResource(id = imageRes),
-        contentDescription = contentDescription,
-        modifier = modifier
-            .aspectRatio(aspectRatio)
-            .scale(if (isPressed) 0.95f else 1f)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick,
-            ),
-        contentScale = ContentScale.FillBounds,
+    Spacer(modifier = Modifier.height(controlSpacing))
+
+    HomeSecondaryButton(
+        text = stringResource(R.string.label_gameplay),
+        contentDescription = stringResource(R.string.cd_gameplay),
+        modifier = Modifier
+            .width(secondaryWidth)
+            .aspectRatio(4.8f),
+        onClick = onGameplayClick,
+    )
+
+    Spacer(modifier = Modifier.height(controlSpacing))
+
+    HomeSecondaryButton(
+        text = stringResource(R.string.label_about),
+        contentDescription = stringResource(R.string.cd_about),
+        modifier = Modifier
+            .width(secondaryWidth)
+            .aspectRatio(4.8f),
+        onClick = onAboutClick,
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Single mode")
 @Composable
-private fun HomeScreenPreview() {
+private fun HomeScreenSinglePreview() {
     GuesserTheme {
         HomeScreen(
-            uiState = HomeUiState(playerMode = PlayerMode.DOUBLE, friendSecretNumber = "258"),
+            uiState = HomeUiState(playerMode = PlayerMode.SINGLE),
+            onPlayerModeSelected = {},
+            onFriendSecretNumberChanged = {},
+            onStartClick = {},
+            onTutorialClick = {},
+            onGameplayClick = {},
+            onAboutClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Double mode")
+@Composable
+private fun HomeScreenDoublePreview() {
+    GuesserTheme {
+        HomeScreen(
+            uiState = HomeUiState(
+                playerMode = PlayerMode.DOUBLE,
+                friendSecretNumber = "258",
+                secretValidationMessage = "Digits must be unique",
+            ),
+            onPlayerModeSelected = {},
+            onFriendSecretNumberChanged = {},
+            onStartClick = {},
+            onTutorialClick = {},
+            onGameplayClick = {},
+            onAboutClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 320, heightDp = 568, name = "Small phone")
+@Composable
+private fun HomeScreenSmallPreview() {
+    GuesserTheme {
+        HomeScreen(
+            uiState = HomeUiState(playerMode = PlayerMode.DOUBLE, friendSecretNumber = ""),
+            onPlayerModeSelected = {},
+            onFriendSecretNumberChanged = {},
+            onStartClick = {},
+            onTutorialClick = {},
+            onGameplayClick = {},
+            onAboutClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 800, heightDp = 1280, name = "Tablet")
+@Composable
+private fun HomeScreenTabletPreview() {
+    GuesserTheme {
+        HomeScreen(
+            uiState = HomeUiState(playerMode = PlayerMode.SINGLE),
             onPlayerModeSelected = {},
             onFriendSecretNumberChanged = {},
             onStartClick = {},

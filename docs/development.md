@@ -146,7 +146,8 @@ depend on the V1 application module.
 - Use Compose UI/instrumentation tests for semantics, rendering, input, and
   navigation.
 - Use V1 JVM tests for its existing `GameRules` and ViewModel behavior.
-- Test compact screens because the artwork-driven Home screen scrolls and
+- Test compact screens because the Compose Home screen still relies on
+  proportional scaling, scrolling fallback, and IME padding for tight heights.
   responds to the IME.
 
 ## Documentation Maintenance

@@ -34,7 +34,7 @@ implementation.
 | Session implementation | `data/.../repository/InMemoryGameSessionRepository.kt` |
 | Shared theme | `core-ui/.../theme/` |
 | Original artwork | `design_assets/raw_assets/` |
-| Runtime artwork | `gameplay/src/main/res/drawable-nodpi/` |
+| Runtime artwork | `gameplay/src/main/res/drawable-nodpi/` (currently `home_background` and `home_title`) |
 
 ### Guesser V1
 

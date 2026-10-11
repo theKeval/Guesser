@@ -17,7 +17,8 @@ The new app uses the package and application ID `io.keval.apps.guesser`. Its
 current implemented experience includes:
 
 - a responsive, scrollable, portrait-first Jetpack Compose home screen;
-- artwork-backed controls for Single Player and Double Player modes;
+- Compose-drawn, resolution-independent controls for Single Player and Double
+  Player modes;
 - a masked Double Player secret field with three-unique-digit validation;
 - in-memory handoff of a valid friend secret to the Game destination;
 - animated navigation to Game, Tutorial, Gameplay, and About destinations;
