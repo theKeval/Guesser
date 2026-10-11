@@ -5,7 +5,7 @@ repository now contains two independent applications:
 
 | Application | Gradle module | Source | Status |
 | --- | --- | --- | --- |
-| **Guesser revamp** | `:guesser` | `guesser/` | Primary Compose app; home and playable game screen implemented; tutorial/info screens still placeholders |
+| **Guesser revamp** | `:guesser` | `guesser/` | Primary Compose app; home, playable game, interactive tutorial, rules guide, and about implemented |
 | **Guesser V1** | `:guesser_v1` | `app/` | Preserved, fully playable legacy game |
 
 The revamp does not reuse V1 source or resources. Both applications build
@@ -29,14 +29,17 @@ current implemented experience includes:
 - a shared wood-background scaffold, back control, and Compose theme;
 - clean module boundaries for UI, domain contracts, data, and app assembly.
 
-The Tutorial, Gameplay, and About destinations are intentionally placeholders.
-The new app does **not yet implement sound, vibration, settings, profiles, or
+Tutorial is a four-step swipeable walkthrough with a separate practice keypad;
+it appears on first launch and remains available from Home afterward.
+Gameplay explains rules with scored tile examples, modes, controls, and tips.
+About presents Guesser's family origin story, credits, installed version, and
+public source/license links. All three reuse the wooden game theme.
+The new app does **not yet implement sound, vibration settings, profiles, or
 scoreboards**.
 
 ## Game Rules
 
-The established Guesser rules, currently playable in Guesser V1 and intended
-to guide the revamp, are:
+The established Guesser rules, implemented in both applications, are:
 
 - The secret and every guess contain exactly three distinct digits.
 - `R` means a digit is correct and in the correct position.

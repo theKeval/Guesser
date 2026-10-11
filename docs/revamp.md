@@ -56,8 +56,8 @@ incrementally rewriting V1. It:
 ## Current Baseline
 
 The primary revamp now includes a playable game. Its Home screen, setup
-handoff, and Game screen are implemented. Tutorial, Gameplay, and About are
-placeholders.
+handoff, and Game screen are implemented. Tutorial, Gameplay, and About now
+provide resource-backed learning, rules, and project content in the game theme.
 
 The repository therefore has two valid but different baselines:
 
@@ -69,7 +69,7 @@ The repository therefore has two valid but different baselines:
 | Complete guessing loop | Implemented (no reveal/abandon) | Implemented |
 | Rules/scoring engine | Implemented (`GuessRules`) | Implemented |
 | Feedback/settings | Key haptics only; no settings | Implemented |
-| Session persistence | Round in `SavedStateHandle`; friend secret in memory | Round in memory; feedback preferences persisted |
+| Session persistence | Round in `SavedStateHandle`; friend secret in memory; first-run tutorial completion in Preferences DataStore | Round in memory; feedback preferences persisted |
 | Package | `io.keval.apps.guesser` | `com.thekeval.guesser` |
 
 ## Current Risks and Gaps
@@ -79,16 +79,15 @@ The repository therefore has two valid but different baselines:
    than in domain models, and there is no reveal/abandon flow.
 2. **Session-only handoff.** A friend secret is lost on process death and has no
    explicit consume lifecycle.
-3. **Scaffold abstractions are ahead of use.** The welcome use case result is
-   discarded, and DataStore is declared but unused.
-4. **Temporary copy.** Secondary screens use hardcoded placeholder text rather
-   than finalized resource-backed content.
-5. **Limited test depth.** Home/Game ViewModels, rules, and one use case are
+3. **Learning interaction coverage.** Tutorial deductions, example scores,
+   and first-run completion use cases have unit tests, but practice/navigation/
+   accessibility still need automated Compose coverage.
+4. **Limited test depth.** Home/Game ViewModels, rules, and use cases are
    covered, but Compose behavior, navigation, and repository lifetime have no
    tests.
-6. **Parallel app maintenance.** Build and documentation changes must avoid
+5. **Parallel app maintenance.** Build and documentation changes must avoid
    accidentally coupling or confusing V1 with the revamp.
-7. **No automated delivery pipeline.** CI, signing, release automation, and
+6. **No automated delivery pipeline.** CI, signing, release automation, and
    store publishing remain undocumented/unimplemented.
 
 ## Recommended Next Phases
@@ -112,11 +111,11 @@ scope.
 
 ### Phase 3: Finish Product Content and Settings
 
-- Replace Tutorial, Gameplay, and About placeholders with resource-backed
-  final content.
+- Done: resource-backed Tutorial with optional interactive practice, Gameplay
+  visual rules reference, and About with story, credits, version, and links.
 - Decide which V1 sound, vibration, motion, and accessibility behaviors belong
   in the revamp.
-- Introduce settings storage only after its required lifetime and migration
+- Add further settings storage only after each setting's lifetime and migration
   behavior are defined.
 
 ### Phase 4: Expand Product Capabilities Deliberately

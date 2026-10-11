@@ -99,8 +99,8 @@ The different application IDs allow both builds to be installed together.
 - Keep destination route names in `gameplay/navigation/GameplayRoutes.kt`.
 - Put shared feature UI in `gameplay/common`; put cross-feature theme tokens in
   `:core-ui`.
-- Put player-visible production copy in resources. Existing placeholder copy
-  is temporary, not a convention to extend.
+- Put player-visible production copy in resources, including learning and
+  informational screens.
 - Preserve lifecycle-aware collection and accessible control semantics.
 
 ### State and Persistence

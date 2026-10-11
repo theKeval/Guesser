@@ -30,7 +30,7 @@ There is deliberately no dependency edge between the revamp modules and
 | `:guesser` | Android application | Application object, activity, composition root, and Navigation Compose host |
 | `:gameplay` | Android library | Home UI/state plus Game, Tutorial, Gameplay, and About destinations |
 | `:domain` | Kotlin/JVM library | Repository interfaces, thin use cases, and pure game rules (`GuessRules`) |
-| `:data` | Android library | Concrete app-info and in-memory game-session repositories |
+| `:data` | Android library | App-info, in-memory game-session, and Preferences DataStore tutorial repositories |
 | `:core-ui` | Android library | Material 3 colors, typography, and `GuesserTheme` |
 | `:guesser_v1` | Android application | Complete legacy XML/View game, physically located in `app/` |
 
@@ -44,16 +44,21 @@ flowchart TD
     APP[GuesserApplication] --> CONTAINER[AppContainer]
     ACT[MainActivity] --> COMPOSE[GuesserTheme + GuesserApp]
     COMPOSE --> NAV[GuesserNavHost]
-    NAV --> HOME[HomeRoute]
+    NAV --> GATE[FirstRunLaunchGate]
+    GATE --> HOME[HomeRoute]
+    GATE --> TUTORIAL[TutorialScreen]
     NAV --> GAME[GameRoute]
-    NAV --> TUTORIAL[TutorialScreen]
     NAV --> INFO[GameplayInfoScreen]
     NAV --> ABOUT[AboutScreen]
     CONTAINER --> AI[GetWelcomeMessageUseCase]
     CONTAINER --> SAVE[SaveFriendSecretUseCase]
     CONTAINER --> GET[GetFriendSecretUseCase]
+    CONTAINER --> OBSERVE[ObserveFirstRunTutorialUseCase]
+    CONTAINER --> COMPLETE[CompleteFirstRunTutorialUseCase]
     SAVE --> SESSION[InMemoryGameSessionRepository]
     GET --> SESSION
+    OBSERVE --> TUTORIAL_REPO[PreferencesTutorialRepository]
+    COMPLETE --> TUTORIAL_REPO
 ```
 
 `GuesserApplication` lazily creates one `AppContainer`. The container performs
@@ -65,19 +70,22 @@ No dependency-injection framework is used.
 
 ## Navigation
 
-`GuesserNavHost` owns five string routes:
+`GuesserNavHost` owns five user-facing routes and a launch-gate route:
 
 | Route | Destination | Current status |
 | --- | --- | --- |
+| `launch_gate` | `FirstRunLaunchGate` | Reads saved onboarding completion before opening Tutorial or Home |
 | `home` | `HomeRoute` | Implemented |
 | `game` | `GameRoute` | Implemented: keypad, guess board, scoring, quit/win dialogs, help |
-| `tutorial` | `TutorialScreen` | Placeholder |
-| `gameplay_info` | `GameplayInfoScreen` | Placeholder |
-| `about` | `AboutScreen` | Placeholder |
+| `tutorial?firstRun={firstRun}` | `TutorialScreen` | Four swipeable steps, isolated practice, onboarding or manual entry |
+| `gameplay_info` | `GameplayInfoScreen` | Visual rules, examples, modes, controls, strategy |
+| `about` | `AboutScreen` | Story, credits, runtime version, public source/license links |
 
 Forward and backward navigation use 320 ms horizontal slide transitions. The
 home Start handler saves either the valid Double Player secret or `null` for
 Single Player before navigating to `game`.
+First-run completion is stored by `PreferencesTutorialRepository`; Skip,
+Get Started, and Back from the first page all mark onboarding complete.
 
 ## Revamp State Ownership
 
@@ -122,7 +130,16 @@ module dependency.
 `:core-ui` supplies a Material 3 theme with static light/dark fallback schemes
 and Android 12+ dynamic color enabled by default. `GuesserScreenScaffold`
 provides the wood background and safe-area padding for secondary destinations.
-`GuesserBackButton` supplies a 48 dp circular target and an auto-mirrored icon.
+`GuideScaffold` adds a 520 dp reading-width cap, scrollable content, and a
+48 dp gold-framed auto-mirrored back control. `GuideComponents` reuses Game's
+wood panels, tiles, and remark boxes with text descriptions for each clue.
+Tutorial practice state is local `rememberSaveable` state, not a Game ViewModel
+or session repository. First-run completion is a separate Preferences DataStore
+value behind the domain `TutorialRepository`; the launch gate waits for that
+value before choosing Tutorial or Home. Skip/Get Started and system Back from
+the first tutorial page save completion. Manual Tutorial remains available.
+Its Play action clears the friend secret and replaces Tutorial with Game;
+Gameplay help only pops back to the existing round.
 
 ## Application Boundaries
 

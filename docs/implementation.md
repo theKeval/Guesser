@@ -132,22 +132,51 @@ the round is won. The repository is process-memory only.
 - `game_board_wood` and `game_keypad_wood` are textures cropped from the home
   background and drawn with `ContentScale.Crop`, so they never stretch.
 
-## Navigation and Placeholder Screens
+## Navigation and Learning Screens
 
-`GuesserNavHost` declares Home, Game, Tutorial, Gameplay, and About routes
-with horizontal slide transitions. Tutorial, Gameplay, and About use
-`GuesserScreenScaffold` and `GuesserBackButton`.
+`GuesserNavHost` starts at a launch gate that reads the first-run tutorial
+completion flag from Preferences DataStore, then routes to Tutorial or Home.
+Skip, Get Started, and first-step system Back complete onboarding before
+opening Home; the persisted flag prevents it from returning on later launches.
+Home can still open Tutorial manually. The host declares Home, Game, Tutorial,
+Gameplay, and About routes with horizontal slide transitions. These learning
+destinations use
+`GuideScaffold`, built on `GuesserScreenScaffold` with a gold-framed back
+control, scrollable content, and 520 dp maximum width.
 
 Game exits by popping back to Home. Its help button navigates to Gameplay
-(`launchSingleTop`) and leaves Game on the back stack. Tutorial, Gameplay, and
-About delegate to a common `PlaceholderScreen` with temporary hardcoded text.
+(`launchSingleTop`) and leaves Game on the back stack.
+
+`GuideComponents` shares wood panels, readable headings/body text, wrapping
+Material buttons, and scored digit/remark examples. Example rows announce
+each digit's feedback as well as the remark. Static examples reveal immediately,
+without entrance animations or repeated motion.
+
+`LearningExamples` evaluates the reference guesses through `GuessRules`.
+`TutorialScreen` uses a horizontally swipeable pager with four accessible
+progress dots and explicit Back/Next actions. Practice state is saved with
+`rememberSaveable`; practice uses the existing keypad and digit tiles but no
+real round state. First-run Skip/Get Started/system Back completion is stored
+through `TutorialRepository` and `PreferencesTutorialRepository`. Manual
+Tutorial Back moves through pages and then returns Home. **PLAY NOW** saves a
+null friend secret and replaces Tutorial with Game, starting Single Player.
+
+The practice keypad switches to three columns on narrow panels to keep digit
+targets at least 48 dp wide. Submitted clues use a polite live-region
+announcement. Compact, large-text, and tablet previews are included.
+
+`GameplayInfoScreen` is a rules reference with examples, controls, modes, and
+strategy. `AboutScreen` reads the installed version through PackageManager and
+opens the public repository and Apache license externally, with an explicit
+message when no link-handling application is installed. All screen copy is
+in `gameplay/src/main/res/values/strings.xml`; each screen has a Compose preview.
 
 ## Theme and Assets
 
 `:core-ui` defines `GuesserTheme`, colors, and default Material typography.
 Android 12+ dynamic color is enabled unless a caller opts out. The wood-screen
-foreground color is explicit white so placeholder content remains legible
-regardless of the dynamic scheme.
+learning-screen foreground colors use explicit cream/gold over dark wood
+panels so content remains legible regardless of the dynamic scheme.
 
 Source artwork lives in `design_assets/raw_assets`. Runtime-sized copies live
 in `gameplay/src/main/res/drawable-nodpi` for the background, title, and the
@@ -162,6 +191,8 @@ stay crisp across screen sizes and densities.
 - `GuessRulesTest` covers validation, generation, and the full remark table.
 - `GameViewModelTest` covers input guards, scoring, winning, exit
   confirmation, play-again, and `SavedStateHandle` restoration.
+- `LearningExamplesTest` verifies displayed remarks and exhaustively checks
+  the tutorial's deduction against every valid code consistent with its clues.
 
 There are no current Compose UI, navigation, repository, or instrumentation
 tests.

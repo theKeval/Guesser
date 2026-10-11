@@ -37,6 +37,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-compose:$version_lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$version_lifecycle"
     implementation "androidx.activity:activity-compose:$version_activity_compose"
+    implementation "androidx.compose.foundation:foundation:1.7.8"
     implementation "androidx.compose.ui:ui:$version_compose_ui"
     implementation "androidx.compose.ui:ui-tooling-preview:$version_compose_ui"
     implementation "androidx.compose.material3:material3:$version_compose_material3"
