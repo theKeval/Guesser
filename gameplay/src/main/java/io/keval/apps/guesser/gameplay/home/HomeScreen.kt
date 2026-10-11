@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +39,7 @@ import io.keval.apps.guesser.core.ui.theme.GuesserGoldCream
 import io.keval.apps.guesser.core.ui.theme.GuesserTheme
 import io.keval.apps.guesser.domain.usecase.GetWelcomeMessageUseCase
 import io.keval.apps.guesser.gameplay.R
+import io.keval.apps.guesser.gameplay.game.GameRoundIconButton
 
 @Composable
 fun HomeRoute(
@@ -45,6 +48,7 @@ fun HomeRoute(
     onTutorialClick: () -> Unit,
     onGameplayClick: () -> Unit,
     onAboutClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: HomeViewModel = viewModel(
@@ -59,11 +63,13 @@ fun HomeRoute(
         onStartClick = {
             if (viewModel.canStartGame()) {
                 onStartClick(uiState)
+                viewModel.onGameStarted()
             }
         },
         onTutorialClick = onTutorialClick,
         onGameplayClick = onGameplayClick,
         onAboutClick = onAboutClick,
+        onSettingsClick = onSettingsClick,
         modifier = modifier,
     )
 }
@@ -77,6 +83,7 @@ fun HomeScreen(
     onTutorialClick: () -> Unit,
     onGameplayClick: () -> Unit,
     onAboutClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(modifier = modifier.fillMaxSize()) {
@@ -187,6 +194,17 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(gapAfterControls))
             }
+
+            GameRoundIconButton(
+                icon = Icons.Filled.Settings,
+                contentDescription = stringResource(R.string.cd_settings),
+                size = 44.dp,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .statusBarsPadding()
+                    .padding(top = 4.dp, end = 8.dp),
+                onClick = onSettingsClick,
+            )
         }
     }
 }
@@ -295,6 +313,7 @@ private fun HomeScreenSinglePreview() {
             onTutorialClick = {},
             onGameplayClick = {},
             onAboutClick = {},
+            onSettingsClick = {},
         )
     }
 }
@@ -315,6 +334,7 @@ private fun HomeScreenDoublePreview() {
             onTutorialClick = {},
             onGameplayClick = {},
             onAboutClick = {},
+            onSettingsClick = {},
         )
     }
 }
@@ -331,6 +351,7 @@ private fun HomeScreenSmallPreview() {
             onTutorialClick = {},
             onGameplayClick = {},
             onAboutClick = {},
+            onSettingsClick = {},
         )
     }
 }
@@ -347,6 +368,7 @@ private fun HomeScreenTabletPreview() {
             onTutorialClick = {},
             onGameplayClick = {},
             onAboutClick = {},
+            onSettingsClick = {},
         )
     }
 }

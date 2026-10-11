@@ -50,6 +50,7 @@ import io.keval.apps.guesser.core.ui.theme.GuesserBronzeDark
 import io.keval.apps.guesser.domain.game.DigitFeedback
 import io.keval.apps.guesser.domain.game.GuessEvaluation
 import io.keval.apps.guesser.gameplay.R
+import io.keval.apps.guesser.gameplay.audio.rememberTapFeedback
 import io.keval.apps.guesser.gameplay.game.DigitTile
 import io.keval.apps.guesser.gameplay.game.GameRoundIconButton
 import io.keval.apps.guesser.gameplay.game.RemarkBox
@@ -112,7 +113,15 @@ internal fun GuideSkipAction(
     onClick: () -> Unit,
     enabled: Boolean,
 ) {
-    TextButton(onClick = onClick, enabled = enabled, modifier = Modifier.heightIn(min = 48.dp)) {
+    val feedback = rememberTapFeedback()
+    TextButton(
+        onClick = {
+            feedback()
+            onClick()
+        },
+        enabled = enabled,
+        modifier = Modifier.heightIn(min = 48.dp),
+    ) {
         Text(text, color = GuesserGoldCream, fontWeight = FontWeight.Bold)
     }
 }
@@ -125,6 +134,7 @@ internal fun GuidePageDots(
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val feedback = rememberTapFeedback()
     Row(
         modifier = modifier.semantics { selectableGroup() },
         horizontalArrangement = Arrangement.Center,
@@ -139,7 +149,10 @@ internal fun GuidePageDots(
                     .selectable(
                         selected = selected,
                         role = Role.RadioButton,
-                        onClick = { onSelect(index) },
+                        onClick = {
+                            if (!selected) feedback()
+                            onSelect(index)
+                        },
                     )
                     .semantics {
                         contentDescription = description
@@ -204,8 +217,14 @@ internal fun GuideAction(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
+    val feedback = rememberTapFeedback()
     Button(
-        onClick, modifier.heightIn(min = 48.dp), enabled = enabled,
+        onClick = {
+            feedback()
+            onClick()
+        },
+        modifier = modifier.heightIn(min = 48.dp),
+        enabled = enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = GuesserOrangeTop, contentColor = GuesserChocolateDark,
             disabledContainerColor = GuesserGoldCream.copy(alpha = 0.2f),

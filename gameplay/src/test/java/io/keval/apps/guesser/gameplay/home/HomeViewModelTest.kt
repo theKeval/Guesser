@@ -48,4 +48,17 @@ class HomeViewModelTest {
         assertTrue(viewModel.canStartGame())
         assertEquals(null, viewModel.uiState.value.secretValidationMessage)
     }
+
+    @Test
+    fun `starting a double player game clears the friend secret but keeps the mode`() {
+        viewModel.onPlayerModeSelected(PlayerMode.DOUBLE)
+        viewModel.onFriendSecretNumberChanged("258")
+        assertTrue(viewModel.canStartGame())
+
+        viewModel.onGameStarted()
+
+        assertEquals(PlayerMode.DOUBLE, viewModel.uiState.value.playerMode)
+        assertEquals("", viewModel.uiState.value.friendSecretNumber)
+        assertEquals(null, viewModel.uiState.value.secretValidationMessage)
+    }
 }

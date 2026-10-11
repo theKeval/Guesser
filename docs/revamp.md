@@ -66,17 +66,17 @@ The repository therefore has two valid but different baselines:
 | UI toolkit | Jetpack Compose | XML Views |
 | Architecture | Multi-module, contracts/use cases, manual container | Single app module, MVVM-style |
 | Home/setup | Implemented | Implemented within game screen |
-| Complete guessing loop | Implemented (no reveal/abandon) | Implemented |
+| Complete guessing loop | Implemented, including quit-and-reveal | Implemented |
 | Rules/scoring engine | Implemented (`GuessRules`) | Implemented |
-| Feedback/settings | Key haptics only; no settings | Implemented |
-| Session persistence | Round in `SavedStateHandle`; friend secret in memory; first-run tutorial completion in Preferences DataStore | Round in memory; feedback preferences persisted |
+| Feedback/settings | Sounds, haptics, confetti, background music; music/sound-effect settings | Implemented |
+| Session persistence | Round in `SavedStateHandle`; friend secret in memory; tutorial completion and audio settings in Preferences DataStore | Round in memory; feedback preferences persisted |
 | Package | `io.keval.apps.guesser` | `com.thekeval.guesser` |
 
 ## Current Risks and Gaps
 
 1. **Partial game domain.** `GuessRules` covers validation, generation, and
    scoring, but round status and player mode live in the Game ViewModel rather
-   than in domain models, and there is no reveal/abandon flow.
+   than in domain models.
 2. **Session-only handoff.** A friend secret is lost on process death and has no
    explicit consume lifecycle.
 3. **Learning interaction coverage.** Tutorial deductions, example scores,
@@ -107,14 +107,15 @@ scope.
 - Done: stateful `GameRoute` + stateless `GameScreen`, both modes, keypad,
   scrolling history, win dialog, quit confirmation, help with state
   preservation, and ViewModel tests.
-- Remaining: secret reveal/abandon, sound, and Compose UI tests.
+- Done: quit-and-reveal, swipe-back, sound, haptics, and win confetti.
+- Remaining: Compose UI tests.
 
 ### Phase 3: Finish Product Content and Settings
 
 - Done: resource-backed Tutorial with optional interactive practice, Gameplay
   visual rules reference, and About with story, credits, version, and links.
-- Decide which V1 sound, vibration, motion, and accessibility behaviors belong
-  in the revamp.
+- Done: Settings with persisted music and sound-effect toggles.
+- Decide whether a vibration setting belongs in the revamp.
 - Add further settings storage only after each setting's lifetime and migration
   behavior are defined.
 

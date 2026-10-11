@@ -61,6 +61,8 @@ guessing round.
 6. A three-unique-digit value is saved to an in-memory repository.
 7. Navigation opens the Game destination, which uses the friend's secret
    without displaying it.
+8. Starting the game clears the Home secret field (Double Player stays
+   selected), so returning Home is ready for a new secret.
 
 The secret is not placed in a route argument, log, or visible copy. It
 remains available through `GetFriendSecretUseCase` only while the application
@@ -68,8 +70,9 @@ process and `AppContainer` live.
 
 ### Game Screen
 
-- A header shows a back button, the Guesser title, and a help (`?`) button,
-  followed by a Single/Double Player mode badge.
+- A header shows back and quit (flag) buttons, the Guesser title, and help
+  (`?`) and settings (gear) buttons, followed by a Single/Double Player mode
+  badge.
 - The guess board lists numbered rows of three digit tiles plus a remark box.
   Each submitted row has a small gold **i** beside its remark. Tapping the
   remark or the **i** opens an iOS-style popup (zoom/fade in, fade/shrink out) with a one-line
@@ -83,15 +86,24 @@ process and `AppContainer` live.
   green/orange feedback is disabled to increase difficulty. Deduction uses the V1 remark
   (`1R, 1W`, `SMYLE`, `Winner`), not individual tile colors.
   The original green/orange/gray feedback logic is retained for reuse.
-- A `SMYLE` remark box is teal and plays a single heartbeat pulse when it is
-  first revealed.
+- Each digit key plays its own note (a C-major pentatonic scale from 0 up to
+  9) with a light haptic, and the key bounces and glows while pressed; a typed
+  digit pops into its tile. DELETE and other buttons play soft taps.
+- On ENTER, each tile ticks as it flips. Once the last tile lands, the remark
+  pops in: `SMYLE` turns teal, plays a single heartbeat pulse and a cheerful
+  jingle; R/W remarks play a short chime.
 - A winning guess disables the keypad and opens a win dialog showing the
-  secret and guess count. Single Player offers **PLAY AGAIN** and **HOME**;
-  Double Player offers **HOME**.
-- Back (header or system) during an unfinished round asks for confirmation
-  before returning Home and discarding the round.
-- Help opens the Gameplay destination. Returning resumes the same round,
-  because the Game back-stack entry and its `SavedStateHandle` state are kept.
+  secret and guess count, with applause, a confirm haptic, and full-screen
+  confetti. Single Player offers **PLAY AGAIN** and **HOME**; Double Player
+  offers **HOME**.
+- Back (header or system) or a horizontal swipe in either direction during an
+  unfinished round asks for confirmation before returning Home and discarding
+  the round.
+- Quit (flag) asks for confirmation, then ends the round and shows a popup
+  revealing the secret number; **HOME**, Back, or tapping outside returns Home.
+- Help opens the Gameplay destination and Settings opens Settings. Returning
+  resumes the same round, because the Game back-stack entry and its
+  `SavedStateHandle` state are kept.
 
 ### Other Destinations
 
@@ -110,12 +122,16 @@ process and `AppContainer` live.
   Tutorial and Gameplay examples retain per-digit colors for teaching; the
   guide distinguishes these examples from the gray tiles used in real rounds.
   Returning from in-game help preserves the existing Game entry.
+- **Settings:** opened from the Home gear or the in-game gear. Toggles for
+  background music and sound effects are saved in Preferences DataStore and
+  default on. A soothing music loop plays only while the app is in the
+  foreground and music is enabled.
 - **About:** the family origin story credits Paresh Langalia, the inventor of
   Guesser, alongside developer Keval Langalia, the Compose revamp, installed
   app version, and external links to the public repository and Apache 2.0
   license.
 
-All three use resource-backed copy, safe-area padding, dark wood panels, and
+All of these use resource-backed copy, safe-area padding, dark wood panels, and
 a 520 dp maximum reading width. Example rows expose spoken per-digit feedback
 so clue meaning does not depend on color.
 
@@ -161,10 +177,11 @@ round.
 - Settings independently control result sounds, keypad sounds, and vibration.
 
 The revamp carries forward the keypad duplicate/length guards (as disabled
-keys) and a win state, but not sound, vibration settings, reveal, or confetti.
+keys), a win state, sound, haptics, reveal, and confetti, with its own
+synthesized sounds and music/sound-effect settings (no vibration setting).
 
 ## Scope Not Yet Implemented in the Revamp
 
-The Compose app currently has no secret reveal/abandon flow, sound, settings,
-cross-launch persistence, profiles, scoreboard, Play Games integration, timer,
+The Compose app currently has no vibration setting, cross-launch round
+persistence, profiles, scoreboard, Play Games integration, timer,
 hints, or daily puzzle.

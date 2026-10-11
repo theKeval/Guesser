@@ -1,8 +1,15 @@
 package io.keval.apps.guesser.gameplay.game
 
+import android.os.Build
+import android.view.HapticFeedbackConstants
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -24,17 +31,27 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.QuestionMark
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -46,15 +63,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.keval.apps.guesser.core.ui.theme.GuesserTheme
 import io.keval.apps.guesser.domain.game.CODE_LENGTH
+import io.keval.apps.guesser.domain.game.DigitFeedback
 import io.keval.apps.guesser.domain.game.GuessEvaluation
 import io.keval.apps.guesser.domain.game.GuessRules
 import io.keval.apps.guesser.gameplay.R
+import io.keval.apps.guesser.gameplay.audio.GameSound
+import io.keval.apps.guesser.gameplay.audio.LocalGameSoundPlayer
+import io.keval.apps.guesser.gameplay.audio.digitKeyPitch
 import io.keval.apps.guesser.gameplay.home.PlayerMode
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.math.abs
 import kotlin.math.floor
 
 private const val ROW_NUMBER_UNITS = 0.55f
@@ -66,6 +90,14 @@ private const val ROW_UNITS = CODE_LENGTH + ROW_NUMBER_UNITS + REMARK_UNITS + IN
 private const val ROW_GAP_COUNT = CODE_LENGTH + 2
 private const val MIN_VISIBLE_ROWS = 5
 private const val TILE_REVEAL_STAGGER_MS = 180
+private const val TILE_FLIP_MS = 420
+
+// The flip sound lands as the tile turns edge-on; the remark pops in once the last tile lands.
+private const val TILE_FLIP_SOUND_OFFSET_MS = 170L
+private const val REMARK_REVEAL_DELAY_MS = ((CODE_LENGTH - 1) * TILE_REVEAL_STAGGER_MS + TILE_FLIP_MS).toLong()
+private const val SECRET_REVEAL_START_MS = 450L
+private val SwipeBackThreshold = 96.dp
+private val SwipeMaxShift = 48.dp
 private const val WIN_DIALOG_DELAY_MS = 1_100L
 private val MaxContentWidth = 520.dp
 private val DialogButtonHeight = 48.dp
@@ -77,6 +109,7 @@ fun GameRoute(
     friendSecretNumber: String?,
     onExitToHome: () -> Unit,
     onHelp: () -> Unit,
+    onSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: GameViewModel = viewModel(factory = GameViewModel.factory(friendSecretNumber))
@@ -91,6 +124,13 @@ fun GameRoute(
         uiState = uiState,
         onBack = requestExit,
         onHelp = onHelp,
+        onSettings = onSettings,
+        onQuit = {
+            if (viewModel.onQuitRequested()) onExitToHome()
+        },
+        onConfirmQuit = viewModel::onConfirmQuit,
+        onDismissQuit = viewModel::onDismissQuitConfirmation,
+        onQuitRevealDone = onExitToHome,
         onDigit = viewModel::onDigit,
         onDelete = viewModel::onDelete,
         onEnter = viewModel::onEnter,
@@ -111,6 +151,11 @@ fun GameScreen(
     uiState: GameUiState,
     onBack: () -> Unit,
     onHelp: () -> Unit,
+    onSettings: () -> Unit,
+    onQuit: () -> Unit,
+    onConfirmQuit: () -> Unit,
+    onDismissQuit: () -> Unit,
+    onQuitRevealDone: () -> Unit,
     onDigit: (Char) -> Unit,
     onDelete: () -> Unit,
     onEnter: () -> Unit,
@@ -122,8 +167,14 @@ fun GameScreen(
     modifier: Modifier = Modifier,
 ) {
     var remarkInfo by remember { mutableStateOf<GuessEvaluation?>(null) }
+    GuessResultFeedback(uiState)
 
-    Box(modifier = modifier.fillMaxSize()) {
+    val swipeOffset = remember { Animatable(0f) }
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .swipeToGoBack(enabled = remarkInfo == null, offset = swipeOffset, onSwipe = onBack),
+    ) {
         Image(
             painter = painterResource(id = R.drawable.home_background),
             contentDescription = null,
@@ -148,13 +199,16 @@ fun GameScreen(
             Column(
                 modifier = Modifier
                     .widthIn(max = MaxContentWidth)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .graphicsLayer { translationX = swipeOffset.value },
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 GameHeader(
                     metrics = metrics,
                     onBack = onBack,
+                    onQuit = onQuit,
                     onHelp = onHelp,
+                    onSettings = onSettings,
                 )
                 Spacer(modifier = Modifier.height(metrics.sectionGap * 0.6f))
                 GameModeBadge(
@@ -193,6 +247,22 @@ fun GameScreen(
                 playerMode = uiState.playerMode,
                 onConfirm = onConfirmExit,
                 onDismiss = onDismissExit,
+            )
+        }
+
+        if (uiState.showQuitConfirmation) {
+            QuitConfirmationDialog(
+                playerMode = uiState.playerMode,
+                onConfirm = onConfirmQuit,
+                onDismiss = onDismissQuit,
+            )
+        }
+
+        if (uiState.isGivenUp) {
+            QuitRevealDialog(
+                secret = uiState.revealedSecret.orEmpty(),
+                guessCount = uiState.guesses.size,
+                onHome = onQuitRevealDone,
             )
         }
 
@@ -254,7 +324,9 @@ private data class GameMetrics(
 private fun GameHeader(
     metrics: GameMetrics,
     onBack: () -> Unit,
+    onQuit: () -> Unit,
     onHelp: () -> Unit,
+    onSettings: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -266,7 +338,18 @@ private fun GameHeader(
             size = metrics.iconSize,
             onClick = onBack,
         )
-        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+        GameRoundIconButton(
+            icon = Icons.Filled.Flag,
+            contentDescription = stringResource(R.string.cd_quit_game),
+            size = metrics.iconSize,
+            onClick = onQuit,
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 4.dp),
+            contentAlignment = Alignment.Center,
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.home_title),
                 contentDescription = stringResource(R.string.cd_game_title),
@@ -282,6 +365,81 @@ private fun GameHeader(
             size = metrics.iconSize,
             onClick = onHelp,
         )
+        GameRoundIconButton(
+            icon = Icons.Filled.Settings,
+            contentDescription = stringResource(R.string.cd_settings),
+            size = metrics.iconSize,
+            onClick = onSettings,
+        )
+    }
+}
+
+/**
+ * Plays the analysis feedback for a newly submitted guess: a tick as each tile flips, then a
+ * sound and haptic matched to the remark once it pops in. The win celebration plays with the
+ * win dialog instead.
+ */
+@Composable
+private fun GuessResultFeedback(uiState: GameUiState) {
+    val player = LocalGameSoundPlayer.current
+    val view = LocalView.current
+    // Saved so returning from Help or Settings does not replay the last result.
+    var playedGuessCount by rememberSaveable { mutableIntStateOf(uiState.guesses.size) }
+    if (uiState.guesses.size < playedGuessCount) playedGuessCount = uiState.guesses.size
+
+    val revealed = uiState.lastRevealedIndex?.let { uiState.guesses.getOrNull(it) }
+    LaunchedEffect(uiState.lastRevealedIndex, uiState.guesses.size) {
+        if (revealed == null || uiState.guesses.size <= playedGuessCount) return@LaunchedEffect
+        playedGuessCount = uiState.guesses.size
+        var elapsed = 0L
+        repeat(CODE_LENGTH) { column ->
+            val flipAt = column * TILE_REVEAL_STAGGER_MS + TILE_FLIP_SOUND_OFFSET_MS
+            delay(flipAt - elapsed)
+            elapsed = flipAt
+            player.play(GameSound.Flip, pitch = 1f + column * 0.08f)
+        }
+        if (revealed.isWin) return@LaunchedEffect
+        delay(REMARK_REVEAL_DELAY_MS - elapsed)
+        if (revealed.remark == GuessRules.SMYLE_REMARK) {
+            player.play(GameSound.Smyle)
+            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+        } else {
+            player.play(GameSound.Clue)
+            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+        }
+    }
+}
+
+/**
+ * A horizontal swipe in either direction (like Android's edge back gesture) asks to go back.
+ * The content follows the finger slightly so the gesture feels connected.
+ */
+@Composable
+private fun Modifier.swipeToGoBack(
+    enabled: Boolean,
+    offset: Animatable<Float, AnimationVector1D>,
+    onSwipe: () -> Unit,
+): Modifier {
+    val scope = rememberCoroutineScope()
+    val currentOnSwipe by rememberUpdatedState(onSwipe)
+    val density = LocalDensity.current
+    val threshold = with(density) { SwipeBackThreshold.toPx() }
+    val maxShift = with(density) { SwipeMaxShift.toPx() }
+    return pointerInput(enabled) {
+        if (!enabled) return@pointerInput
+        var total = 0f
+        detectHorizontalDragGestures(
+            onDragStart = { total = 0f },
+            onDragEnd = {
+                if (abs(total) >= threshold) currentOnSwipe()
+                scope.launch { offset.animateTo(0f, spring(dampingRatio = 0.6f, stiffness = 500f)) }
+            },
+            onDragCancel = { scope.launch { offset.animateTo(0f) } },
+        ) { change, dragAmount ->
+            change.consume()
+            total += dragAmount
+            scope.launch { offset.snapTo((total * 0.3f).coerceIn(-maxShift, maxShift)) }
+        }
     }
 }
 
@@ -314,7 +472,7 @@ private fun GuessBoard(
                 baseGap
             }
 
-            val activeRow = if (uiState.isWon) null else uiState.guesses.size
+            val activeRow = if (uiState.isRoundOver) null else uiState.guesses.size
             val usedRows = uiState.guesses.size + if (activeRow != null) 1 else 0
             val totalRows = maxOf(visibleRows, usedRows)
             val listState = rememberLazyListState()
@@ -419,7 +577,8 @@ private fun GuessRow(
                 isWinner = evaluation?.isWin == true,
                 height = tile * 0.74f,
                 modifier = Modifier.width(tile * REMARK_UNITS),
-                animateHeartbeat = animateReveal,
+                animateReveal = animateReveal,
+                revealDelayMs = REMARK_REVEAL_DELAY_MS,
             )
             Box(
                 modifier = Modifier
@@ -502,6 +661,7 @@ private fun DigitKey(
         enabled = uiState.isDigitEnabled(digit),
         height = keyHeight,
         modifier = modifier,
+        soundPitch = digitKeyPitch(digit),
         onClick = { onDigit(digit) },
     )
 }
@@ -532,6 +692,84 @@ private fun ExitConfirmationDialog(
 }
 
 @Composable
+private fun QuitConfirmationDialog(
+    playerMode: PlayerMode,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val modeName = stringResource(
+        if (playerMode == PlayerMode.DOUBLE) R.string.game_mode_double else R.string.game_mode_single,
+    )
+    Dialog(onDismissRequest = onDismiss) {
+        GuesserDialogFrame(
+            textureRes = R.drawable.game_keypad_wood,
+            title = stringResource(R.string.quit_title),
+            message = stringResource(R.string.quit_message, modeName),
+        ) {
+            DialogButtons(
+                secondaryText = stringResource(R.string.exit_cancel),
+                onSecondary = onDismiss,
+                primaryText = stringResource(R.string.quit_confirm),
+                onPrimary = onConfirm,
+            )
+        }
+    }
+}
+
+@Composable
+private fun QuitRevealDialog(
+    secret: String,
+    guessCount: Int,
+    onHome: () -> Unit,
+) {
+    val player = LocalGameSoundPlayer.current
+    LaunchedEffect(secret) {
+        // A tick for each secret tile as it flips over.
+        delay(SECRET_REVEAL_START_MS)
+        repeat(secret.length) { index ->
+            player.play(GameSound.Flip, pitch = 1f + index * 0.08f)
+            delay(TILE_REVEAL_STAGGER_MS.toLong())
+        }
+    }
+    Dialog(onDismissRequest = onHome) {
+        GuesserDialogFrame(
+            textureRes = R.drawable.game_keypad_wood,
+            title = stringResource(R.string.quit_reveal_title),
+            message = pluralStringResource(R.plurals.quit_reveal_message, guessCount, guessCount),
+            content = {
+                Row(
+                    modifier = Modifier.clearAndSetSemantics {
+                        contentDescription = secret.toList().joinToString(" ")
+                    },
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    secret.forEachIndexed { index, digit ->
+                        DigitTile(
+                            state = TileState.Revealed(digit, DigitFeedback.EXACT),
+                            size = 56.dp,
+                            isCursor = false,
+                            animateRevealDelayMs = SECRET_REVEAL_START_MS.toInt() - TILE_FLIP_SOUND_OFFSET_MS.toInt() +
+                                index * TILE_REVEAL_STAGGER_MS,
+                            colorFeedbackEnabled = false,
+                        )
+                    }
+                }
+            },
+        ) {
+            KeypadKey(
+                label = stringResource(R.string.win_home),
+                contentDescription = stringResource(R.string.win_home),
+                style = KeyStyle.Enter,
+                enabled = true,
+                height = DialogButtonHeight,
+                modifier = Modifier.fillMaxWidth(0.6f),
+                onClick = onHome,
+            )
+        }
+    }
+}
+
+@Composable
 private fun WinDialog(
     uiState: GameUiState,
     onPlayAgain: () -> Unit,
@@ -539,35 +777,77 @@ private fun WinDialog(
     onDismiss: () -> Unit,
 ) {
     val guessCount = uiState.guesses.size
-    Dialog(onDismissRequest = onDismiss) {
-        GuesserDialogFrame(
-            textureRes = R.drawable.game_keypad_wood,
-            title = stringResource(R.string.win_title),
-            message = pluralStringResource(
-                R.plurals.win_message,
-                guessCount,
-                uiState.revealedSecret.orEmpty(),
-                guessCount,
-            ),
+    val player = LocalGameSoundPlayer.current
+    val view = LocalView.current
+    LaunchedEffect(Unit) {
+        player.play(GameSound.Applause)
+        view.performHapticFeedback(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) HapticFeedbackConstants.CONFIRM else HapticFeedbackConstants.LONG_PRESS,
+        )
+    }
+    // Full-window dialog so the confetti can rain over the whole screen, not just the card.
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                // Tapping outside the card dismisses, like a standard dialog.
+                .pointerInput(Unit) { detectTapGestures { onDismiss() } },
+            contentAlignment = Alignment.Center,
         ) {
-            if (uiState.playerMode == PlayerMode.SINGLE) {
-                DialogButtons(
-                    secondaryText = stringResource(R.string.win_home),
-                    onSecondary = onHome,
-                    primaryText = stringResource(R.string.win_play_again),
-                    onPrimary = onPlayAgain,
-                )
-            } else {
-                KeypadKey(
-                    label = stringResource(R.string.win_home),
-                    contentDescription = stringResource(R.string.win_home),
-                    style = KeyStyle.Enter,
-                    enabled = true,
-                    height = DialogButtonHeight,
-                    modifier = Modifier.fillMaxWidth(0.6f),
-                    onClick = onHome,
-                )
+            WinDialogCard(uiState, guessCount, onPlayAgain, onHome)
+            ConfettiBurst(modifier = Modifier.fillMaxSize())
+        }
+    }
+}
+
+@Composable
+private fun WinDialogCard(
+    uiState: GameUiState,
+    guessCount: Int,
+    onPlayAgain: () -> Unit,
+    onHome: () -> Unit,
+) {
+    val pop = remember { Animatable(0.6f) }
+    LaunchedEffect(Unit) { pop.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = 380f)) }
+    GuesserDialogFrame(
+        textureRes = R.drawable.game_keypad_wood,
+        title = stringResource(R.string.win_title),
+        message = pluralStringResource(
+            R.plurals.win_message,
+            guessCount,
+            uiState.revealedSecret.orEmpty(),
+            guessCount,
+        ),
+        modifier = Modifier
+            .padding(horizontal = 32.dp)
+            .widthIn(max = 420.dp)
+            .graphicsLayer {
+                scaleX = pop.value
+                scaleY = pop.value
             }
+            // Swallow taps on the card so they do not dismiss the dialog.
+            .pointerInput(Unit) { detectTapGestures { } },
+    ) {
+        if (uiState.playerMode == PlayerMode.SINGLE) {
+            DialogButtons(
+                secondaryText = stringResource(R.string.win_home),
+                onSecondary = onHome,
+                primaryText = stringResource(R.string.win_play_again),
+                onPrimary = onPlayAgain,
+            )
+        } else {
+            KeypadKey(
+                label = stringResource(R.string.win_home),
+                contentDescription = stringResource(R.string.win_home),
+                style = KeyStyle.Enter,
+                enabled = true,
+                height = DialogButtonHeight,
+                modifier = Modifier.fillMaxWidth(0.6f),
+                onClick = onHome,
+            )
         }
     }
 }
@@ -621,6 +901,11 @@ private fun GameScreenPreviewContent(uiState: GameUiState) {
             uiState = uiState,
             onBack = {},
             onHelp = {},
+            onSettings = {},
+            onQuit = {},
+            onConfirmQuit = {},
+            onDismissQuit = {},
+            onQuitRevealDone = {},
             onDigit = {},
             onDelete = {},
             onEnter = {},

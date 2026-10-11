@@ -38,6 +38,11 @@ class HomeViewModel(
         )
     }
 
+    /** A friend's secret is single use: clear it once its game starts so Home is ready for the next one. */
+    fun onGameStarted() {
+        _uiState.value = _uiState.value.copy(friendSecretNumber = "", secretValidationMessage = null)
+    }
+
     fun canStartGame(): Boolean {
         val currentState = _uiState.value
         if (currentState.playerMode == PlayerMode.SINGLE) {

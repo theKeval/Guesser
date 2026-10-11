@@ -70,13 +70,14 @@ No dependency-injection framework is used.
 
 ## Navigation
 
-`GuesserNavHost` owns five user-facing routes and a launch-gate route:
+`GuesserNavHost` owns six user-facing routes and a launch-gate route:
 
 | Route | Destination | Current status |
 | --- | --- | --- |
 | `launch_gate` | `FirstRunLaunchGate` | Reads saved onboarding completion before opening Tutorial or Home |
+| `settings` | `SettingsRoute` | Music and sound-effect toggles, opened from Home or Game |
 | `home` | `HomeRoute` | Implemented |
-| `game` | `GameRoute` | Implemented: keypad, guess board, scoring, quit/win dialogs, help |
+| `game` | `GameRoute` | Implemented: keypad, guess board, scoring, leave/quit-reveal/win dialogs, help, settings, sound and confetti |
 | `tutorial?firstRun={firstRun}` | `TutorialScreen` | Four swipeable steps, isolated practice, onboarding or manual entry |
 | `gameplay_info` | `GameplayInfoScreen` | Visual rules, examples, modes, controls, strategy |
 | `about` | `AboutScreen` | Story, credits, runtime version, public source/license links |
@@ -97,12 +98,26 @@ Get Started, and Back from the first page all mark onboarding complete.
 | Handed-off friend secret | `InMemoryGameSessionRepository` | `AppContainer` / application process |
 | Round secret, guesses, input, dialogs | `GameViewModel` / `SavedStateHandle` | Game navigation entry, including process recreation |
 | Navigation back stack | `NavHostController` | Compose activity instance |
+| Music and sound-effect settings | `PreferencesSettingsRepository` (DataStore) | Across launches |
+| Sound pool and music player | `GuesserAudio` in `AppContainer` | Application process; music paused while the activity is stopped |
 
 `HomeUiState` and `GameUiState` are exposed as read-only `StateFlow`s and
 collected with lifecycle awareness. Only the Game round uses
-`SavedStateHandle`. There is no database, DataStore use, or cross-launch game
-persistence. Although `:data` declares a DataStore dependency, current
-production code does not use it.
+`SavedStateHandle`. There is no database or cross-launch game persistence.
+Tutorial completion and audio settings share one Preferences DataStore file
+(`guesser_preferences`) through a single delegate in `GuesserPreferences.kt`.
+
+## Audio
+
+`GuesserAudio` (`:gameplay/audio`) loads the short WAV effects in
+`gameplay/src/main/res/raw` into a `SoundPool` and loops
+`music_background.ogg` with `MediaPlayer` (fading in). `MainActivity` collects
+`ObserveAudioSettingsUseCase` while started and tells `GuesserAudio` whether
+the app is in the foreground, so music never plays in the background. It
+provides `GuesserAudio` to Compose as `LocalGameSoundPlayer`; previews fall
+back to silence. Components use `rememberTapFeedback` for a sound plus a
+`KEYBOARD_TAP` haptic. The sounds are synthesized by
+`design_assets/audio/make_audio.py`.
 
 The app-info repository and welcome-message use case are wired and invoked
 during `HomeViewModel` initialization, but the returned string is not currently
