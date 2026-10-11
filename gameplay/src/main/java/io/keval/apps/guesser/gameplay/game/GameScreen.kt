@@ -436,16 +436,6 @@ private fun Keypad(
             }
             Row(horizontalArrangement = Arrangement.spacedBy(horizontalGap)) {
                 KeypadKey(
-                    label = stringResource(R.string.key_enter),
-                    contentDescription = stringResource(R.string.cd_key_enter),
-                    style = KeyStyle.Enter,
-                    enabled = uiState.canEnter,
-                    height = keyHeight,
-                    modifier = Modifier.weight(1f),
-                    onClick = onEnter,
-                )
-                DigitKey('0', uiState, keyHeight, onDigit, Modifier.weight(1f))
-                KeypadKey(
                     label = stringResource(R.string.key_delete),
                     contentDescription = stringResource(R.string.cd_key_delete),
                     style = KeyStyle.Delete,
@@ -453,6 +443,16 @@ private fun Keypad(
                     height = keyHeight,
                     modifier = Modifier.weight(1f),
                     onClick = onDelete,
+                )
+                DigitKey('0', uiState, keyHeight, onDigit, Modifier.weight(1f))
+                KeypadKey(
+                    label = stringResource(R.string.key_enter),
+                    contentDescription = stringResource(R.string.cd_key_enter),
+                    style = KeyStyle.Enter,
+                    enabled = uiState.canEnter,
+                    height = keyHeight,
+                    modifier = Modifier.weight(1f),
+                    onClick = onEnter,
                 )
             }
         }
