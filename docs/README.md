@@ -7,8 +7,9 @@ These documents cover both applications in the repository:
   Gradle as `:guesser_v1`.
 
 The revamp currently implements its home, navigation, dependency boundaries,
-Double Player setup handoff, and a playable Game screen. Its informational
-destinations (Tutorial, Gameplay, About) remain placeholders.
+Double Player setup handoff, and a playable Game screen. Tutorial offers a
+four-step practice walkthrough; Gameplay is the visual rules reference; About
+contains the project story, credits, runtime version, and source/license links.
 
 | Document | Purpose |
 | --- | --- |

@@ -56,8 +56,8 @@ incrementally rewriting V1. It:
 ## Current Baseline
 
 The primary revamp now includes a playable game. Its Home screen, setup
-handoff, and Game screen are implemented. Tutorial, Gameplay, and About are
-placeholders.
+handoff, and Game screen are implemented. Tutorial, Gameplay, and About now
+provide resource-backed learning, rules, and project content in the game theme.
 
 The repository therefore has two valid but different baselines:
 
@@ -81,8 +81,9 @@ The repository therefore has two valid but different baselines:
    explicit consume lifecycle.
 3. **Scaffold abstractions are ahead of use.** The welcome use case result is
    discarded, and DataStore is declared but unused.
-4. **Temporary copy.** Secondary screens use hardcoded placeholder text rather
-   than finalized resource-backed content.
+4. **Learning interaction coverage.** Tutorial deductions and example scores
+   have unit tests, but practice/navigation/accessibility still need automated
+   Compose coverage.
 5. **Limited test depth.** Home/Game ViewModels, rules, and one use case are
    covered, but Compose behavior, navigation, and repository lifetime have no
    tests.
@@ -112,8 +113,8 @@ scope.
 
 ### Phase 3: Finish Product Content and Settings
 
-- Replace Tutorial, Gameplay, and About placeholders with resource-backed
-  final content.
+- Done: resource-backed Tutorial with optional interactive practice, Gameplay
+  visual rules reference, and About with story, credits, version, and links.
 - Decide which V1 sound, vibration, motion, and accessibility behaviors belong
   in the revamp.
 - Introduce settings storage only after its required lifetime and migration

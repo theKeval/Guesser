@@ -71,9 +71,9 @@ No dependency-injection framework is used.
 | --- | --- | --- |
 | `home` | `HomeRoute` | Implemented |
 | `game` | `GameRoute` | Implemented: keypad, guess board, scoring, quit/win dialogs, help |
-| `tutorial` | `TutorialScreen` | Placeholder |
-| `gameplay_info` | `GameplayInfoScreen` | Placeholder |
-| `about` | `AboutScreen` | Placeholder |
+| `tutorial` | `TutorialScreen` | Four-step walkthrough, isolated practice, Single Player CTA |
+| `gameplay_info` | `GameplayInfoScreen` | Visual rules, examples, modes, controls, strategy |
+| `about` | `AboutScreen` | Story, credits, runtime version, public source/license links |
 
 Forward and backward navigation use 320 ms horizontal slide transitions. The
 home Start handler saves either the valid Double Player secret or `null` for
@@ -122,7 +122,12 @@ module dependency.
 `:core-ui` supplies a Material 3 theme with static light/dark fallback schemes
 and Android 12+ dynamic color enabled by default. `GuesserScreenScaffold`
 provides the wood background and safe-area padding for secondary destinations.
-`GuesserBackButton` supplies a 48 dp circular target and an auto-mirrored icon.
+`GuideScaffold` adds a 520 dp reading-width cap, scrollable content, and a
+48 dp gold-framed auto-mirrored back control. `GuideComponents` reuses Game's
+wood panels, tiles, and remark boxes with text descriptions for each clue.
+Tutorial practice state is local `rememberSaveable` state, not a Game ViewModel
+or session repository. Its Play action clears the friend secret and replaces
+Tutorial with Game; Gameplay help only pops back to the existing round.
 
 ## Application Boundaries
 

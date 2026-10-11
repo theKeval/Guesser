@@ -93,7 +93,15 @@ fun GuesserNavHost(
             popEnterTransition = { slideInFromLeft() },
             popExitTransition = { slideOutToRight() },
         ) {
-            TutorialScreen(onBack = navController::navigateUp)
+            TutorialScreen(
+                onBack = navController::navigateUp,
+                onPlay = {
+                    appContainer.saveFriendSecretUseCase(null)
+                    navController.navigate(GAME_ROUTE) {
+                        popUpTo(TUTORIAL_ROUTE) { inclusive = true }
+                    }
+                },
+            )
         }
 
         composable(

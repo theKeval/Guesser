@@ -89,9 +89,22 @@ process and `AppContainer` live.
 
 ### Other Destinations
 
-Tutorial, Gameplay, and About are navigable placeholder screens. They share
-the wood background and back control, but they do not contain final product
-content.
+- **Tutorial:** four steps introduce the shown practice secret `245`, explain
+  a scored clue row, offer an interactive practice keypad, and introduce both
+  modes. Practice accepts any valid guess and displays the latest evaluation;
+  it is optional and independent of real rounds. Header/system Back goes to the
+  previous step, then returns Home from the first step. **PLAY NOW** clears any
+  friend secret and replaces Tutorial with a new Single Player game.
+- **Gameplay:** a scrollable reference explains code constraints (including
+  leading zero), unlimited guesses, tile colors, R/W/SMYLE/Winner, both modes,
+  controls, and strategy. Four examples use `GuessRules` against secret `245`.
+  Returning from in-game help preserves the existing Game entry.
+- **About:** the project origin, creator, Compose revamp, installed app version,
+  and external links to the public repository and Apache 2.0 license.
+
+All three use resource-backed copy, safe-area padding, dark wood panels, and
+a 520 dp maximum reading width. Example rows expose spoken per-digit feedback
+so clue meaning does not depend on color.
 
 ## Guesser V1 Behavior
 
