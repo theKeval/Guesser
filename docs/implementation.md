@@ -129,6 +129,11 @@ the round is won. The repository is process-memory only.
 - `GameComponents` provides the `WoodPanel` (gold frame over a cropped wood
   texture), `DigitTile` with a staggered flip reveal, `RemarkBox`, `KeypadKey`,
   and `GuesserDialogFrame`. These reuse the Home palette.
+  `DigitTile` retains the original feedback-to-color mapping behind
+  `colorFeedbackEnabled` (true by default for learning examples).
+  `GameScreen` passes false so every game-board tile stays gray before,
+  during, and after reveal, with light digits for contrast. Evaluations,
+  remarks, and win detection are unchanged.
 - `game_board_wood` and `game_keypad_wood` are textures cropped from the home
   background and drawn with `ContentScale.Crop`, so they never stretch.
 

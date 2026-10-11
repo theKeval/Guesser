@@ -363,6 +363,7 @@ private fun GuessRow(
                 size = tile,
                 isCursor = isActive && column == uiState.currentInput.length,
                 animateRevealDelayMs = if (animateReveal) column * TILE_REVEAL_STAGGER_MS else null,
+                colorFeedbackEnabled = false,
             )
         }
         RemarkBox(
