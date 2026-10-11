@@ -49,6 +49,7 @@ import io.keval.apps.guesser.gameplay.common.GuidePanel
 import io.keval.apps.guesser.gameplay.common.GuideScaffold
 import io.keval.apps.guesser.gameplay.common.GuideSkipAction
 import io.keval.apps.guesser.gameplay.common.highlightClueWords
+import io.keval.apps.guesser.gameplay.common.highlightGameDetails
 import io.keval.apps.guesser.gameplay.game.DigitTile
 import io.keval.apps.guesser.gameplay.game.KeyStyle
 import io.keval.apps.guesser.gameplay.game.KeypadKey
@@ -197,7 +198,7 @@ private fun TutorialPage(
 ) {
     when (page) {
         0 -> GuidePanel(stringResource(R.string.tutorial_goal_title)) {
-            GuideBody(stringResource(R.string.tutorial_goal_body))
+            GuideBody(highlightGameDetails(stringResource(R.string.tutorial_goal_body)))
 //            Row(
 //                Modifier.fillMaxWidth(),
 //                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),

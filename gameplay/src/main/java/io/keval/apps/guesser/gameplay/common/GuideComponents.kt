@@ -49,6 +49,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -208,29 +209,54 @@ private val ClueRightColor = Color(0xFF8EE06A)
 private val ClueWrongColor = Color(0xFFFF7A66)
 private val ClueSmyleColor = Color(0xFF4FD1C5)
 private val ClueSmyleMeaningColor = Color(0xFFFFD43B)
-private val RightClueWords = Regex("\\b(RIGHT|1R|2R)\\b")
-private val WrongClueWords = Regex("\\b(WRONG|1W|2W|3W)\\b")
-private val SmyleWord = Regex("\\bSMYLE\\b")
-private val SmyleMeaning = Regex("\\bSimply Make Your Life Easy\\b")
+private val DetailsGoalColor = Color(0xFFFFD36B)
+private val DetailsRuleColor = Color(0xFFFFB04D)
+private val DetailsSingleColor = Color(0xFF7FD4FF)
+private val DetailsDoubleColor = Color(0xFFC9A7FF)
+private val DetailsStartColor = Color(0xFFF7A23B)
+
+private fun bold(color: Color = Color.Unspecified) = SpanStyle(color = color, fontWeight = FontWeight.Bold)
+
+private val ClueWordStyles = listOf(
+    Regex("\\b(RIGHT|1R|2R)\\b") to bold(ClueRightColor),
+    Regex("\\b(WRONG|1W|2W|3W)\\b") to bold(ClueWrongColor),
+    Regex("\\bSMYLE\\b") to bold(ClueSmyleColor),
+    Regex("\\bSimply Make Your Life Easy\\b") to bold(ClueSmyleMeaningColor),
+)
+
+private val GameDetailStyles = listOf(
+    Regex("\\bhidden number\\b") to bold(DetailsGoalColor),
+    Regex("\\b3 unique digits\\b|\\b0 to 9\\b|\\(no repeat\\)") to bold(DetailsRuleColor),
+    Regex("\\bclue\\b") to bold(),
+    Regex("\\bsingle player\\b", RegexOption.IGNORE_CASE) to bold(DetailsSingleColor),
+    Regex("\\bdouble player\\b", RegexOption.IGNORE_CASE) to bold(DetailsDoubleColor),
+    Regex("\\bstart\\b", RegexOption.IGNORE_CASE) to bold(DetailsStartColor),
+    Regex("Swipe left for play details\\.?") to SpanStyle(fontStyle = FontStyle.Italic),
+    Regex("\\bSwipe left\\b") to bold(DetailsGoalColor),
+)
+
+/** Adds [styles] to every whole-word match in [text]; the text itself is never changed. */
+private fun highlight(text: String, styles: List<Pair<Regex, SpanStyle>>): AnnotatedString = buildAnnotatedString {
+    append(text)
+    styles.forEach { (pattern, style) ->
+        pattern.findAll(text).forEach { match -> addStyle(style, match.range.first, match.range.last + 1) }
+    }
+}
 
 /**
  * Makes the clue words stand out in bold: RIGHT, 1R and 2R in green; WRONG, 1W, 2W and 3W in
  * red; SMYLE in teal and "Simply Make Your Life Easy" in yellow. Only styling is added; the
  * text is unchanged.
  */
-internal fun highlightClueWords(text: String): AnnotatedString = buildAnnotatedString {
-    append(text)
-    listOf(
-        RightClueWords to ClueRightColor,
-        WrongClueWords to ClueWrongColor,
-        SmyleWord to ClueSmyleColor,
-        SmyleMeaning to ClueSmyleMeaningColor,
-    ).forEach { (words, color) ->
-        words.findAll(text).forEach { match ->
-            addStyle(SpanStyle(color = color, fontWeight = FontWeight.Bold), match.range.first, match.range.last + 1)
-        }
-    }
-}
+internal fun highlightClueWords(text: String): AnnotatedString = highlight(text, ClueWordStyles)
+
+/**
+ * Brings out the key ideas of the game introduction, all in bold: the hidden number in gold;
+ * the code rules (3 unique digits, 0 to 9, no repeat) in amber; each mode in its own color;
+ * start in Start-button orange; and the closing swipe hint in italics. Only styling is added;
+ * the text is unchanged.
+ */
+internal fun highlightGameDetails(text: String): AnnotatedString = highlight(text, GameDetailStyles)
 
 @Composable
 internal fun GuideBody(text: AnnotatedString, modifier: Modifier = Modifier) {

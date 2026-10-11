@@ -42,4 +42,21 @@ class ClueHighlightTest {
         assertTrue(styled.all { it.second.fontWeight == FontWeight.Bold })
         assertTrue(styled[0].second.color != styled[1].second.color)
     }
+
+    @Test
+    fun `game details highlight the goal, rules, modes, start and swipe hint without changing text`() {
+        val text = "This game is to find a hidden number with 3 unique digits from 0 to 9 (no repeat) by guessing. " +
+            "Each guess opens a clue to find the hidden number. \n\nIn single player mode, the player would need " +
+            "to find the hidden number by the game. In double player mode, one player will hide the number.\n\n" +
+            "Once you are ready to play, select start to begin the game.\n\nSwipe left for play details."
+        val highlighted = highlightGameDetails(text)
+        val styled = highlighted.spanStyles.map { text.substring(it.start, it.end) }
+
+        assertEquals(text, highlighted.text)
+        assertEquals(3, styled.count { it == "hidden number" })
+        assertTrue(styled.containsAll(listOf("3 unique digits", "0 to 9", "(no repeat)", "clue", "start", "Swipe left")))
+        assertTrue(styled.containsAll(listOf("single player", "double player", "Swipe left for play details.")))
+        // Words that only contain a keyword are left alone.
+        assertTrue(highlightGameDetails("clues restart starts").spanStyles.isEmpty())
+    }
 }
