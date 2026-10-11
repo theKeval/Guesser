@@ -14,7 +14,8 @@ as `GuessRules` in `:domain`, which drives the revamp Game screen.
 A secret or guess is valid when it:
 
 1. contains exactly three characters;
-2. contains only characters recognized as digits by Kotlin's `Char.isDigit`;
+2. contains only ASCII digits `0`–`9` (the revamp rejects other Unicode
+   digits so every valid secret can be typed on the game keypad);
 3. contains three different digits.
 
 Codes are strings, not integers, so a leading zero is preserved. Examples:

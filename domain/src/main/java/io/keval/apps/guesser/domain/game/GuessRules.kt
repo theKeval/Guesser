@@ -33,7 +33,7 @@ object GuessRules {
 
     fun isValidCode(value: String): Boolean {
         return value.length == CODE_LENGTH &&
-            value.all(Char::isDigit) &&
+            value.all(::isCodeDigit) &&
             value.toSet().size == CODE_LENGTH
     }
 
@@ -68,3 +68,6 @@ object GuessRules {
         return GuessEvaluation(guess = guess, digits = digits, remark = remark)
     }
 }
+
+/** Only ASCII `0`-`9` are valid code digits, matching the in-game keypad. */
+fun isCodeDigit(char: Char): Boolean = char in '0'..'9'

@@ -37,6 +37,7 @@ class GuessRulesTest {
         assertFalse(GuessRules.isValidCode("112"))
         assertFalse(GuessRules.isValidCode("12"))
         assertFalse(GuessRules.isValidCode("1a2"))
+        assertFalse(GuessRules.isValidCode("\u0661\u0662\u0663"))
     }
 
     @Test

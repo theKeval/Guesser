@@ -7,6 +7,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import io.keval.apps.guesser.domain.game.CODE_LENGTH
 import io.keval.apps.guesser.domain.game.GuessRules
+import io.keval.apps.guesser.domain.game.isCodeDigit
 import io.keval.apps.guesser.gameplay.home.PlayerMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,19 +19,30 @@ class GameViewModel(
     private val generateSecret: () -> String = { GuessRules.generateSecret() },
 ) : ViewModel() {
 
-    private val playerMode: PlayerMode =
-        if (friendSecret != null && GuessRules.isValidCode(friendSecret)) PlayerMode.DOUBLE else PlayerMode.SINGLE
+    private val savedSecret: String? = savedStateHandle.get<String>(KEY_SECRET)
+        ?.takeIf(GuessRules::isValidCode)
 
-    private var secret: String = savedStateHandle.get<String>(KEY_SECRET)
+    // The friend secret lives only in process memory, so a restored round must use its saved mode.
+    private val playerMode: PlayerMode =
+        savedStateHandle.get<String>(KEY_MODE)
+            ?.takeIf { savedSecret != null }
+            ?.let { saved -> PlayerMode.entries.firstOrNull { it.name == saved } }
+            ?: if (friendSecret != null && GuessRules.isValidCode(friendSecret)) PlayerMode.DOUBLE else PlayerMode.SINGLE
+
+    private var secret: String = savedSecret
         ?: (if (playerMode == PlayerMode.DOUBLE) friendSecret!! else generateSecret())
-            .also { savedStateHandle[KEY_SECRET] = it }
+
+    init {
+        savedStateHandle[KEY_SECRET] = secret
+        savedStateHandle[KEY_MODE] = playerMode.name
+    }
 
     private val _uiState = MutableStateFlow(restoreState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
     fun onDigit(digit: Char) {
         val state = _uiState.value
-        if (!digit.isDigit() || !state.isDigitEnabled(digit)) return
+        if (!isCodeDigit(digit) || !state.isDigitEnabled(digit)) return
         updateInput(state.currentInput + digit)
     }
 
@@ -101,7 +113,7 @@ class GameViewModel(
         val isWon = guesses.lastOrNull()?.isWin == true
         val input = savedStateHandle.get<String>(KEY_INPUT)
             .orEmpty()
-            .takeIf { !isWon && it.length <= CODE_LENGTH && it.all(Char::isDigit) && it.toSet().size == it.length }
+            .takeIf { !isWon && it.length <= CODE_LENGTH && it.all(::isCodeDigit) && it.toSet().size == it.length }
             .orEmpty()
         return GameUiState(
             playerMode = playerMode,
@@ -115,6 +127,7 @@ class GameViewModel(
 
     companion object {
         private const val KEY_SECRET = "game_secret"
+        private const val KEY_MODE = "game_mode"
         private const val KEY_GUESSES = "game_guesses"
         private const val KEY_INPUT = "game_input"
         private const val KEY_WIN_DIALOG = "game_win_dialog"

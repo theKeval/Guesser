@@ -95,6 +95,19 @@ class GameViewModelTest {
     }
 
     @Test
+    fun `double player mode is restored even when the in-memory friend secret is gone`() {
+        val handle = SavedStateHandle()
+        viewModel(handle, friendSecret = "908").apply {
+            type("901")
+            onEnter()
+        }
+
+        val restored = viewModel(handle, friendSecret = null).uiState.value
+        assertEquals(PlayerMode.DOUBLE, restored.playerMode)
+        assertEquals("2R", restored.guesses.single().remark)
+    }
+
+    @Test
     fun `valid friend secret starts double player and play again is single player only`() {
         val vm = viewModel(friendSecret = "908")
         assertEquals(PlayerMode.DOUBLE, vm.uiState.value.playerMode)

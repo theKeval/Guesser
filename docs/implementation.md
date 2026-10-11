@@ -50,7 +50,7 @@ message.
 
 ### Secret Input
 
-`onFriendSecretNumberChanged` filters input through `Char.isDigit` and keeps
+`onFriendSecretNumberChanged` filters input to ASCII `0`-`9` (`isCodeDigit`) and keeps
 at most three characters. Empty input shows no live error. Non-empty values
 are validated with duplicate detection before length detection, so `11`
 reports `Digits must be unique`.
