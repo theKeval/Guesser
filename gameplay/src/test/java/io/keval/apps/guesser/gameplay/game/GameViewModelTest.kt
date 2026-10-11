@@ -126,4 +126,57 @@ class GameViewModelTest {
         single.onEnter()
         assertTrue(single.uiState.value.isWon)
     }
+
+    @Test
+    fun `quit asks first, then reveals the secret and locks the round`() {
+        val vm = viewModel()
+        vm.type("48")
+
+        assertFalse(vm.onQuitRequested())
+        assertTrue(vm.uiState.value.showQuitConfirmation)
+        assertNull(vm.uiState.value.revealedSecret)
+
+        vm.onDismissQuitConfirmation()
+        assertFalse(vm.uiState.value.showQuitConfirmation)
+        assertFalse(vm.uiState.value.isGivenUp)
+
+        vm.onQuitRequested()
+        vm.onConfirmQuit()
+        val state = vm.uiState.value
+        assertTrue(state.isGivenUp)
+        assertFalse(state.isWon)
+        assertFalse(state.showQuitConfirmation)
+        assertEquals("573", state.revealedSecret)
+        assertEquals("", state.currentInput)
+
+        vm.onDigit('1')
+        assertEquals("", vm.uiState.value.currentInput)
+        assertTrue(vm.onBackRequested())
+        assertTrue(vm.onQuitRequested())
+    }
+
+    @Test
+    fun `a given up round is restored with its secret revealed`() {
+        val handle = SavedStateHandle()
+        viewModel(handle).apply {
+            type("481")
+            onEnter()
+            onConfirmQuit()
+        }
+
+        val restored = viewModel(handle, secrets = mutableListOf("999")).uiState.value
+        assertTrue(restored.isGivenUp)
+        assertEquals("573", restored.revealedSecret)
+        assertEquals(listOf("481"), restored.guesses.map { it.guess })
+    }
+
+    @Test
+    fun `play again clears a given up round`() {
+        val vm = viewModel()
+        vm.onConfirmQuit()
+        vm.onPlayAgain()
+
+        assertFalse(vm.uiState.value.isGivenUp)
+        assertNull(vm.uiState.value.revealedSecret)
+    }
 }

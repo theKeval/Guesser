@@ -1,7 +1,9 @@
 package io.keval.apps.guesser.gameplay.common
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -16,8 +18,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -28,7 +32,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -39,19 +45,27 @@ import androidx.compose.ui.semantics.selectableGroup
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.keval.apps.guesser.core.ui.theme.GuesserChocolateDark
 import io.keval.apps.guesser.core.ui.theme.GuesserGoldCream
 import io.keval.apps.guesser.core.ui.theme.GuesserOrangeTop
 import io.keval.apps.guesser.core.ui.theme.GuesserBronzeDark
+import io.keval.apps.guesser.core.ui.theme.GuesserGoldBorder
 import io.keval.apps.guesser.domain.game.DigitFeedback
 import io.keval.apps.guesser.domain.game.GuessEvaluation
 import io.keval.apps.guesser.gameplay.R
+import io.keval.apps.guesser.gameplay.audio.rememberTapFeedback
 import io.keval.apps.guesser.gameplay.game.DigitTile
 import io.keval.apps.guesser.gameplay.game.GameRoundIconButton
+import io.keval.apps.guesser.gameplay.game.GoldFrameBrush
 import io.keval.apps.guesser.gameplay.game.RemarkBox
 import io.keval.apps.guesser.gameplay.game.TileState
 import io.keval.apps.guesser.gameplay.game.WoodPanel
@@ -112,7 +126,15 @@ internal fun GuideSkipAction(
     onClick: () -> Unit,
     enabled: Boolean,
 ) {
-    TextButton(onClick = onClick, enabled = enabled, modifier = Modifier.heightIn(min = 48.dp)) {
+    val feedback = rememberTapFeedback()
+    TextButton(
+        onClick = {
+            feedback()
+            onClick()
+        },
+        enabled = enabled,
+        modifier = Modifier.heightIn(min = 48.dp),
+    ) {
         Text(text, color = GuesserGoldCream, fontWeight = FontWeight.Bold)
     }
 }
@@ -125,6 +147,7 @@ internal fun GuidePageDots(
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val feedback = rememberTapFeedback()
     Row(
         modifier = modifier.semantics { selectableGroup() },
         horizontalArrangement = Arrangement.Center,
@@ -139,7 +162,10 @@ internal fun GuidePageDots(
                     .selectable(
                         selected = selected,
                         role = Role.RadioButton,
-                        onClick = { onSelect(index) },
+                        onClick = {
+                            if (!selected) feedback()
+                            onSelect(index)
+                        },
                     )
                     .semantics {
                         contentDescription = description
@@ -178,9 +204,89 @@ internal fun GuideHeading(text: String, modifier: Modifier = Modifier) {
     )
 }
 
+private val ClueRightColor = Color(0xFF8EE06A)
+private val ClueWrongColor = Color(0xFFFF7A66)
+private val ClueSmyleColor = Color(0xFF4FD1C5)
+private val ClueSmyleMeaningColor = Color(0xFFFFD43B)
+private val RightClueWords = Regex("\\b(RIGHT|1R|2R)\\b")
+private val WrongClueWords = Regex("\\b(WRONG|1W|2W|3W)\\b")
+private val SmyleWord = Regex("\\bSMYLE\\b")
+private val SmyleMeaning = Regex("\\bSimply Make Your Life Easy\\b")
+
+/**
+ * Makes the clue words stand out in bold: RIGHT, 1R and 2R in green; WRONG, 1W, 2W and 3W in
+ * red; SMYLE in teal and "Simply Make Your Life Easy" in yellow. Only styling is added; the
+ * text is unchanged.
+ */
+internal fun highlightClueWords(text: String): AnnotatedString = buildAnnotatedString {
+    append(text)
+    listOf(
+        RightClueWords to ClueRightColor,
+        WrongClueWords to ClueWrongColor,
+        SmyleWord to ClueSmyleColor,
+        SmyleMeaning to ClueSmyleMeaningColor,
+    ).forEach { (words, color) ->
+        words.findAll(text).forEach { match ->
+            addStyle(SpanStyle(color = color, fontWeight = FontWeight.Bold), match.range.first, match.range.last + 1)
+        }
+    }
+}
+
+@Composable
+internal fun GuideBody(text: AnnotatedString, modifier: Modifier = Modifier) {
+    Text(text, modifier, color = GuesserGoldCream, fontSize = 16.sp, lineHeight = 24.sp)
+}
+
 @Composable
 internal fun GuideBody(text: String, modifier: Modifier = Modifier) {
     Text(text, modifier, color = GuesserGoldCream, fontSize = 16.sp, lineHeight = 24.sp)
+}
+
+/**
+ * One rule in a numbered list: a gold-framed number badge beside the rule text, on a softly
+ * inset card. The pair is read as a single item by accessibility services.
+ */
+@Composable
+internal fun GuideNumberedRule(number: Int, text: AnnotatedString, modifier: Modifier = Modifier) {
+    val cardShape = RoundedCornerShape(14.dp)
+    Row(
+        modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {}
+            .background(GuesserChocolateDark.copy(alpha = 0.55f), cardShape)
+            .border(1.dp, GuesserGoldBorder.copy(alpha = 0.35f), cardShape)
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(
+            Modifier
+                .squareAtLeast(34.dp)
+                .shadow(4.dp, CircleShape, clip = false)
+                .background(GoldFrameBrush, CircleShape)
+                .padding(2.dp)
+                .background(Brush.verticalGradient(listOf(GuesserOrangeTop, GuesserBronzeDark)), CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                number.toString(),
+                color = GuesserChocolateDark,
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Black,
+                fontSize = 17.sp,
+                modifier = Modifier.padding(horizontal = 6.dp),
+            )
+        }
+        GuideBody(text, Modifier.weight(1f))
+    }
+}
+
+/** Sizes the element as a square that fits its content, so a circle stays round at any font scale. */
+private fun Modifier.squareAtLeast(minSide: Dp): Modifier = layout { measurable, constraints ->
+    val width = measurable.maxIntrinsicWidth(constraints.maxHeight)
+    val height = measurable.maxIntrinsicHeight(width)
+    val side = maxOf(width, height, minSide.roundToPx())
+    val placeable = measurable.measure(Constraints.fixed(side, side))
+    layout(side, side) { placeable.place(0, 0) }
 }
 
 @Composable
@@ -204,8 +310,14 @@ internal fun GuideAction(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
+    val feedback = rememberTapFeedback()
     Button(
-        onClick, modifier.heightIn(min = 48.dp), enabled = enabled,
+        onClick = {
+            feedback()
+            onClick()
+        },
+        modifier = modifier.heightIn(min = 48.dp),
+        enabled = enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = GuesserOrangeTop, contentColor = GuesserChocolateDark,
             disabledContainerColor = GuesserGoldCream.copy(alpha = 0.2f),
@@ -216,24 +328,36 @@ internal fun GuideAction(
     }
 }
 
+/**
+ * A scored guess row. With [colorFeedbackEnabled] false it matches real rounds: every tile is
+ * gray and only the remark is announced, so no per-digit hint is given.
+ */
 @Composable
-internal fun GuideGuess(evaluation: GuessEvaluation, announce: Boolean = false) {
-    val description = stringResource(
-        R.string.guide_guess_description, evaluation.guess, evaluation.remark,
-        evaluation.digits.mapIndexed { index, feedback ->
-            stringResource(
-                R.string.guide_digit_description, evaluation.guess[index].toString(),
+internal fun GuideGuess(
+    evaluation: GuessEvaluation,
+    announce: Boolean = false,
+    colorFeedbackEnabled: Boolean = true,
+) {
+    val description = if (colorFeedbackEnabled) {
+        stringResource(
+            R.string.guide_guess_description, evaluation.guess, evaluation.remark,
+            evaluation.digits.mapIndexed { index, feedback ->
                 stringResource(
-                    when (feedback) {
-                        DigitFeedback.EXACT -> R.string.clue_exact
-                        DigitFeedback.CLOSE -> R.string.clue_close
-                        DigitFeedback.ABSENT -> R.string.clue_absent
-                    },
-                ),
-            )
-        }.joinToString("; "),
-    )
-    // A spoken clue for each digit conveys the same information as the tile colors.
+                    R.string.guide_digit_description, evaluation.guess[index].toString(),
+                    stringResource(
+                        when (feedback) {
+                            DigitFeedback.EXACT -> R.string.clue_exact
+                            DigitFeedback.CLOSE -> R.string.clue_close
+                            DigitFeedback.ABSENT -> R.string.clue_absent
+                        },
+                    ),
+                )
+            }.joinToString("; "),
+        )
+    } else {
+        stringResource(R.string.guide_guess_remark_description, evaluation.guess, evaluation.remark)
+    }
+    // With colors on, a spoken clue for each digit conveys the same information as the tile colors.
     Column(
         Modifier.fillMaxWidth().clearAndSetSemantics {
             contentDescription = description
@@ -244,7 +368,13 @@ internal fun GuideGuess(evaluation: GuessEvaluation, announce: Boolean = false) 
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             evaluation.guess.forEachIndexed { index, digit ->
-                DigitTile(TileState.Revealed(digit, evaluation.digits[index]), 56.dp, false, null)
+                DigitTile(
+                    TileState.Revealed(digit, evaluation.digits[index]),
+                    56.dp,
+                    false,
+                    null,
+                    colorFeedbackEnabled = colorFeedbackEnabled,
+                )
             }
         }
         RemarkBox(evaluation.remark, evaluation.isWin, 52.dp, Modifier.fillMaxWidth())

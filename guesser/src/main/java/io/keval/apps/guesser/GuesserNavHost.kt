@@ -42,6 +42,8 @@ import io.keval.apps.guesser.gameplay.navigation.GAME_ROUTE
 import io.keval.apps.guesser.gameplay.navigation.HOME_ROUTE
 import io.keval.apps.guesser.gameplay.navigation.LAUNCH_GATE_ROUTE
 import io.keval.apps.guesser.gameplay.navigation.MANUAL_TUTORIAL_ROUTE
+import io.keval.apps.guesser.gameplay.navigation.SETTINGS_ROUTE
+import io.keval.apps.guesser.gameplay.settings.SettingsRoute
 import io.keval.apps.guesser.gameplay.navigation.TUTORIAL_ROUTE
 import io.keval.apps.guesser.gameplay.tutorial.TutorialScreen
 import kotlinx.coroutines.flow.first
@@ -110,6 +112,7 @@ fun GuesserNavHost(
                 onTutorialClick = { navController.navigate(MANUAL_TUTORIAL_ROUTE) },
                 onGameplayClick = { navController.navigate(GAMEPLAY_INFO_ROUTE) },
                 onAboutClick = { navController.navigate(ABOUT_ROUTE) },
+                onSettingsClick = { navController.navigate(SETTINGS_ROUTE) { launchSingleTop = true } },
             )
         }
 
@@ -185,6 +188,21 @@ fun GuesserNavHost(
         }
 
         composable(
+            route = SETTINGS_ROUTE,
+            enterTransition = { slideInFromRight() },
+            exitTransition = { slideOutToLeft() },
+            popEnterTransition = { slideInFromLeft() },
+            popExitTransition = { slideOutToRight() },
+        ) {
+            SettingsRoute(
+                observeAudioSettings = appContainer.observeAudioSettingsUseCase,
+                setMusicEnabled = appContainer.setMusicEnabledUseCase,
+                setSoundEffectsEnabled = appContainer.setSoundEffectsEnabledUseCase,
+                onBack = navController::navigateUp,
+            )
+        }
+
+        composable(
             route = GAME_ROUTE,
             enterTransition = { slideInFromRight() },
             exitTransition = { slideOutToLeft() },
@@ -193,9 +211,18 @@ fun GuesserNavHost(
         ) {
             GameRoute(
                 friendSecretNumber = appContainer.getFriendSecretUseCase(),
-                onExitToHome = { navController.popBackStack(HOME_ROUTE, inclusive = false) },
+                onExitToHome = {
+                    // Home is normally below Game; if not, open it so leaving can never strand the player.
+                    if (!navController.popBackStack(HOME_ROUTE, inclusive = false)) {
+                        navController.navigate(HOME_ROUTE) {
+                            popUpTo(GAME_ROUTE) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                },
                 // The Game entry stays on the back stack, so its ViewModel (and round) survive Help.
                 onHelp = { navController.navigate(GAMEPLAY_INFO_ROUTE) { launchSingleTop = true } },
+                onSettings = { navController.navigate(SETTINGS_ROUTE) { launchSingleTop = true } },
             )
         }
     }

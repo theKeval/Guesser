@@ -121,7 +121,18 @@ the round is won. The repository is process-memory only.
   process death, and navigating to Help and back. It exposes `GameUiState` as
   a `StateFlow`.
 - `GameRoute` collects state, handles system back with `BackHandler`, and
-  delegates to a stateless `GameScreen`.
+  delegates to a stateless `GameScreen`. A horizontal drag past 96 dp
+  (`swipeToGoBack`) calls the same back request; the content follows the
+  finger by up to 48 dp and springs back.
+- Quit calls `onQuitRequested` (confirmation), then `onConfirmQuit`, which sets
+  `isGivenUp`, reveals the secret, locks input, and is saved in
+  `SavedStateHandle`. `QuitRevealDialog` flips the secret tiles in and returns
+  Home when closed.
+- `GuessResultFeedback` plays a flip tick per tile, then the SMYLE jingle or
+  clue chime when the remark pops in (`REMARK_REVEAL_DELAY_MS`). A saveable
+  guess count stops the result replaying after Help or Settings. The win
+  dialog is full-window so `ConfettiBurst` (`Confetti.kt`, frame-driven
+  analytic physics) can cover the screen; it plays applause on entry.
 - `GameScreen` sizes everything from `BoxWithConstraints`. Tile size is the
   smaller of a width fit and a height fit that keeps at least five rows
   visible. Keypad keys scale with width and height, and content is capped at
@@ -172,10 +183,12 @@ each digit's feedback as well as the remark. Static examples reveal immediately,
 without entrance animations or repeated motion.
 
 `LearningExamples` evaluates the reference guesses through `GuessRules`.
-`TutorialScreen` uses a horizontally swipeable pager with four accessible
+`TutorialScreen` uses a horizontally swipeable pager with three accessible
 progress dots and explicit Back/Next actions. Practice state is saved with
 `rememberSaveable`; practice uses the existing keypad and digit tiles but no
-real round state. First-run Skip/Get Started/system Back completion is stored
+real round state. It shows submitted guesses with
+`GuideGuess(colorFeedbackEnabled = false)`: gray tiles and a remark-only
+announcement, matching real rounds. Gameplay examples keep the default colors. First-run Skip/Get Started/system Back completion is stored
 through `TutorialRepository` and `PreferencesTutorialRepository`. Manual
 Tutorial Back moves through pages and then returns Home. **PLAY NOW** saves a
 null friend secret and replaces Tutorial with Game, starting Single Player.

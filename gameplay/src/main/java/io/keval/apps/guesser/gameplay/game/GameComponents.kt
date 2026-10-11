@@ -50,10 +50,8 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -79,8 +77,11 @@ import io.keval.apps.guesser.core.ui.theme.GuesserWoodBottom
 import io.keval.apps.guesser.core.ui.theme.GuesserWoodTop
 import io.keval.apps.guesser.domain.game.DigitFeedback
 import io.keval.apps.guesser.domain.game.GuessRules
+import io.keval.apps.guesser.gameplay.audio.GameSound
+import io.keval.apps.guesser.gameplay.audio.rememberTapFeedback
+import kotlinx.coroutines.delay
 
-private val GoldFrameBrush = Brush.verticalGradient(listOf(GuesserGoldBorder, GuesserBronzeDark, GuesserGoldBorder))
+internal val GoldFrameBrush = Brush.verticalGradient(listOf(GuesserGoldBorder, GuesserBronzeDark, GuesserGoldBorder))
 private val TileEmptyBrush = Brush.verticalGradient(listOf(Color(0xFFE2BC86), Color(0xFFCD9D62), Color(0xFFBE8A50)))
 private val TileExactBrush = Brush.verticalGradient(listOf(Color(0xFF7CC94E), Color(0xFF55A535), Color(0xFF3D8526)))
 private val TileCloseBrush = Brush.verticalGradient(listOf(GuesserOrangeTop, GuesserOrangeMid, GuesserOrangeBottom))
@@ -145,12 +146,16 @@ fun GameRoundIconButton(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val scale by animateFloatAsState(if (isPressed) 0.9f else 1f, spring(dampingRatio = 0.6f), label = "iconScale")
+    val scale by animateFloatAsState(if (isPressed) 0.86f else 1f, spring(dampingRatio = 0.4f, stiffness = 600f), label = "iconScale")
+    val feedback = rememberTapFeedback()
 
     Box(
         modifier = modifier
             .size(size.coerceAtLeast(48.dp))
-            .clickable(interactionSource = interactionSource, indication = null, role = Role.Button, onClick = onClick)
+            .clickable(interactionSource = interactionSource, indication = null, role = Role.Button) {
+                feedback()
+                onClick()
+            }
             .semantics { this.contentDescription = contentDescription },
         contentAlignment = Alignment.Center,
     ) {
@@ -259,11 +264,16 @@ fun DigitTile(
     }
     val showFront = state !is TileState.Revealed || rotation.value < 90f
     val shape = RoundedCornerShape(size * 0.12f)
-    val pressScale by animateFloatAsState(
-        targetValue = if (state is TileState.Pending) 1f else 0.98f,
-        animationSpec = spring(dampingRatio = 0.45f, stiffness = 700f),
-        label = "tilePop",
-    )
+    // A freshly typed digit pops in, then springs back to rest.
+    val pop = remember { Animatable(1f) }
+    LaunchedEffect(state) {
+        if (state is TileState.Pending) {
+            pop.snapTo(1.18f)
+            pop.animateTo(1f, spring(dampingRatio = 0.38f, stiffness = 520f))
+        } else {
+            pop.snapTo(1f)
+        }
+    }
 
     val brush = digitTileBrush(state, showFront, colorFeedbackEnabled)
     val digit = when (state) {
@@ -286,8 +296,8 @@ fun DigitTile(
                     0f
                 }
                 cameraDistance = 12f * density
-                scaleX = pressScale
-                scaleY = pressScale
+                scaleX = pop.value
+                scaleY = pop.value
             }
             .shadow(4.dp, shape, clip = false)
             .background(brush, shape)
@@ -325,21 +335,30 @@ fun RemarkBox(
     isWinner: Boolean,
     height: Dp,
     modifier: Modifier = Modifier,
-    animateHeartbeat: Boolean = false,
+    animateReveal: Boolean = false,
+    revealDelayMs: Long = 0L,
 ) {
     val corner = height * 0.16f
     val goldDash = GuesserGoldBorder.copy(alpha = 0.55f)
-    val isSmyle = remark == GuessRules.SMYLE_REMARK
     val beat = remember(remark) { Animatable(1f) }
-    LaunchedEffect(remark, animateHeartbeat) {
-        if (isSmyle && animateHeartbeat) {
+    // While animating, the remark waits for the tiles to finish flipping, then pops in.
+    val appear = remember(remark, animateReveal) { Animatable(if (remark != null && animateReveal) 0f else 1f) }
+    LaunchedEffect(remark, animateReveal) {
+        if (remark == null || !animateReveal) return@LaunchedEffect
+        delay(revealDelayMs)
+        if (remark == GuessRules.SMYLE_REMARK) {
+            appear.snapTo(1f)
             // One "lub-dub" heartbeat: two quick pulses, then settle.
             beat.animateTo(1.14f, tween(120, easing = FastOutSlowInEasing))
             beat.animateTo(0.97f, tween(110))
             beat.animateTo(1.09f, tween(110))
             beat.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = 400f))
+        } else {
+            appear.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = 420f))
         }
     }
+    // Keep the teal SMYLE styling hidden until the remark itself is revealed.
+    val isSmyle = remark == GuessRules.SMYLE_REMARK && appear.value > 0f
     BoxWithConstraints(
         modifier = modifier
             .height(height)
@@ -370,6 +389,11 @@ fun RemarkBox(
             val fontSize = with(LocalDensity.current) { (minOf(height * 0.4f, maxWidth / 5.8f)).toSp() }
             Text(
                 text = if (isWinner) "$remark!" else remark,
+                modifier = Modifier.graphicsLayer {
+                    alpha = appear.value.coerceIn(0f, 1f)
+                    scaleX = 0.4f + 0.6f * appear.value
+                    scaleY = 0.4f + 0.6f * appear.value
+                },
                 color = if (isWinner) WinnerGreen else GuesserGoldCream,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Bold,
@@ -452,11 +476,11 @@ fun RowNumber(
     }
 }
 
-enum class KeyStyle {
-    Digit,
-    Enter,
-    Delete,
-    Secondary,
+enum class KeyStyle(val defaultSound: GameSound) {
+    Digit(GameSound.Key),
+    Enter(GameSound.Tap),
+    Delete(GameSound.Delete),
+    Secondary(GameSound.Tap),
 }
 
 @Composable
@@ -467,15 +491,23 @@ fun KeypadKey(
     enabled: Boolean,
     height: Dp,
     modifier: Modifier = Modifier,
+    sound: GameSound = style.defaultSound,
+    soundPitch: Float = 1f,
     onClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val haptics = LocalHapticFeedback.current
+    val feedback = rememberTapFeedback(sound, soundPitch)
+    // Low damping gives the key a little bounce when it is released.
     val scale by animateFloatAsState(
-        targetValue = if (isPressed && enabled) 0.93f else 1f,
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 700f),
+        targetValue = if (isPressed && enabled) 0.9f else 1f,
+        animationSpec = spring(dampingRatio = 0.38f, stiffness = 800f),
         label = "keyScale",
+    )
+    val glow by animateFloatAsState(
+        targetValue = if (isPressed && enabled) 1f else 0f,
+        animationSpec = tween(if (isPressed) 60 else 260),
+        label = "keyGlow",
     )
     val shape = RoundedCornerShape(height * 0.3f)
     val brush = when (style) {
@@ -496,7 +528,7 @@ fun KeypadKey(
                 enabled = enabled,
                 role = Role.Button,
             ) {
-                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                feedback()
                 onClick()
             }
             .semantics { this.contentDescription = contentDescription },
@@ -523,6 +555,17 @@ fun KeypadKey(
                         size = Size(size.width * 0.88f, size.height * 0.3f),
                         cornerRadius = CornerRadius(size.height * 0.15f),
                     )
+                    if (glow > 0f) {
+                        // Warm glow from the key's center while it is held.
+                        drawRoundRect(
+                            brush = Brush.radialGradient(
+                                listOf(Color.White.copy(alpha = 0.42f * glow), Color.Transparent),
+                                center = center,
+                                radius = size.maxDimension * 0.6f,
+                            ),
+                            cornerRadius = CornerRadius(size.height * 0.3f),
+                        )
+                    }
                 },
             contentAlignment = Alignment.Center,
         ) {
@@ -558,6 +601,7 @@ fun GuesserDialogFrame(
     title: String,
     message: String,
     modifier: Modifier = Modifier,
+    content: @Composable () -> Unit = {},
     buttons: @Composable () -> Unit,
 ) {
     WoodPanel(
@@ -589,6 +633,8 @@ fun GuesserDialogFrame(
                 lineHeight = 22.sp,
                 textAlign = TextAlign.Center,
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            content()
             Spacer(modifier = Modifier.height(20.dp))
             buttons()
         }

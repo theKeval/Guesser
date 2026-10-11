@@ -41,10 +41,12 @@ import io.keval.apps.guesser.gameplay.R
 import io.keval.apps.guesser.gameplay.common.GuideAction
 import io.keval.apps.guesser.gameplay.common.GuideBody
 import io.keval.apps.guesser.gameplay.common.GuideGuess
+import io.keval.apps.guesser.gameplay.common.GuideNumberedRule
 import io.keval.apps.guesser.gameplay.common.GuidePageDots
 import io.keval.apps.guesser.gameplay.common.GuidePanel
 import io.keval.apps.guesser.gameplay.common.GuideScaffold
 import io.keval.apps.guesser.gameplay.common.GuideSkipAction
+import io.keval.apps.guesser.gameplay.common.highlightClueWords
 import io.keval.apps.guesser.gameplay.game.DigitTile
 import io.keval.apps.guesser.gameplay.game.KeyStyle
 import io.keval.apps.guesser.gameplay.game.KeypadKey
@@ -52,7 +54,7 @@ import io.keval.apps.guesser.gameplay.game.TileState
 import io.keval.apps.guesser.gameplay.info.LearningExamples
 import kotlinx.coroutines.launch
 
-private const val TUTORIAL_PAGE_COUNT = 4
+private const val TUTORIAL_PAGE_COUNT = 3
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
@@ -186,21 +188,25 @@ private fun TutorialPage(
     when (page) {
         0 -> GuidePanel(stringResource(R.string.tutorial_goal_title)) {
             GuideBody(stringResource(R.string.tutorial_goal_body))
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            ) {
-                LearningExamples.SECRET.forEach {
-                    DigitTile(TileState.Pending(it), 64.dp, false, null)
-                }
-            }
-            GuideBody(stringResource(R.string.rules_code_body))
+//            Row(
+//                Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+//            ) {
+//                LearningExamples.SECRET.forEach {
+//                    DigitTile(TileState.Pending(it), 64.dp, false, null)
+//                }
+//            }
+//            GuideBody(stringResource(R.string.rules_code_body))
         }
         1 -> GuidePanel(stringResource(R.string.tutorial_clues_title)) {
-            GuideBody(stringResource(R.string.rules_clues_body))
-            GuideGuess(LearningExamples.evaluations.first())
-            GuideBody(stringResource(R.string.example_mixed))
-            GuideBody(stringResource(R.string.tutorial_deduction))
+            GuideBody(stringResource(R.string.rules_clues_title_main_1))
+            GuideNumberedRule(1, highlightClueWords(stringResource(R.string.rules_clues_title_main_2)))
+            GuideNumberedRule(2, highlightClueWords(stringResource(R.string.rules_clues_title_main_3)))
+            GuideNumberedRule(3, highlightClueWords(stringResource(R.string.rules_clues_title_main_4)))
+//            GuideBody(stringResource(R.string.rules_clues_body))
+//            GuideGuess(LearningExamples.evaluations.first())
+//            GuideBody(stringResource(R.string.example_mixed))
+//            GuideBody(stringResource(R.string.tutorial_deduction))
         }
         2 -> GuidePanel(stringResource(R.string.tutorial_practice_title)) {
             GuideBody(stringResource(R.string.tutorial_practice_body, LearningExamples.SECRET))
@@ -254,17 +260,13 @@ private fun TutorialPage(
                 )
             }
             if (evaluation != null) {
-                GuideGuess(evaluation, announce = true)
+                // Like a real round: gray tiles, so only the remark guides the next guess.
+                GuideGuess(evaluation, announce = true, colorFeedbackEnabled = false)
                 GuideBody(
                     stringResource(if (evaluation.isWin) R.string.tutorial_practice_win else R.string.tutorial_practice_retry),
                     Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                 )
             }
-        }
-        3 -> GuidePanel(stringResource(R.string.tutorial_ready_title)) {
-            GuideBody(stringResource(R.string.tutorial_ready_body))
-            GuideBody(stringResource(R.string.rules_single_body))
-            GuideBody(stringResource(R.string.rules_double_body))
         }
     }
 }

@@ -113,8 +113,17 @@ persistence, define:
 - whether it may be backed up;
 - how sensitive values are excluded from logs and navigation arguments.
 
-Do not use the existing DataStore dependency as an implicit design decision;
-it is not used by production code today.
+Preferences DataStore holds tutorial completion and audio settings in one
+`guesser_preferences` file. New preference repositories must reuse the
+`guesserPreferences` delegate in `:data`; a second delegate for the same file
+crashes at runtime. Do not store the friend secret there without first
+answering the questions above.
+
+### Audio
+
+Sounds are synthesized by `design_assets/audio/make_audio.py`; see its README
+to regenerate them. Play effects through `LocalGameSoundPlayer` or
+`rememberTapFeedback` so the sound-effects setting is respected.
 
 ### Artwork
 

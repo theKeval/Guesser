@@ -58,6 +58,7 @@ import io.keval.apps.guesser.core.ui.theme.GuesserOrangeTop
 import io.keval.apps.guesser.core.ui.theme.GuesserWoodBottom
 import io.keval.apps.guesser.core.ui.theme.GuesserWoodTop
 import io.keval.apps.guesser.domain.game.isCodeDigit
+import io.keval.apps.guesser.gameplay.audio.rememberTapFeedback
 
 private val PillShape = RoundedCornerShape(percent = 50)
 
@@ -120,6 +121,7 @@ private fun HomePillButton(
         targetValue = if (isPressed) 0.12f else 0f,
         label = "overlayAlpha",
     )
+    val feedback = rememberTapFeedback()
 
     val backgroundBrush = when (style) {
         HomeButtonStyle.Primary -> Brush.verticalGradient(
@@ -140,8 +142,10 @@ private fun HomePillButton(
                 interactionSource = interactionSource,
                 indication = null,
                 role = Role.Button,
-                onClick = onClick,
-            )
+            ) {
+                feedback()
+                onClick()
+            }
             .semantics { this.contentDescription = contentDescription },
         contentAlignment = Alignment.Center,
     ) {
@@ -286,14 +290,17 @@ private fun ModeSegment(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
+    val feedback = rememberTapFeedback()
     Box(
         modifier = modifier
             .fillMaxSize()
             .selectable(
                 selected = selected,
                 role = Role.RadioButton,
-                onClick = onClick,
-            )
+            ) {
+                if (!selected) feedback()
+                onClick()
+            }
             .semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) {

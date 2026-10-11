@@ -30,7 +30,7 @@ current implemented experience includes:
 - a shared wood-background scaffold, back control, and Compose theme;
 - clean module boundaries for UI, domain contracts, data, and app assembly.
 
-Tutorial is a four-step swipeable walkthrough with a separate practice keypad;
+Tutorial is a three-step swipeable walkthrough with a separate practice keypad;
 it appears on first launch and remains available from Home afterward.
 Gameplay explains rules with scored tile examples, modes, controls, and tips.
 Game-board color feedback is currently disabled to increase difficulty;

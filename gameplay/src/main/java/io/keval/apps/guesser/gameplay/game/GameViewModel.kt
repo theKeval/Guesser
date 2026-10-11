@@ -75,13 +75,40 @@ class GameViewModel(
     /** Returns true when the screen may leave immediately without confirmation. */
     fun onBackRequested(): Boolean {
         val state = _uiState.value
-        if (state.isWon) return true
+        if (state.isRoundOver) return true
         _uiState.value = state.copy(showExitConfirmation = true)
         return false
     }
 
     fun onDismissExitConfirmation() {
         _uiState.value = _uiState.value.copy(showExitConfirmation = false)
+    }
+
+    /** Returns true when the round is already over, so the screen may leave right away. */
+    fun onQuitRequested(): Boolean {
+        val state = _uiState.value
+        if (state.isRoundOver) return true
+        _uiState.value = state.copy(showQuitConfirmation = true)
+        return false
+    }
+
+    fun onDismissQuitConfirmation() {
+        _uiState.value = _uiState.value.copy(showQuitConfirmation = false)
+    }
+
+    /** Ends the round and reveals the secret. */
+    fun onConfirmQuit() {
+        val state = _uiState.value
+        if (state.isRoundOver) return
+        savedStateHandle[KEY_GIVEN_UP] = true
+        savedStateHandle[KEY_INPUT] = ""
+        _uiState.value = state.copy(
+            isGivenUp = true,
+            revealedSecret = secret,
+            currentInput = "",
+            showQuitConfirmation = false,
+            lastRevealedIndex = null,
+        )
     }
 
     fun onDismissWinDialog() {
@@ -97,6 +124,7 @@ class GameViewModel(
         savedStateHandle[KEY_GUESSES] = ArrayList<String>()
         savedStateHandle[KEY_INPUT] = ""
         savedStateHandle[KEY_WIN_DIALOG] = false
+        savedStateHandle[KEY_GIVEN_UP] = false
         _uiState.value = GameUiState(playerMode = playerMode)
     }
 
@@ -111,16 +139,20 @@ class GameViewModel(
             .filter(GuessRules::isValidCode)
             .map { GuessRules.evaluate(secret, it) }
         val isWon = guesses.lastOrNull()?.isWin == true
+        val isGivenUp = !isWon && savedStateHandle.get<Boolean>(KEY_GIVEN_UP) == true
         val input = savedStateHandle.get<String>(KEY_INPUT)
             .orEmpty()
-            .takeIf { !isWon && it.length <= CODE_LENGTH && it.all(::isCodeDigit) && it.toSet().size == it.length }
+            .takeIf {
+                !isWon && !isGivenUp && it.length <= CODE_LENGTH && it.all(::isCodeDigit) && it.toSet().size == it.length
+            }
             .orEmpty()
         return GameUiState(
             playerMode = playerMode,
             guesses = guesses,
             currentInput = input,
             isWon = isWon,
-            revealedSecret = secret.takeIf { isWon },
+            isGivenUp = isGivenUp,
+            revealedSecret = secret.takeIf { isWon || isGivenUp },
             showWinDialog = isWon && savedStateHandle.get<Boolean>(KEY_WIN_DIALOG) == true,
         )
     }
@@ -131,6 +163,7 @@ class GameViewModel(
         private const val KEY_GUESSES = "game_guesses"
         private const val KEY_INPUT = "game_input"
         private const val KEY_WIN_DIALOG = "game_win_dialog"
+        private const val KEY_GIVEN_UP = "game_given_up"
 
         fun factory(friendSecret: String?): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
