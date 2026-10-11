@@ -38,6 +38,19 @@
     </plurals>
     <string name="win_play_again">PLAY AGAIN</string>
     <string name="win_home">HOME</string>
+    <string name="cd_remark_info">What does %1$s mean?</string>
+    <string name="remark_info_dismiss">GOT IT</string>
+    <string name="remark_info_winner">All 3 digits are correct and in the right place. You cracked the code!</string>
+    <string name="remark_info_smyle">None of your digits are in the secret. Simply Make Your Life Easy: rule all three out.</string>
+    <string name="remark_info_counts">%1$s %2$s</string>
+    <plurals name="remark_info_right">
+        <item quantity="one">%1$d digit is correct and in the right place.</item>
+        <item quantity="other">%1$d digits are correct and in the right place.</item>
+    </plurals>
+    <plurals name="remark_info_wrong">
+        <item quantity="one">%1$d digit is in the secret but in the wrong place.</item>
+        <item quantity="other">%1$d digits are in the secret but in the wrong places.</item>
+    </plurals>
     <!-- Learning screens -->
     <string name="guide_back">Go back</string>
     <string name="guide_guess_description">Guess %1$s. Remark: %2$s. %3$s</string>

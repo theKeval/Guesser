@@ -45,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.keval.apps.guesser.core.ui.theme.GuesserTheme
 import io.keval.apps.guesser.domain.game.CODE_LENGTH
+import io.keval.apps.guesser.domain.game.GuessEvaluation
 import io.keval.apps.guesser.domain.game.GuessRules
 import io.keval.apps.guesser.gameplay.R
 import io.keval.apps.guesser.gameplay.home.PlayerMode
@@ -53,7 +54,11 @@ import kotlin.math.floor
 
 private const val ROW_NUMBER_UNITS = 0.55f
 private const val REMARK_UNITS = 2.15f
-private const val ROW_UNITS = CODE_LENGTH + ROW_NUMBER_UNITS + REMARK_UNITS
+private const val INFO_UNITS = 0.5f
+private const val ROW_UNITS = CODE_LENGTH + ROW_NUMBER_UNITS + REMARK_UNITS + INFO_UNITS
+
+// Gaps between row number, digit tiles, remark box and info button.
+private const val ROW_GAP_COUNT = CODE_LENGTH + 2
 private const val MIN_VISIBLE_ROWS = 5
 private const val TILE_REVEAL_STAGGER_MS = 180
 private const val WIN_DIALOG_DELAY_MS = 1_100L
@@ -111,6 +116,8 @@ fun GameScreen(
     onDismissWinDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var remarkInfo by remember { mutableStateOf<GuessEvaluation?>(null) }
+
     Box(modifier = modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.home_background),
@@ -151,6 +158,7 @@ fun GameScreen(
                 Spacer(modifier = Modifier.height(metrics.sectionGap))
                 GuessBoard(
                     uiState = uiState,
+                    onRemarkInfo = { remarkInfo = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
@@ -166,6 +174,11 @@ fun GameScreen(
                 )
             }
         }
+
+        RemarkInfoPopup(
+            evaluation = remarkInfo,
+            onDismiss = { remarkInfo = null },
+        )
 
         if (uiState.showExitConfirmation) {
             ExitConfirmationDialog(
@@ -267,6 +280,7 @@ private fun GameHeader(
 @Composable
 private fun GuessBoard(
     uiState: GameUiState,
+    onRemarkInfo: (GuessEvaluation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     WoodPanel(
@@ -281,10 +295,10 @@ private fun GuessBoard(
             contentAlignment = Alignment.TopCenter,
         ) {
             val baseGap = (maxWidth * 0.022f).coerceIn(4.dp, 10.dp)
-            val widthTile = (maxWidth - baseGap * 4) / ROW_UNITS
+            val widthTile = (maxWidth - baseGap * ROW_GAP_COUNT) / ROW_UNITS
             val heightTile = (maxHeight - baseGap * (MIN_VISIBLE_ROWS - 1)) / MIN_VISIBLE_ROWS
             val tile = minOf(widthTile, heightTile).coerceAtLeast(24.dp)
-            val rowWidth = tile * ROW_UNITS + baseGap * 4
+            val rowWidth = tile * ROW_UNITS + baseGap * ROW_GAP_COUNT
             val visibleRows = floor(((maxHeight + baseGap) / (tile + baseGap)).toDouble()).toInt().coerceAtLeast(1)
             val rowGap = if (visibleRows > 1) {
                 ((maxHeight - tile * visibleRows) / (visibleRows - 1)).coerceIn(baseGap, baseGap * 2.5f)
@@ -318,6 +332,7 @@ private fun GuessBoard(
                         isActive = index == activeRow,
                         tile = tile,
                         gap = baseGap,
+                        onRemarkInfo = onRemarkInfo,
                     )
                 }
             }
@@ -332,6 +347,7 @@ private fun GuessRow(
     isActive: Boolean,
     tile: Dp,
     gap: Dp,
+    onRemarkInfo: (GuessEvaluation) -> Unit,
 ) {
     val evaluation = uiState.guesses.getOrNull(index)
     val animateReveal = evaluation != null && uiState.lastRevealedIndex == index
@@ -372,6 +388,21 @@ private fun GuessRow(
             height = tile * 0.74f,
             modifier = Modifier.width(tile * REMARK_UNITS),
         )
+        Box(
+            modifier = Modifier
+                .width(tile * INFO_UNITS)
+                .height(tile),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (evaluation != null) {
+                RemarkInfoButton(
+                    contentDescription = stringResource(R.string.cd_remark_info, evaluation.remark),
+                    size = tile * 0.42f,
+                    modifier = Modifier.fillMaxSize(),
+                    onClick = { onRemarkInfo(evaluation) },
+                )
+            }
+        }
     }
 }
 

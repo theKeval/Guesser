@@ -134,6 +134,12 @@ the round is won. The repository is process-memory only.
   `GameScreen` passes false so every game-board tile stays gray before,
   during, and after reveal, with light digits for contrast. Evaluations,
   remarks, and win detection are unchanged.
+- `RemarkInfoButton` sits in a reserved `INFO_UNITS` column beside each
+  remark. `GameScreen` holds the selected `GuessEvaluation` and shows
+  `RemarkInfoPopup`, an in-window overlay animated with `AnimatedVisibility`
+  (scrim fade; card `scaleIn` from 1.18 with fade, `scaleOut` to 0.92 on
+  dismiss). `GuessEvaluation.remarkMeaning()` (`RemarkMeaning.kt`) maps a
+  guess to Winner, SMYLE, or R/W counts, rendered with plural strings.
 - `game_board_wood` and `game_keypad_wood` are textures cropped from the home
   background and drawn with `ContentScale.Crop`, so they never stretch.
 
@@ -196,6 +202,7 @@ stay crisp across screen sizes and densities.
 - `GuessRulesTest` covers validation, generation, and the full remark table.
 - `GameViewModelTest` covers input guards, scoring, winning, exit
   confirmation, play-again, and `SavedStateHandle` restoration.
+- `RemarkMeaningTest` checks remark-to-meaning mapping for every remark type.
 - `LearningExamplesTest` verifies displayed remarks and exhaustively checks
   the tutorial's deduction against every valid code consistent with its clues.
 

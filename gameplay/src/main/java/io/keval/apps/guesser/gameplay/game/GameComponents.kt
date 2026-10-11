@@ -360,6 +360,50 @@ fun RemarkBox(
     }
 }
 
+/** Small gold "i" button shown beside a remark; opens a short explanation of that remark. */
+@Composable
+fun RemarkInfoButton(
+    contentDescription: String,
+    size: Dp,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(if (isPressed) 0.85f else 1f, spring(dampingRatio = 0.6f), label = "infoScale")
+
+    Box(
+        modifier = modifier
+            .clickable(interactionSource = interactionSource, indication = null, role = Role.Button, onClick = onClick)
+            .semantics { this.contentDescription = contentDescription },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(size)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
+                .shadow(4.dp, CircleShape, clip = false)
+                .background(GoldFrameBrush, CircleShape)
+                .padding(size * 0.08f)
+                .background(Brush.verticalGradient(listOf(Color(0xFF6B3E1F), GuesserChocolateDark)), CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = "i",
+                color = GuesserGoldBorder,
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Black,
+                fontSize = with(LocalDensity.current) { (size * 0.56f).toSp() },
+                maxLines = 1,
+                softWrap = false,
+            )
+        }
+    }
+}
+
 @Composable
 fun RowNumber(
     number: Int,

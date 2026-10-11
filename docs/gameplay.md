@@ -71,6 +71,9 @@ process and `AppContainer` live.
 - A header shows a back button, the Guesser title, and a help (`?`) button,
   followed by a Single/Double Player mode badge.
 - The guess board lists numbered rows of three digit tiles plus a remark box.
+  Each submitted row has a small gold **i** button beside its remark. Tapping
+  it opens an iOS-style popup (zoom/fade in, fade/shrink out) with a one-line
+  meaning of that remark; tap **GOT IT**, outside the card, or Back to close.
   Guesses are unlimited; the board scrolls and keeps the active row visible.
 - The custom keypad has digits 0–9, **ENTER**, and **DELETE**. Digits already
   in the current guess are disabled, so duplicates are impossible. ENTER is
