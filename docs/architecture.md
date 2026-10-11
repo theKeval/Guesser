@@ -29,7 +29,7 @@ There is deliberately no dependency edge between the revamp modules and
 | --- | --- | --- |
 | `:guesser` | Android application | Application object, activity, composition root, and Navigation Compose host |
 | `:gameplay` | Android library | Home UI/state plus Game, Tutorial, Gameplay, and About destinations |
-| `:domain` | Kotlin/JVM library | Repository interfaces and thin application use cases |
+| `:domain` | Kotlin/JVM library | Repository interfaces, thin use cases, and pure game rules (`GuessRules`) |
 | `:data` | Android library | Concrete app-info and in-memory game-session repositories |
 | `:core-ui` | Android library | Material 3 colors, typography, and `GuesserTheme` |
 | `:guesser_v1` | Android application | Complete legacy XML/View game, physically located in `app/` |
@@ -45,7 +45,7 @@ flowchart TD
     ACT[MainActivity] --> COMPOSE[GuesserTheme + GuesserApp]
     COMPOSE --> NAV[GuesserNavHost]
     NAV --> HOME[HomeRoute]
-    NAV --> GAME[GameScreen]
+    NAV --> GAME[GameRoute]
     NAV --> TUTORIAL[TutorialScreen]
     NAV --> INFO[GameplayInfoScreen]
     NAV --> ABOUT[AboutScreen]
@@ -70,7 +70,7 @@ No dependency-injection framework is used.
 | Route | Destination | Current status |
 | --- | --- | --- |
 | `home` | `HomeRoute` | Implemented |
-| `game` | `GameScreen` | Placeholder with setup-type acknowledgement |
+| `game` | `GameRoute` | Implemented: keypad, guess board, scoring, quit/win dialogs, help |
 | `tutorial` | `TutorialScreen` | Placeholder |
 | `gameplay_info` | `GameplayInfoScreen` | Placeholder |
 | `about` | `AboutScreen` | Placeholder |
@@ -87,12 +87,14 @@ Single Player before navigating to `game`.
 | Friend secret input | `HomeViewModel` / `HomeUiState` | Home navigation entry/ViewModel |
 | Validation message | `HomeViewModel` / `HomeUiState` | Home navigation entry/ViewModel |
 | Handed-off friend secret | `InMemoryGameSessionRepository` | `AppContainer` / application process |
+| Round secret, guesses, input, dialogs | `GameViewModel` / `SavedStateHandle` | Game navigation entry, including process recreation |
 | Navigation back stack | `NavHostController` | Compose activity instance |
 
-`HomeUiState` is exposed as a read-only `StateFlow` and collected with
-lifecycle awareness. There is no `SavedStateHandle`, database, DataStore use,
-or persistent game session. Although `:data` declares a DataStore dependency,
-current production code does not use it.
+`HomeUiState` and `GameUiState` are exposed as read-only `StateFlow`s and
+collected with lifecycle awareness. Only the Game round uses
+`SavedStateHandle`. There is no database, DataStore use, or cross-launch game
+persistence. Although `:data` declares a DataStore dependency, current
+production code does not use it.
 
 The app-info repository and welcome-message use case are wired and invoked
 during `HomeViewModel` initialization, but the returned string is not currently

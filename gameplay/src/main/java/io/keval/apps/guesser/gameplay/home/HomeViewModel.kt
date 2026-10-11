@@ -3,6 +3,7 @@ package io.keval.apps.guesser.gameplay.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
+import io.keval.apps.guesser.domain.game.isCodeDigit
 import io.keval.apps.guesser.domain.usecase.GetWelcomeMessageUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +29,7 @@ class HomeViewModel(
     }
 
     fun onFriendSecretNumberChanged(value: String) {
-        val sanitized = value.filter(Char::isDigit).take(3)
+        val sanitized = value.filter(::isCodeDigit).take(3)
         _uiState.value = _uiState.value.copy(
             friendSecretNumber = sanitized,
             secretValidationMessage = sanitized

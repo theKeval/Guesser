@@ -13,4 +13,29 @@
     <string name="label_about">ABOUT</string>
     <string name="label_single_player">Single\nplayer</string>
     <string name="label_double_player">Double\nplayer</string>
+    <!-- Game screen -->
+    <string name="game_mode_single">Single Player</string>
+    <string name="game_mode_double">Double Player</string>
+    <string name="cd_game_title">Guesser</string>
+    <string name="cd_back_home">Back to home</string>
+    <string name="cd_help">How to play</string>
+    <string name="cd_guess_row">Guess %1$d: %2$s, %3$s</string>
+    <string name="cd_active_row">Guess %1$d, entering: %2$s</string>
+    <string name="cd_empty_row">Guess %1$d, empty</string>
+    <string name="key_enter">ENTER</string>
+    <string name="key_delete">DELETE</string>
+    <string name="cd_key_digit">Digit %1$s</string>
+    <string name="cd_key_enter">Submit guess</string>
+    <string name="cd_key_delete">Delete last digit</string>
+    <string name="exit_title">Quit this game?</string>
+    <string name="exit_message">Your current %1$s game will end and its progress will be lost.</string>
+    <string name="exit_confirm">QUIT</string>
+    <string name="exit_cancel">STAY</string>
+    <string name="win_title">You cracked it!</string>
+    <plurals name="win_message">
+        <item quantity="one">The secret number was %1$s.\nSolved in %2$d guess.</item>
+        <item quantity="other">The secret number was %1$s.\nSolved in %2$d guesses.</item>
+    </plurals>
+    <string name="win_play_again">PLAY AGAIN</string>
+    <string name="win_home">HOME</string>
 </resources>

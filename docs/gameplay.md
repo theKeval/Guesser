@@ -6,16 +6,16 @@ Guesser is a deduction game in which a seeker identifies a hidden
 three-character digit code. Each guess returns positional information that
 narrows the remaining possibilities.
 
-These rules are fully implemented in Guesser V1. They are the established
-product contract for the revamp, but the revamp Game screen does not implement
-them yet.
+These rules are fully implemented in Guesser V1 and are ported to the revamp
+as `GuessRules` in `:domain`, which drives the revamp Game screen.
 
 ### Valid Codes
 
 A secret or guess is valid when it:
 
 1. contains exactly three characters;
-2. contains only characters recognized as digits by Kotlin's `Char.isDigit`;
+2. contains only ASCII digits `0`–`9` (the revamp rejects other Unicode
+   digits so every valid secret can be typed on the game keypad);
 3. contains three different digits.
 
 Codes are strings, not integers, so a leading zero is preserved. Examples:
@@ -40,17 +40,15 @@ means Winner," while its scoring engine displays the word `Winner`.
 
 ## Revamp Behavior Today
 
-The new `:guesser` application currently implements round setup, not the round
-itself.
+The new `:guesser` application implements round setup and a complete
+guessing round.
 
 ### Single Player
 
 1. Single Player is selected by default.
 2. Tapping **Start** clears any previously held friend secret.
-3. Navigation opens the Game destination.
-4. The destination displays a Single Player placeholder.
-
-No random secret is generated and no guesses can be submitted yet.
+3. Navigation opens the Game destination, which generates a random secret of
+   three unique digits.
 
 ### Double Player
 
@@ -61,12 +59,33 @@ No random secret is generated and no guesses can be submitted yet.
 5. An empty field remains quiet while typing but shows the length message when
    Start is pressed.
 6. A three-unique-digit value is saved to an in-memory repository.
-7. Navigation opens the Game destination, which acknowledges Double Player
-   setup without displaying the secret.
+7. Navigation opens the Game destination, which uses the friend's secret
+   without displaying it.
 
-The secret is not placed in a route argument, log, or visible placeholder
-copy. It remains available through `GetFriendSecretUseCase` only while the
-application process and `AppContainer` live.
+The secret is not placed in a route argument, log, or visible copy. It
+remains available through `GetFriendSecretUseCase` only while the application
+process and `AppContainer` live.
+
+### Game Screen
+
+- A header shows a back button, the Guesser title, and a help (`?`) button,
+  followed by a Single/Double Player mode badge.
+- The guess board lists numbered rows of three digit tiles plus a remark box.
+  Guesses are unlimited; the board scrolls and keeps the active row visible.
+- The custom keypad has digits 0–9, **ENTER**, and **DELETE**. Digits already
+  in the current guess are disabled, so duplicates are impossible. ENTER is
+  enabled only after three digits.
+- Typed digits appear in a neutral color. On ENTER, tiles flip in sequence:
+  green for a correct digit in the correct place, orange for a digit present
+  elsewhere, gray for an absent digit. The remark box shows the V1 remark
+  (`1R, 1W`, `SMYLE`, `Winner`).
+- A winning guess disables the keypad and opens a win dialog showing the
+  secret and guess count. Single Player offers **PLAY AGAIN** and **HOME**;
+  Double Player offers **HOME**.
+- Back (header or system) during an unfinished round asks for confirmation
+  before returning Home and discarding the round.
+- Help opens the Gameplay destination. Returning resumes the same round,
+  because the Game back-stack entry and its `SavedStateHandle` state are kept.
 
 ### Other Destinations
 
@@ -115,11 +134,11 @@ round.
 - Other results use the wrong-result effect.
 - Settings independently control result sounds, keypad sounds, and vibration.
 
-The revamp has not carried these feedback systems forward yet.
+The revamp carries forward the keypad duplicate/length guards (as disabled
+keys) and a win state, but not sound, vibration settings, reveal, or confetti.
 
 ## Scope Not Yet Implemented in the Revamp
 
-The Compose app currently has no secret generation, scoring engine, guesses,
-round state machine, win/reveal/reset flow, attempt history, sound, haptics,
-settings, persistence, profiles, scoreboard, Play Games integration, timer,
+The Compose app currently has no secret reveal/abandon flow, sound, settings,
+cross-launch persistence, profiles, scoreboard, Play Games integration, timer,
 hints, or daily puzzle.

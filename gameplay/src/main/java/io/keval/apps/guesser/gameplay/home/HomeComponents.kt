@@ -30,10 +30,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -57,6 +57,7 @@ import io.keval.apps.guesser.core.ui.theme.GuesserOrangeMid
 import io.keval.apps.guesser.core.ui.theme.GuesserOrangeTop
 import io.keval.apps.guesser.core.ui.theme.GuesserWoodBottom
 import io.keval.apps.guesser.core.ui.theme.GuesserWoodTop
+import io.keval.apps.guesser.domain.game.isCodeDigit
 
 private val PillShape = RoundedCornerShape(percent = 50)
 
@@ -341,7 +342,7 @@ fun FriendSecretInput(
         ) {
             BasicTextField(
                 value = value,
-                onValueChange = { onValueChange(it.filter(Char::isDigit)) },
+                onValueChange = { onValueChange(it.filter(::isCodeDigit)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                 visualTransformation = PasswordVisualTransformation(),
