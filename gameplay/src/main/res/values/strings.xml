@@ -83,9 +83,9 @@
     <string name="rules_clues_title">Read the clues</string>
     <string name="rules_clues_body">R counts digits in the correct place. W counts digits in the secret that belong somewhere else. Winner means all three digits are correctly placed.\n\nIn real rounds, every checked tile turns gray. Use the remark counts to deduce the code; gray does not mean a digit is absent.\n\nOnly the learning examples use colors: green for a correct place, orange for a wrong place, and gray for an absent digit.</string>
     <string name="rules_clues_title_main_1">Select your first clue by entering 3 unique digits and hit ENTER. You would see one of the following clues to help you with your next guess.</string>
-    <string name="rules_clues_title_main_2">1. The clue showing 1R or 2R represents number of guessed digits matching with the RIGHT place of the hidden number.</string>
-    <string name="rules_clues_title_main_3">2. The clue showing 1W, 2W or 3W represents number of guessed digits existing in the hidden number, but entered in the WRONG place in the attempted guess.</string>
-    <string name="rules_clues_title_main_4">3. When ALL 3 digits in the attempted guess are absent from the hidden number, the player is rewarded with SMYLE, which means \"Simply Make Your Life Easy\", and ignore these 3 digits in your next guess.</string>
+    <string name="rules_clues_title_main_2">The clue showing 1R or 2R represents number of guessed digits matching with the RIGHT place of the hidden number.</string>
+    <string name="rules_clues_title_main_3">The clue showing 1W, 2W or 3W represents number of guessed digits existing in the hidden number, but entered in the WRONG place in the attempted guess.</string>
+    <string name="rules_clues_title_main_4">When ALL 3 digits in the attempted guess are absent from the hidden number, the player is rewarded with SMYLE, which means \"Simply Make Your Life Easy\", and ignore these 3 digits in your next guess.</string>
     <string name="rules_smyle_body">SMYLE means none of your digits are in the secret. It stands for Simply Make Your Life Easy: three digits you can rule out!</string>
     <string name="rules_examples_title">A clue book, in color</string>
     <string name="rules_example_secret">For these examples only, the secret is %1$s. In a real game, it stays hidden until you win.</string>

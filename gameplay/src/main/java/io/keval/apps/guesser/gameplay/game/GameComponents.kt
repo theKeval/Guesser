@@ -81,7 +81,7 @@ import io.keval.apps.guesser.gameplay.audio.GameSound
 import io.keval.apps.guesser.gameplay.audio.rememberTapFeedback
 import kotlinx.coroutines.delay
 
-private val GoldFrameBrush = Brush.verticalGradient(listOf(GuesserGoldBorder, GuesserBronzeDark, GuesserGoldBorder))
+internal val GoldFrameBrush = Brush.verticalGradient(listOf(GuesserGoldBorder, GuesserBronzeDark, GuesserGoldBorder))
 private val TileEmptyBrush = Brush.verticalGradient(listOf(Color(0xFFE2BC86), Color(0xFFCD9D62), Color(0xFFBE8A50)))
 private val TileExactBrush = Brush.verticalGradient(listOf(Color(0xFF7CC94E), Color(0xFF55A535), Color(0xFF3D8526)))
 private val TileCloseBrush = Brush.verticalGradient(listOf(GuesserOrangeTop, GuesserOrangeMid, GuesserOrangeBottom))

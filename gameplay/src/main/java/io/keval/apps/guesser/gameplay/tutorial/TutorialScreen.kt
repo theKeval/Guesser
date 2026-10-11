@@ -41,6 +41,7 @@ import io.keval.apps.guesser.gameplay.R
 import io.keval.apps.guesser.gameplay.common.GuideAction
 import io.keval.apps.guesser.gameplay.common.GuideBody
 import io.keval.apps.guesser.gameplay.common.GuideGuess
+import io.keval.apps.guesser.gameplay.common.GuideNumberedRule
 import io.keval.apps.guesser.gameplay.common.GuidePageDots
 import io.keval.apps.guesser.gameplay.common.GuidePanel
 import io.keval.apps.guesser.gameplay.common.GuideScaffold
@@ -198,9 +199,9 @@ private fun TutorialPage(
         }
         1 -> GuidePanel(stringResource(R.string.tutorial_clues_title)) {
             GuideBody(stringResource(R.string.rules_clues_title_main_1))
-            GuideBody(stringResource(R.string.rules_clues_title_main_2))
-            GuideBody(stringResource(R.string.rules_clues_title_main_3))
-            GuideBody(stringResource(R.string.rules_clues_title_main_4))
+            GuideNumberedRule(1, stringResource(R.string.rules_clues_title_main_2))
+            GuideNumberedRule(2, stringResource(R.string.rules_clues_title_main_3))
+            GuideNumberedRule(3, stringResource(R.string.rules_clues_title_main_4))
 //            GuideBody(stringResource(R.string.rules_clues_body))
 //            GuideGuess(LearningExamples.evaluations.first())
 //            GuideBody(stringResource(R.string.example_mixed))

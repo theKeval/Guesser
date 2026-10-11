@@ -1,7 +1,9 @@
 package io.keval.apps.guesser.gameplay.common
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -16,8 +18,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -28,7 +32,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -41,18 +47,22 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.keval.apps.guesser.core.ui.theme.GuesserChocolateDark
 import io.keval.apps.guesser.core.ui.theme.GuesserGoldCream
 import io.keval.apps.guesser.core.ui.theme.GuesserOrangeTop
 import io.keval.apps.guesser.core.ui.theme.GuesserBronzeDark
+import io.keval.apps.guesser.core.ui.theme.GuesserGoldBorder
 import io.keval.apps.guesser.domain.game.DigitFeedback
 import io.keval.apps.guesser.domain.game.GuessEvaluation
 import io.keval.apps.guesser.gameplay.R
 import io.keval.apps.guesser.gameplay.audio.rememberTapFeedback
 import io.keval.apps.guesser.gameplay.game.DigitTile
 import io.keval.apps.guesser.gameplay.game.GameRoundIconButton
+import io.keval.apps.guesser.gameplay.game.GoldFrameBrush
 import io.keval.apps.guesser.gameplay.game.RemarkBox
 import io.keval.apps.guesser.gameplay.game.TileState
 import io.keval.apps.guesser.gameplay.game.WoodPanel
@@ -194,6 +204,53 @@ internal fun GuideHeading(text: String, modifier: Modifier = Modifier) {
 @Composable
 internal fun GuideBody(text: String, modifier: Modifier = Modifier) {
     Text(text, modifier, color = GuesserGoldCream, fontSize = 16.sp, lineHeight = 24.sp)
+}
+
+/**
+ * One rule in a numbered list: a gold-framed number badge beside the rule text, on a softly
+ * inset card. The pair is read as a single item by accessibility services.
+ */
+@Composable
+internal fun GuideNumberedRule(number: Int, text: String, modifier: Modifier = Modifier) {
+    val cardShape = RoundedCornerShape(14.dp)
+    Row(
+        modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) {}
+            .background(GuesserChocolateDark.copy(alpha = 0.55f), cardShape)
+            .border(1.dp, GuesserGoldBorder.copy(alpha = 0.35f), cardShape)
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(
+            Modifier
+                .squareAtLeast(34.dp)
+                .shadow(4.dp, CircleShape, clip = false)
+                .background(GoldFrameBrush, CircleShape)
+                .padding(2.dp)
+                .background(Brush.verticalGradient(listOf(GuesserOrangeTop, GuesserBronzeDark)), CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                number.toString(),
+                color = GuesserChocolateDark,
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Black,
+                fontSize = 17.sp,
+                modifier = Modifier.padding(horizontal = 6.dp),
+            )
+        }
+        GuideBody(text, Modifier.weight(1f))
+    }
+}
+
+/** Sizes the element as a square that fits its content, so a circle stays round at any font scale. */
+private fun Modifier.squareAtLeast(minSide: Dp): Modifier = layout { measurable, constraints ->
+    val width = measurable.maxIntrinsicWidth(constraints.maxHeight)
+    val height = measurable.maxIntrinsicHeight(width)
+    val side = maxOf(width, height, minSide.roundToPx())
+    val placeable = measurable.measure(Constraints.fixed(side, side))
+    layout(side, side) { placeable.place(0, 0) }
 }
 
 @Composable
