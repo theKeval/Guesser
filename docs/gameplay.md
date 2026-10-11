@@ -89,18 +89,23 @@ process and `AppContainer` live.
 
 ### Other Destinations
 
-- **Tutorial:** four steps introduce the shown practice secret `245`, explain
-  a scored clue row, offer an interactive practice keypad, and introduce both
-  modes. Practice accepts any valid guess and displays the latest evaluation;
-  it is optional and independent of real rounds. Header/system Back goes to the
-  previous step, then returns Home from the first step. **PLAY NOW** clears any
-  friend secret and replaces Tutorial with a new Single Player game.
+- **Tutorial:** on first launch, four swipeable steps introduce the shown
+  practice secret `245`, explain a scored clue row, offer an interactive
+  practice keypad, and introduce both modes. Progress dots and Back/Next buttons
+  provide alternate navigation. Skip, Get Started, or system Back from the
+  first step completes onboarding and opens Home; completion is saved across
+  restarts. Tutorial remains available from Home. Practice accepts any valid
+  guess and displays the latest evaluation; it is independent of real rounds.
+  Manual Tutorial Back returns through the steps and then to Home. **PLAY NOW**
+  clears any friend secret and replaces Tutorial with a new Single Player game.
 - **Gameplay:** a scrollable reference explains code constraints (including
   leading zero), unlimited guesses, tile colors, R/W/SMYLE/Winner, both modes,
   controls, and strategy. Four examples use `GuessRules` against secret `245`.
   Returning from in-game help preserves the existing Game entry.
-- **About:** the project origin, creator, Compose revamp, installed app version,
-  and external links to the public repository and Apache 2.0 license.
+- **About:** the family origin story credits Paresh Langalia, the inventor of
+  Guesser, alongside developer Keval Langalia, the Compose revamp, installed
+  app version, and external links to the public repository and Apache 2.0
+  license.
 
 All three use resource-backed copy, safe-area padding, dark wood panels, and
 a 520 dp maximum reading width. Example rows expose spoken per-digit feedback

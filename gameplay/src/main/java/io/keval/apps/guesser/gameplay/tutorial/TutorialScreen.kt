@@ -1,23 +1,30 @@
 package io.keval.apps.guesser.gameplay.tutorial
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -34,120 +41,230 @@ import io.keval.apps.guesser.gameplay.R
 import io.keval.apps.guesser.gameplay.common.GuideAction
 import io.keval.apps.guesser.gameplay.common.GuideBody
 import io.keval.apps.guesser.gameplay.common.GuideGuess
+import io.keval.apps.guesser.gameplay.common.GuidePageDots
 import io.keval.apps.guesser.gameplay.common.GuidePanel
 import io.keval.apps.guesser.gameplay.common.GuideScaffold
+import io.keval.apps.guesser.gameplay.common.GuideSkipAction
 import io.keval.apps.guesser.gameplay.game.DigitTile
 import io.keval.apps.guesser.gameplay.game.KeyStyle
 import io.keval.apps.guesser.gameplay.game.KeypadKey
 import io.keval.apps.guesser.gameplay.game.TileState
 import io.keval.apps.guesser.gameplay.info.LearningExamples
+import kotlinx.coroutines.launch
+
+private const val TUTORIAL_PAGE_COUNT = 4
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 fun TutorialScreen(
     onBack: () -> Unit,
     onPlay: () -> Unit,
     modifier: Modifier = Modifier,
+    isFirstRun: Boolean = false,
+    onCompleteFirstRun: () -> Unit = onBack,
+    isCompletingFirstRun: Boolean = false,
+    firstRunCompletionError: Boolean = false,
 ) {
-    var page by rememberSaveable { mutableIntStateOf(0) }
+    val pagerState = rememberPagerState(pageCount = { TUTORIAL_PAGE_COUNT })
+    val scope = rememberCoroutineScope()
+    val page by remember { derivedStateOf { pagerState.currentPage } }
     var input by rememberSaveable { mutableStateOf("") }
     var submitted by rememberSaveable { mutableStateOf("") }
     val evaluation = remember(submitted) {
         submitted.takeIf(GuessRules::isValidCode)?.let { GuessRules.evaluate(LearningExamples.SECRET, it) }
     }
-    val back: () -> Unit = { if (page > 0) page-- else onBack() }
+
+    val back: () -> Unit = {
+        if (page > 0) {
+            scope.launch { pagerState.scrollToPage(page - 1) }
+            Unit
+        } else if (isFirstRun) {
+            onCompleteFirstRun()
+        } else {
+            onBack()
+        }
+    }
     BackHandler(onBack = back)
-    key(page) {
-        GuideScaffold(stringResource(R.string.label_tutorial), back, modifier) {
-            GuideBody(stringResource(R.string.tutorial_progress, page + 1, 4))
-            LinearProgressIndicator(
-                progress = { (page + 1) / 4f },
-                modifier = Modifier.fillMaxWidth(),
-                color = GuesserOrangeTop,
-                trackColor = GuesserGoldCream.copy(alpha = 0.2f),
+
+    GuideScaffold(
+        title = stringResource(R.string.label_tutorial),
+        onBack = back,
+        modifier = modifier,
+        fixedContent = true,
+        trailingAction = {
+            if (isFirstRun) {
+                GuideSkipAction(
+                    text = stringResource(R.string.tutorial_skip),
+                    onClick = onCompleteFirstRun,
+                    enabled = !isCompletingFirstRun,
+                )
+            }
+        },
+        footer = {
+            if (firstRunCompletionError) {
+                GuideBody(
+                    stringResource(R.string.tutorial_completion_error),
+                    Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+            GuideBody(
+                stringResource(R.string.tutorial_progress, page + 1, TUTORIAL_PAGE_COUNT),
+                Modifier.semantics { liveRegion = LiveRegionMode.Polite },
             )
-            when (page) {
-                0 -> GuidePanel(stringResource(R.string.tutorial_goal_title)) {
-                    GuideBody(stringResource(R.string.tutorial_goal_body))
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                    ) {
-                        LearningExamples.SECRET.forEach {
-                            DigitTile(TileState.Pending(it), 64.dp, false, null)
-                        }
-                    }
-                    GuideBody(stringResource(R.string.rules_code_body))
+            GuidePageDots(
+                count = TUTORIAL_PAGE_COUNT,
+                selectedIndex = page,
+                pageDescription = { stringResource(R.string.tutorial_dot_description, it + 1, TUTORIAL_PAGE_COUNT) },
+                onSelect = { index -> scope.launch { pagerState.scrollToPage(index) } },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                if (page > 0) {
+                    GuideAction(
+                        stringResource(R.string.tutorial_back),
+                        { scope.launch { pagerState.scrollToPage(page - 1) } },
+                        Modifier.weight(1f),
+                        enabled = !isCompletingFirstRun,
+                    )
                 }
-                1 -> GuidePanel(stringResource(R.string.tutorial_clues_title)) {
-                    GuideBody(stringResource(R.string.rules_clues_body))
-                    GuideGuess(LearningExamples.evaluations.first())
-                    GuideBody(stringResource(R.string.example_mixed))
-                    GuideBody(stringResource(R.string.tutorial_deduction))
+                val isLastPage = page == TUTORIAL_PAGE_COUNT - 1
+                val actionText = when {
+                    !isLastPage -> R.string.tutorial_next
+                    isFirstRun -> R.string.tutorial_get_started
+                    else -> R.string.tutorial_play
                 }
-                2 -> GuidePanel(stringResource(R.string.tutorial_practice_title)) {
-                    GuideBody(stringResource(R.string.tutorial_practice_body, LearningExamples.SECRET))
-                    val inputDescription = stringResource(R.string.tutorial_input_description, input, input.length)
-                    Row(
-                        Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = inputDescription },
-                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                    ) {
-                        repeat(3) { index ->
-                            DigitTile(
-                                input.getOrNull(index)?.let { TileState.Pending(it) } ?: TileState.Empty,
-                                56.dp, index == input.length, null,
-                            )
+                GuideAction(
+                    stringResource(actionText),
+                    onClick = {
+                        if (isLastPage) {
+                            if (isFirstRun) onCompleteFirstRun() else onPlay()
+                        } else {
+                            scope.launch { pagerState.scrollToPage(page + 1) }
                         }
-                    }
-                    BoxWithConstraints(Modifier.fillMaxWidth()) {
-                        val rows = if (maxWidth < 272.dp) listOf("123", "456", "789", " 0 ") else listOf("12345", "67890")
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            rows.forEach { digits ->
-                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    digits.forEach { digit ->
-                                        if (digit == ' ') {
-                                            Spacer(Modifier.weight(1f))
-                                        } else {
-                                            KeypadKey(
-                                                digit.toString(), stringResource(R.string.cd_key_digit, digit.toString()),
-                                                KeyStyle.Digit, input.length < 3 && digit !in input, 48.dp,
-                                                Modifier.weight(1f),
-                                            ) { input += digit }
-                                        }
-                                    }
+                    },
+                    modifier = Modifier.weight(1f),
+                    enabled = !isCompletingFirstRun,
+                )
+            }
+        },
+    ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize(),
+            key = { it },
+        ) { pageIndex ->
+            Column(
+                Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                TutorialPage(
+                    pageIndex,
+                    input,
+                    onInputChange = { input = it },
+                    onSubmit = {
+                        submitted = input
+                        input = ""
+                    },
+                    evaluation = evaluation,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TutorialPage(
+    page: Int,
+    input: String,
+    onInputChange: (String) -> Unit,
+    onSubmit: () -> Unit,
+    evaluation: io.keval.apps.guesser.domain.game.GuessEvaluation?,
+) {
+    when (page) {
+        0 -> GuidePanel(stringResource(R.string.tutorial_goal_title)) {
+            GuideBody(stringResource(R.string.tutorial_goal_body))
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            ) {
+                LearningExamples.SECRET.forEach {
+                    DigitTile(TileState.Pending(it), 64.dp, false, null)
+                }
+            }
+            GuideBody(stringResource(R.string.rules_code_body))
+        }
+        1 -> GuidePanel(stringResource(R.string.tutorial_clues_title)) {
+            GuideBody(stringResource(R.string.rules_clues_body))
+            GuideGuess(LearningExamples.evaluations.first())
+            GuideBody(stringResource(R.string.example_mixed))
+            GuideBody(stringResource(R.string.tutorial_deduction))
+        }
+        2 -> GuidePanel(stringResource(R.string.tutorial_practice_title)) {
+            GuideBody(stringResource(R.string.tutorial_practice_body, LearningExamples.SECRET))
+            val inputDescription = stringResource(R.string.tutorial_input_description, input, input.length)
+            Row(
+                Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = inputDescription },
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            ) {
+                repeat(3) { index ->
+                    DigitTile(
+                        input.getOrNull(index)?.let { TileState.Pending(it) } ?: TileState.Empty,
+                        56.dp, index == input.length, null,
+                    )
+                }
+            }
+            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                val rows = if (maxWidth < 272.dp) listOf("123", "456", "789", " 0 ") else listOf("12345", "67890")
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    rows.forEach { digits ->
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            digits.forEach { digit ->
+                                if (digit == ' ') {
+                                    Spacer(Modifier.weight(1f))
+                                } else {
+                                    KeypadKey(
+                                        digit.toString(),
+                                        stringResource(R.string.cd_key_digit, digit.toString()),
+                                        KeyStyle.Digit,
+                                        input.length < 3 && digit !in input,
+                                        48.dp,
+                                        Modifier.weight(1f),
+                                    ) { onInputChange(input + digit) }
                                 }
                             }
                         }
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        GuideAction(stringResource(R.string.key_delete), {
-                            input = input.dropLast(1)
-                        }, Modifier.weight(1f), input.isNotEmpty())
-                        GuideAction(stringResource(R.string.key_enter), {
-                            submitted = input
-                            input = ""
-                        }, Modifier.weight(1f), GuessRules.isValidCode(input))
-                    }
-                    if (evaluation != null) {
-                        GuideGuess(evaluation, announce = true)
-                        GuideBody(
-                            stringResource(if (evaluation.isWin) R.string.tutorial_practice_win else R.string.tutorial_practice_retry),
-                            Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                        )
-                    }
-                }
-                3 -> GuidePanel(stringResource(R.string.tutorial_ready_title)) {
-                    GuideBody(stringResource(R.string.tutorial_ready_body))
-                    GuideBody(stringResource(R.string.rules_single_body))
-                    GuideBody(stringResource(R.string.rules_double_body))
-                    GuideAction(stringResource(R.string.tutorial_play), onPlay, Modifier.fillMaxWidth())
                 }
             }
-            if (page < 3) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 GuideAction(
-                    stringResource(if (page == 2) R.string.tutorial_finish else R.string.tutorial_next),
-                    { page++ }, Modifier.fillMaxWidth(),
+                    stringResource(R.string.key_delete),
+                    { onInputChange(input.dropLast(1)) },
+                    Modifier.weight(1f),
+                    input.isNotEmpty(),
+                )
+                GuideAction(
+                    stringResource(R.string.key_enter),
+                    onSubmit,
+                    Modifier.weight(1f),
+                    GuessRules.isValidCode(input),
                 )
             }
+            if (evaluation != null) {
+                GuideGuess(evaluation, announce = true)
+                GuideBody(
+                    stringResource(if (evaluation.isWin) R.string.tutorial_practice_win else R.string.tutorial_practice_retry),
+                    Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+        }
+        3 -> GuidePanel(stringResource(R.string.tutorial_ready_title)) {
+            GuideBody(stringResource(R.string.tutorial_ready_body))
+            GuideBody(stringResource(R.string.rules_single_body))
+            GuideBody(stringResource(R.string.rules_double_body))
         }
     }
 }

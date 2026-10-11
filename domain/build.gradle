@@ -7,6 +7,7 @@ java {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$version_kotlin"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_coroutine"
 
     testImplementation 'junit:junit:4.13.2'
 }

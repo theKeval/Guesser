@@ -29,10 +29,11 @@ current implemented experience includes:
 - a shared wood-background scaffold, back control, and Compose theme;
 - clean module boundaries for UI, domain contracts, data, and app assembly.
 
-Tutorial includes a four-step walkthrough and a separate practice keypad.
+Tutorial is a four-step swipeable walkthrough with a separate practice keypad;
+it appears on first launch and remains available from Home afterward.
 Gameplay explains rules with scored tile examples, modes, controls, and tips.
-About presents the project story, credits, installed version, and public
-source/license links. All three reuse the wooden game theme.
+About presents Guesser's family origin story, credits, installed version, and
+public source/license links. All three reuse the wooden game theme.
 The new app does **not yet implement sound, vibration settings, profiles, or
 scoreboards**.
 

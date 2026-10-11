@@ -53,11 +53,11 @@ fun AboutScreen(
             painterResource(R.drawable.home_title), stringResource(R.string.cd_game_title),
             Modifier.fillMaxWidth().height(120.dp),
         )
-        GuidePanel(stringResource(R.string.about_tagline)) {
-            GuideBody(stringResource(R.string.about_intro))
-        }
         GuidePanel(stringResource(R.string.about_story_title)) {
             GuideBody(stringResource(R.string.about_story_body))
+        }
+        GuidePanel(stringResource(R.string.about_tagline)) {
+            GuideBody(stringResource(R.string.about_intro))
         }
         GuidePanel(stringResource(R.string.about_mind_title)) {
             GuideBody(stringResource(R.string.about_mind_body))

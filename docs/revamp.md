@@ -69,7 +69,7 @@ The repository therefore has two valid but different baselines:
 | Complete guessing loop | Implemented (no reveal/abandon) | Implemented |
 | Rules/scoring engine | Implemented (`GuessRules`) | Implemented |
 | Feedback/settings | Key haptics only; no settings | Implemented |
-| Session persistence | Round in `SavedStateHandle`; friend secret in memory | Round in memory; feedback preferences persisted |
+| Session persistence | Round in `SavedStateHandle`; friend secret in memory; first-run tutorial completion in Preferences DataStore | Round in memory; feedback preferences persisted |
 | Package | `io.keval.apps.guesser` | `com.thekeval.guesser` |
 
 ## Current Risks and Gaps
@@ -79,17 +79,15 @@ The repository therefore has two valid but different baselines:
    than in domain models, and there is no reveal/abandon flow.
 2. **Session-only handoff.** A friend secret is lost on process death and has no
    explicit consume lifecycle.
-3. **Scaffold abstractions are ahead of use.** The welcome use case result is
-   discarded, and DataStore is declared but unused.
-4. **Learning interaction coverage.** Tutorial deductions and example scores
-   have unit tests, but practice/navigation/accessibility still need automated
-   Compose coverage.
-5. **Limited test depth.** Home/Game ViewModels, rules, and one use case are
+3. **Learning interaction coverage.** Tutorial deductions, example scores,
+   and first-run completion use cases have unit tests, but practice/navigation/
+   accessibility still need automated Compose coverage.
+4. **Limited test depth.** Home/Game ViewModels, rules, and use cases are
    covered, but Compose behavior, navigation, and repository lifetime have no
    tests.
-6. **Parallel app maintenance.** Build and documentation changes must avoid
+5. **Parallel app maintenance.** Build and documentation changes must avoid
    accidentally coupling or confusing V1 with the revamp.
-7. **No automated delivery pipeline.** CI, signing, release automation, and
+6. **No automated delivery pipeline.** CI, signing, release automation, and
    store publishing remain undocumented/unimplemented.
 
 ## Recommended Next Phases
@@ -117,7 +115,7 @@ scope.
   visual rules reference, and About with story, credits, version, and links.
 - Decide which V1 sound, vibration, motion, and accessibility behaviors belong
   in the revamp.
-- Introduce settings storage only after its required lifetime and migration
+- Add further settings storage only after each setting's lifetime and migration
   behavior are defined.
 
 ### Phase 4: Expand Product Capabilities Deliberately
