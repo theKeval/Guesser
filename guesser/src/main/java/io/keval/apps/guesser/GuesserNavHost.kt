@@ -11,7 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import io.keval.apps.guesser.gameplay.about.AboutScreen
-import io.keval.apps.guesser.gameplay.game.GameScreen
+import io.keval.apps.guesser.gameplay.game.GameRoute
 import io.keval.apps.guesser.gameplay.home.HomeRoute
 import io.keval.apps.guesser.gameplay.info.GameplayInfoScreen
 import io.keval.apps.guesser.gameplay.navigation.ABOUT_ROUTE
@@ -123,9 +123,11 @@ fun GuesserNavHost(
             popEnterTransition = { slideInFromLeft() },
             popExitTransition = { slideOutToRight() },
         ) {
-            GameScreen(
+            GameRoute(
                 friendSecretNumber = appContainer.getFriendSecretUseCase(),
-                onBack = navController::navigateUp,
+                onExitToHome = { navController.popBackStack(HOME_ROUTE, inclusive = false) },
+                // The Game entry stays on the back stack, so its ViewModel (and round) survive Help.
+                onHelp = { navController.navigate(GAMEPLAY_INFO_ROUTE) { launchSingleTop = true } },
             )
         }
     }

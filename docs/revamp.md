@@ -55,9 +55,9 @@ incrementally rewriting V1. It:
 
 ## Current Baseline
 
-The primary revamp is a scalable application foundation, not yet a complete
-game. Its Home screen and setup handoff are implemented. Game, Tutorial,
-Gameplay, and About are placeholders.
+The primary revamp now includes a playable game. Its Home screen, setup
+handoff, and Game screen are implemented. Tutorial, Gameplay, and About are
+placeholders.
 
 The repository therefore has two valid but different baselines:
 
@@ -66,26 +66,26 @@ The repository therefore has two valid but different baselines:
 | UI toolkit | Jetpack Compose | XML Views |
 | Architecture | Multi-module, contracts/use cases, manual container | Single app module, MVVM-style |
 | Home/setup | Implemented | Implemented within game screen |
-| Complete guessing loop | Not implemented | Implemented |
-| Rules/scoring engine | Not implemented | Implemented |
-| Feedback/settings | Not implemented | Implemented |
-| Session persistence | In memory only | Round in memory; feedback preferences persisted |
+| Complete guessing loop | Implemented (no reveal/abandon) | Implemented |
+| Rules/scoring engine | Implemented (`GuessRules`) | Implemented |
+| Feedback/settings | Key haptics only; no settings | Implemented |
+| Session persistence | Round in `SavedStateHandle`; friend secret in memory | Round in memory; feedback preferences persisted |
 | Package | `io.keval.apps.guesser` | `com.thekeval.guesser` |
 
 ## Current Risks and Gaps
 
-1. **No revamp game domain yet.** The new `:domain` module has session and app
-   info contracts but no secret generator, scoring model, round state, or
-   guess history.
+1. **Partial game domain.** `GuessRules` covers validation, generation, and
+   scoring, but round status and player mode live in the Game ViewModel rather
+   than in domain models, and there is no reveal/abandon flow.
 2. **Session-only handoff.** A friend secret is lost on process death and has no
    explicit consume lifecycle.
 3. **Scaffold abstractions are ahead of use.** The welcome use case result is
    discarded, and DataStore is declared but unused.
 4. **Temporary copy.** Secondary screens use hardcoded placeholder text rather
    than finalized resource-backed content.
-5. **Limited test depth.** ViewModel validation and one use case are covered,
-   but Compose behavior, navigation, repository lifetime, and future gameplay
-   have no tests.
+5. **Limited test depth.** Home/Game ViewModels, rules, and one use case are
+   covered, but Compose behavior, navigation, and repository lifetime have no
+   tests.
 6. **Parallel app maintenance.** Build and documentation changes must avoid
    accidentally coupling or confusing V1 with the revamp.
 7. **No automated delivery pipeline.** CI, signing, release automation, and
@@ -96,23 +96,19 @@ The repository therefore has two valid but different baselines:
 These phases describe a technically coherent path, not committed product
 scope.
 
-### Phase 1: Establish the Revamp Game Domain
+### Phase 1: Establish the Revamp Game Domain (largely done)
 
-- Port the established rules into pure `:domain` models and use cases without
-  importing V1.
-- Model player mode, round status, secret, guess, and structured `R`/`W`
-  results explicitly.
-- Test leading zeroes, unique-digit validation, generation, the full scoring
-  table, and invalid transitions.
-- Define when the friend secret is consumed or cleared.
+- Done: `GuessRules` ports validation, generation, and structured scoring
+  without importing V1, with tests for the full remark table.
+- Remaining: model round status and player mode explicitly in `:domain`, and
+  define when the friend secret is consumed or cleared.
 
-### Phase 2: Implement the Compose Game Loop
+### Phase 2: Implement the Compose Game Loop (largely done)
 
-- Replace `GameScreen` with a stateful route and stateless screen.
-- Support Single Player generation and Double Player setup from the session.
-- Add guess input, history, reveal, reset, win, and back-navigation semantics.
-- Keep display strings separate from structured scoring decisions.
-- Add ViewModel and Compose UI tests for both modes.
+- Done: stateful `GameRoute` + stateless `GameScreen`, both modes, keypad,
+  scrolling history, win dialog, quit confirmation, help with state
+  preservation, and ViewModel tests.
+- Remaining: secret reveal/abandon, sound, and Compose UI tests.
 
 ### Phase 3: Finish Product Content and Settings
 

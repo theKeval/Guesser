@@ -5,7 +5,7 @@ repository now contains two independent applications:
 
 | Application | Gradle module | Source | Status |
 | --- | --- | --- | --- |
-| **Guesser revamp** | `:guesser` | `guesser/` | Primary Compose app; home and navigation foundation implemented, gameplay screens still placeholders |
+| **Guesser revamp** | `:guesser` | `guesser/` | Primary Compose app; home and playable game screen implemented; tutorial/info screens still placeholders |
 | **Guesser V1** | `:guesser_v1` | `app/` | Preserved, fully playable legacy game |
 
 The revamp does not reuse V1 source or resources. Both applications build
@@ -21,13 +21,17 @@ current implemented experience includes:
   Player modes;
 - a masked Double Player secret field with three-unique-digit validation;
 - in-memory handoff of a valid friend secret to the Game destination;
+- a playable Game screen with a custom keypad, scrollable guess board,
+  green/orange/gray tile reveal, V1-style `R`/`W`/`SMYLE`/`Winner` remarks,
+  quit confirmation, win dialog, and a help button that opens Gameplay while
+  preserving the round;
 - animated navigation to Game, Tutorial, Gameplay, and About destinations;
 - a shared wood-background scaffold, back control, and Compose theme;
 - clean module boundaries for UI, domain contracts, data, and app assembly.
 
-The Game, Tutorial, Gameplay, and About destinations are intentionally
-placeholders. The new app does **not yet implement guessing, `R`/`W` scoring,
-round state, history, sound, vibration, settings, profiles, or scoreboards**.
+The Tutorial, Gameplay, and About destinations are intentionally placeholders.
+The new app does **not yet implement sound, vibration, settings, profiles, or
+scoreboards**.
 
 ## Game Rules
 

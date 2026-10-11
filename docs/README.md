@@ -7,9 +7,8 @@ These documents cover both applications in the repository:
   Gradle as `:guesser_v1`.
 
 The revamp currently implements its home, navigation, dependency boundaries,
-and Double Player setup handoff. Its actual game and informational
-destinations remain placeholders. V1 remains the only complete playable
-implementation.
+Double Player setup handoff, and a playable Game screen. Its informational
+destinations (Tutorial, Gameplay, About) remain placeholders.
 
 | Document | Purpose |
 | --- | --- |
@@ -30,11 +29,14 @@ implementation.
 | Navigation graph | `guesser/.../GuesserNavHost.kt` |
 | Home state and validation | `gameplay/.../home/HomeUiState.kt` and `HomeViewModel.kt` |
 | Home Compose UI | `gameplay/.../home/HomeScreen.kt` |
+| Validation, secret generation, and remarks | `domain/.../game/GuessRules.kt` |
+| Game round state | `gameplay/.../game/GameViewModel.kt` and `GameUiState.kt` |
+| Game Compose UI | `gameplay/.../game/GameScreen.kt` and `GameComponents.kt` |
 | Session handoff contracts | `domain/.../repository/GameSessionRepository.kt` |
 | Session implementation | `data/.../repository/InMemoryGameSessionRepository.kt` |
 | Shared theme | `core-ui/.../theme/` |
 | Original artwork | `design_assets/raw_assets/` |
-| Runtime artwork | `gameplay/src/main/res/drawable-nodpi/` (currently `home_background` and `home_title`) |
+| Runtime artwork | `gameplay/src/main/res/drawable-nodpi/` (`home_background`, `home_title`, `game_board_wood`, `game_keypad_wood`) |
 
 ### Guesser V1
 

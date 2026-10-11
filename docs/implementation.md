@@ -96,7 +96,7 @@ sequenceDiagram
     participant Nav as GuesserNavHost
     participant Save as SaveFriendSecretUseCase
     participant Repo as InMemoryGameSessionRepository
-    participant Game as GameScreen
+    participant Game as GameRoute
 
     Home->>Nav: Valid HomeUiState
     Nav->>Save: friend secret or null
@@ -106,20 +106,41 @@ sequenceDiagram
     Repo-->>Game: String? secret
 ```
 
-Single Player stores `null`; Double Player stores the validated secret. The
-Game placeholder receives the value only to choose its explanatory copy and
-never displays the secret. The repository is process-memory only.
+Single Player stores `null`; Double Player stores the validated secret.
+`GameRoute` passes the retrieved value into `GameViewModel`, which uses it as
+the round secret (or generates one when absent) and never displays it until
+the round is won. The repository is process-memory only.
+
+## Game Screen
+
+- `GuessRules` (`:domain`, package `domain.game`) validates codes, generates
+  unique secrets, and evaluates a guess into per-digit `DigitFeedback`
+  (`EXACT`, `CLOSE`, `ABSENT`) plus the V1 remark string.
+- `GameViewModel` owns the secret, submitted guesses, current input, and dialog
+  flags. These are stored in `SavedStateHandle`, so they survive rotation,
+  process death, and navigating to Help and back. It exposes `GameUiState` as
+  a `StateFlow`.
+- `GameRoute` collects state, handles system back with `BackHandler`, and
+  delegates to a stateless `GameScreen`.
+- `GameScreen` sizes everything from `BoxWithConstraints`. Tile size is the
+  smaller of a width fit and a height fit that keeps at least five rows
+  visible. Keypad keys scale with width and height, and content is capped at
+  520 dp on tablets.
+- `GameComponents` provides the `WoodPanel` (gold frame over a cropped wood
+  texture), `DigitTile` with a staggered flip reveal, `RemarkBox`, `KeypadKey`,
+  and `GuesserDialogFrame`. These reuse the Home palette.
+- `game_board_wood` and `game_keypad_wood` are textures cropped from the home
+  background and drawn with `ContentScale.Crop`, so they never stretch.
 
 ## Navigation and Placeholder Screens
 
 `GuesserNavHost` declares Home, Game, Tutorial, Gameplay, and About routes
-with horizontal slide transitions. The four secondary screens use
+with horizontal slide transitions. Tutorial, Gameplay, and About use
 `GuesserScreenScaffold` and `GuesserBackButton`.
 
-Game distinguishes Single from Double Player by whether the retrieved secret
-is null/blank. It does not generate a secret or implement a round. Tutorial,
-Gameplay, and About delegate to a common `PlaceholderScreen` with temporary
-hardcoded text.
+Game exits by popping back to Home. Its help button navigates to Gameplay
+(`launchSingleTop`) and leaves Game on the back stack. Tutorial, Gameplay, and
+About delegate to a common `PlaceholderScreen` with temporary hardcoded text.
 
 ## Theme and Assets
 
@@ -129,18 +150,21 @@ foreground color is explicit white so placeholder content remains legible
 regardless of the dynamic scheme.
 
 Source artwork lives in `design_assets/raw_assets`. Runtime-sized copies live
-in `gameplay/src/main/res/drawable-nodpi` for the background and title only.
-Home controls are now vector-like Compose components, so they stay crisp across
-screen sizes and densities.
+in `gameplay/src/main/res/drawable-nodpi` for the background, title, and the
+two Game wood textures. Buttons, tiles, and keys are Compose-drawn, so they
+stay crisp across screen sizes and densities.
 
 ## Revamp Tests
 
 - `HomeViewModelTest` covers duplicate-message consistency, empty-on-type
   versus required-on-start behavior, and valid Double Player setup.
 - `GetWelcomeMessageUseCaseTest` verifies repository delegation.
+- `GuessRulesTest` covers validation, generation, and the full remark table.
+- `GameViewModelTest` covers input guards, scoring, winning, exit
+  confirmation, play-again, and `SavedStateHandle` restoration.
 
-There are no current Compose UI, navigation, repository, instrumentation, or
-process-restoration tests.
+There are no current Compose UI, navigation, repository, or instrumentation
+tests.
 
 ## Guesser V1 Implementation
 
