@@ -31,4 +31,15 @@ class ClueHighlightTest {
     fun `only whole words are highlighted`() {
         assertTrue(styledWords("BRIGHT, WRONGLY, 11R, 3WX, right and wrong").isEmpty())
     }
+
+    @Test
+    fun `SMYLE is bold teal and its meaning bold yellow`() {
+        val text = "the player is rewarded with SMYLE, \"Simply Make Your Life Easy\", and ignore these 3 digits."
+        val styled = styledWords(text)
+
+        assertEquals(text, highlightClueWords(text).text)
+        assertEquals(listOf("SMYLE", "Simply Make Your Life Easy"), styled.map { it.first })
+        assertTrue(styled.all { it.second.fontWeight == FontWeight.Bold })
+        assertTrue(styled[0].second.color != styled[1].second.color)
+    }
 }

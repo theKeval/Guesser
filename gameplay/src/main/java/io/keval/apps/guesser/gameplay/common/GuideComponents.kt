@@ -206,16 +206,26 @@ internal fun GuideHeading(text: String, modifier: Modifier = Modifier) {
 
 private val ClueRightColor = Color(0xFF8EE06A)
 private val ClueWrongColor = Color(0xFFFF7A66)
+private val ClueSmyleColor = Color(0xFF4FD1C5)
+private val ClueSmyleMeaningColor = Color(0xFFFFD43B)
 private val RightClueWords = Regex("\\b(RIGHT|1R|2R)\\b")
 private val WrongClueWords = Regex("\\b(WRONG|1W|2W|3W)\\b")
+private val SmyleWord = Regex("\\bSMYLE\\b")
+private val SmyleMeaning = Regex("\\bSimply Make Your Life Easy\\b")
 
 /**
- * Makes the clue words stand out: RIGHT, 1R and 2R in bold green; WRONG, 1W, 2W and 3W in bold
- * red. Only styling is added; the text is unchanged.
+ * Makes the clue words stand out in bold: RIGHT, 1R and 2R in green; WRONG, 1W, 2W and 3W in
+ * red; SMYLE in teal and "Simply Make Your Life Easy" in yellow. Only styling is added; the
+ * text is unchanged.
  */
 internal fun highlightClueWords(text: String): AnnotatedString = buildAnnotatedString {
     append(text)
-    listOf(RightClueWords to ClueRightColor, WrongClueWords to ClueWrongColor).forEach { (words, color) ->
+    listOf(
+        RightClueWords to ClueRightColor,
+        WrongClueWords to ClueWrongColor,
+        SmyleWord to ClueSmyleColor,
+        SmyleMeaning to ClueSmyleMeaningColor,
+    ).forEach { (words, color) ->
         words.findAll(text).forEach { match ->
             addStyle(SpanStyle(color = color, fontWeight = FontWeight.Bold), match.range.first, match.range.last + 1)
         }
