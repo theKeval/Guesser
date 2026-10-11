@@ -2,6 +2,9 @@ package io.keval.apps.guesser.gameplay.game
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -35,6 +38,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -129,6 +134,9 @@ fun GameScreen(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
+                // While the remark popup is open, hide the game from accessibility services so
+                // only the popup can be explored and activated.
+                .then(if (remarkInfo != null) Modifier.clearAndSetSemantics {} else Modifier)
                 .statusBarsPadding()
                 .navigationBarsPadding()
                 .padding(horizontal = 12.dp, vertical = 8.dp),
@@ -382,26 +390,46 @@ private fun GuessRow(
                 colorFeedbackEnabled = false,
             )
         }
-        RemarkBox(
-            remark = evaluation?.remark,
-            isWinner = evaluation?.isWin == true,
-            height = tile * 0.74f,
-            modifier = Modifier.width(tile * REMARK_UNITS),
-            animateHeartbeat = animateReveal,
-        )
-        Box(
+        val infoInteraction = remember { MutableInteractionSource() }
+        val infoPressed by infoInteraction.collectIsPressedAsState()
+        val infoDescription = evaluation?.let { stringResource(R.string.cd_remark_info, it.remark) }
+        // The remark box and the "i" share one tap target (>= 48 dp wide) that opens the popup.
+        Row(
             modifier = Modifier
-                .width(tile * INFO_UNITS)
-                .height(tile),
-            contentAlignment = Alignment.Center,
+                .height(tile)
+                .then(
+                    if (evaluation != null && infoDescription != null) {
+                        Modifier
+                            .clickable(
+                                interactionSource = infoInteraction,
+                                indication = null,
+                                role = Role.Button,
+                                onClick = { onRemarkInfo(evaluation) },
+                            )
+                            .semantics { contentDescription = infoDescription }
+                    } else {
+                        Modifier
+                    },
+                ),
+            horizontalArrangement = Arrangement.spacedBy(gap),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (evaluation != null) {
-                RemarkInfoButton(
-                    contentDescription = stringResource(R.string.cd_remark_info, evaluation.remark),
-                    size = tile * 0.42f,
-                    modifier = Modifier.fillMaxSize(),
-                    onClick = { onRemarkInfo(evaluation) },
-                )
+            RemarkBox(
+                remark = evaluation?.remark,
+                isWinner = evaluation?.isWin == true,
+                height = tile * 0.74f,
+                modifier = Modifier.width(tile * REMARK_UNITS),
+                animateHeartbeat = animateReveal,
+            )
+            Box(
+                modifier = Modifier
+                    .width(tile * INFO_UNITS)
+                    .fillMaxHeight(),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (evaluation != null) {
+                    RemarkInfoIcon(size = tile * 0.42f, isPressed = infoPressed)
+                }
             }
         }
     }

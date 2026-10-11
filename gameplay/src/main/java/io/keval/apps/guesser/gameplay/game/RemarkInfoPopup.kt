@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.paneTitle
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.keval.apps.guesser.domain.game.GuessEvaluation
 import io.keval.apps.guesser.gameplay.R
@@ -80,6 +82,7 @@ fun RemarkInfoPopup(
                     title = current.remark,
                     message = remarkMeaningText(current.remarkMeaning()),
                     modifier = Modifier
+                        .semantics { paneTitle = current.remark }
                         .padding(horizontal = 40.dp)
                         .widthIn(max = 320.dp)
                         // Swallow taps so touching the card does not dismiss it via the scrim.

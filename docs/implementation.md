@@ -137,10 +137,13 @@ the round is won. The repository is process-memory only.
   detection are unchanged.
 - `RemarkBox` renders `SMYLE` with a teal fill and border. With
   `animateHeartbeat` (set for the just-revealed row) it scales through a
-  one-time "lub-dub" pulse. `RemarkInfoButton` trims font padding so the "i"
+  one-time "lub-dub" pulse. `RemarkInfoIcon` trims font padding so the "i"
   is optically centered.
-- `RemarkInfoButton` sits in a reserved `INFO_UNITS` column beside each
-  remark. `GameScreen` holds the selected `GuessEvaluation` and shows
+- `RemarkInfoIcon` sits in a reserved `INFO_UNITS` column beside each
+  remark. The remark box and icon share one clickable row (well above the
+  48 dp minimum touch target). While the popup is open, the game content uses
+  `clearAndSetSemantics {}` so accessibility services see only the popup,
+  which is announced through `paneTitle`. `GameScreen` holds the selected `GuessEvaluation` and shows
   `RemarkInfoPopup`, an in-window overlay animated with `AnimatedVisibility`
   (scrim fade; card `scaleIn` from 1.18 with fade, `scaleOut` to 0.92 on
   dismiss). `GuessEvaluation.remarkMeaning()` (`RemarkMeaning.kt`) maps a
