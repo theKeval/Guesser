@@ -222,6 +222,18 @@ sealed interface TileState {
     data class Revealed(val digit: Char, val feedback: DigitFeedback) : TileState
 }
 
+internal fun digitTileBrush(
+    state: TileState,
+    showFront: Boolean,
+    colorFeedbackEnabled: Boolean,
+): Brush = when {
+    !colorFeedbackEnabled -> TileAbsentBrush
+    showFront || state !is TileState.Revealed -> TileEmptyBrush
+    state.feedback == DigitFeedback.EXACT -> TileExactBrush
+    state.feedback == DigitFeedback.CLOSE -> TileCloseBrush
+    else -> TileAbsentBrush
+}
+
 @Composable
 fun DigitTile(
     state: TileState,
@@ -229,6 +241,7 @@ fun DigitTile(
     isCursor: Boolean,
     animateRevealDelayMs: Int?,
     modifier: Modifier = Modifier,
+    colorFeedbackEnabled: Boolean = true,
 ) {
     val rotation = remember(state, animateRevealDelayMs) {
         Animatable(if (state is TileState.Revealed && animateRevealDelayMs != null) 0f else 180f)
@@ -246,12 +259,7 @@ fun DigitTile(
         label = "tilePop",
     )
 
-    val brush = when {
-        showFront -> TileEmptyBrush
-        (state as TileState.Revealed).feedback == DigitFeedback.EXACT -> TileExactBrush
-        state.feedback == DigitFeedback.CLOSE -> TileCloseBrush
-        else -> TileAbsentBrush
-    }
+    val brush = digitTileBrush(state, showFront, colorFeedbackEnabled)
     val digit = when (state) {
         TileState.Empty -> null
         is TileState.Pending -> state.digit
@@ -290,7 +298,7 @@ fun DigitTile(
         contentAlignment = Alignment.Center,
     ) {
         if (digit != null) {
-            val light = !showFront
+            val light = !colorFeedbackEnabled || !showFront
             Text(
                 text = digit.toString(),
                 style = TextStyle(

@@ -75,10 +75,11 @@ process and `AppContainer` live.
 - The custom keypad has digits 0–9, **ENTER**, and **DELETE**. Digits already
   in the current guess are disabled, so duplicates are impossible. ENTER is
   enabled only after three digits.
-- Typed digits appear in a neutral color. On ENTER, tiles flip in sequence:
-  green for a correct digit in the correct place, orange for a digit present
-  elsewhere, gray for an absent digit. The remark box shows the V1 remark
-  (`1R, 1W`, `SMYLE`, `Winner`).
+- All game-board tiles stay gray, including empty, typed, and submitted tiles.
+  On ENTER, tiles still flip in sequence, but per-digit color feedback is
+  disabled to increase difficulty. Deduction uses the V1 remark
+  (`1R, 1W`, `SMYLE`, `Winner`), not individual tile colors.
+  The original green/orange/gray feedback logic is retained for reuse.
 - A winning guess disables the keypad and opens a win dialog showing the
   secret and guess count. Single Player offers **PLAY AGAIN** and **HOME**;
   Double Player offers **HOME**.
@@ -101,6 +102,8 @@ process and `AppContainer` live.
 - **Gameplay:** a scrollable reference explains code constraints (including
   leading zero), unlimited guesses, tile colors, R/W/SMYLE/Winner, both modes,
   controls, and strategy. Four examples use `GuessRules` against secret `245`.
+  Tutorial and Gameplay examples retain per-digit colors for teaching; the
+  guide distinguishes these examples from the gray tiles used in real rounds.
   Returning from in-game help preserves the existing Game entry.
 - **About:** the family origin story credits Paresh Langalia, the inventor of
   Guesser, alongside developer Keval Langalia, the Compose revamp, installed

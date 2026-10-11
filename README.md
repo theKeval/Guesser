@@ -22,7 +22,8 @@ current implemented experience includes:
 - a masked Double Player secret field with three-unique-digit validation;
 - in-memory handoff of a valid friend secret to the Game destination;
 - a playable Game screen with a custom keypad, scrollable guess board,
-  green/orange/gray tile reveal, V1-style `R`/`W`/`SMYLE`/`Winner` remarks,
+  uniformly gray digit tiles with a staggered flip reveal,
+  V1-style `R`/`W`/`SMYLE`/`Winner` remarks,
   quit confirmation, win dialog, and a help button that opens Gameplay while
   preserving the round;
 - animated navigation to Game, Tutorial, Gameplay, and About destinations;
@@ -32,6 +33,8 @@ current implemented experience includes:
 Tutorial is a four-step swipeable walkthrough with a separate practice keypad;
 it appears on first launch and remains available from Home afterward.
 Gameplay explains rules with scored tile examples, modes, controls, and tips.
+Game-board color feedback is currently disabled to increase difficulty;
+the original green/orange/gray feedback remains available in learning examples.
 About presents Guesser's family origin story, credits, installed version, and
 public source/license links. All three reuse the wooden game theme.
 The new app does **not yet implement sound, vibration settings, profiles, or
