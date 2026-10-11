@@ -13,11 +13,17 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +35,7 @@ import io.keval.apps.guesser.core.ui.theme.GuesserChocolateDark
 import io.keval.apps.guesser.core.ui.theme.GuesserGoldBorder
 import io.keval.apps.guesser.core.ui.theme.GuesserGoldCream
 import io.keval.apps.guesser.core.ui.theme.GuesserOrangeMid
+import io.keval.apps.guesser.core.ui.theme.GuesserOrangeTop
 import io.keval.apps.guesser.core.ui.theme.GuesserTheme
 import io.keval.apps.guesser.core.ui.theme.GuesserWoodBottom
 import io.keval.apps.guesser.domain.settings.AudioSettings
@@ -40,6 +47,7 @@ import io.keval.apps.guesser.gameplay.audio.rememberTapFeedback
 import io.keval.apps.guesser.gameplay.common.GuideBody
 import io.keval.apps.guesser.gameplay.common.GuidePanel
 import io.keval.apps.guesser.gameplay.common.GuideScaffold
+import java.io.IOException
 import kotlinx.coroutines.launch
 
 @Composable
@@ -52,12 +60,25 @@ fun SettingsRoute(
 ) {
     val settings by observeAudioSettings().collectAsStateWithLifecycle(initialValue = null)
     val scope = rememberCoroutineScope()
+    var saveFailed by remember { mutableStateOf(false) }
+    // A failed write leaves the saved value, and so the switch, unchanged.
+    val save: (suspend () -> Unit) -> Unit = { write ->
+        scope.launch {
+            saveFailed = try {
+                write()
+                false
+            } catch (_: IOException) {
+                true
+            }
+        }
+    }
     SettingsScreen(
         settings = settings,
-        onMusicChange = { enabled -> scope.launch { setMusicEnabled(enabled) } },
-        onSoundEffectsChange = { enabled -> scope.launch { setSoundEffectsEnabled(enabled) } },
+        onMusicChange = { enabled -> save { setMusicEnabled(enabled) } },
+        onSoundEffectsChange = { enabled -> save { setSoundEffectsEnabled(enabled) } },
         onBack = onBack,
         modifier = modifier,
+        saveFailed = saveFailed,
     )
 }
 
@@ -69,6 +90,7 @@ fun SettingsScreen(
     onSoundEffectsChange: (Boolean) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    saveFailed: Boolean = false,
 ) {
     GuideScaffold(stringResource(R.string.settings_title), onBack, modifier) {
         GuidePanel(stringResource(R.string.settings_sound_title)) {
@@ -86,6 +108,14 @@ fun SettingsScreen(
                 enabled = settings != null,
                 onCheckedChange = onSoundEffectsChange,
             )
+            if (saveFailed) {
+                Text(
+                    stringResource(R.string.settings_save_error),
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                    color = GuesserOrangeTop,
+                    fontSize = 14.sp,
+                )
+            }
         }
     }
 }

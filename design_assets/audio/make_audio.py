@@ -1,5 +1,6 @@
 """Synthesizes Guesser's sound effects and background music (pure stdlib)."""
 import math
+import os
 import random
 import struct
 import sys
@@ -7,6 +8,7 @@ import wave
 from array import array
 
 OUT = sys.argv[1]
+os.makedirs(OUT, exist_ok=True)
 TAU = 2 * math.pi
 rng = random.Random(20261011)
 

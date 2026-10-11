@@ -68,6 +68,7 @@
     <string name="settings_music_body">A soothing tune that plays while Guesser is open.</string>
     <string name="settings_effects">Sound effects</string>
     <string name="settings_effects_body">Keypad notes, button taps, clue chimes, SMYLE and winner applause.</string>
+    <string name="settings_save_error">Couldn\'t save that setting. Check your device storage and try again.</string>
     <!-- Learning screens -->
     <string name="guide_back">Go back</string>
     <string name="guide_guess_description">Guess %1$s. Remark: %2$s. %3$s</string>

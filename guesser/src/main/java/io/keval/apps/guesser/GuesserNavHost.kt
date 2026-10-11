@@ -211,7 +211,15 @@ fun GuesserNavHost(
         ) {
             GameRoute(
                 friendSecretNumber = appContainer.getFriendSecretUseCase(),
-                onExitToHome = { navController.popBackStack(HOME_ROUTE, inclusive = false) },
+                onExitToHome = {
+                    // Home is normally below Game; if not, open it so leaving can never strand the player.
+                    if (!navController.popBackStack(HOME_ROUTE, inclusive = false)) {
+                        navController.navigate(HOME_ROUTE) {
+                            popUpTo(GAME_ROUTE) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                },
                 // The Game entry stays on the back stack, so its ViewModel (and round) survive Help.
                 onHelp = { navController.navigate(GAMEPLAY_INFO_ROUTE) { launchSingleTop = true } },
                 onSettings = { navController.navigate(SETTINGS_ROUTE) { launchSingleTop = true } },
