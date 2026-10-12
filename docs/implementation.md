@@ -177,8 +177,10 @@ control, scrollable content, and 520 dp maximum width.
 Game exits by popping back to Home. Its help button, shown only when
 `GAMEPLAY_GUIDE_ENABLED` (`navigation/GameplayRoutes.kt`) is true, navigates
 to Gameplay (`launchSingleTop`) and leaves Game on the back stack. The flag is
-currently false, which also hides Home's GAME PLAY button; the Game header keeps
-the help slot empty so the title stays centered.
+currently false, which also hides Home's GAME PLAY button. When enabled, a
+matching spacer on the left keeps the title centered. Quit is the `GamePillButton`
+**SHOW** in the mode-badge row, styled like `GameModeBadge` with a 48 dp touch
+target.
 
 `GuideComponents` shares wood panels, readable headings/body text, wrapping
 Material buttons, and scored digit/remark examples. Example rows announce

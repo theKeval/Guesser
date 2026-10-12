@@ -70,9 +70,9 @@ process and `AppContainer` live.
 
 ### Game Screen
 
-- A header shows back and quit (flag) buttons, the Guesser title, and a
-  settings (gear) button, followed by a Single/Double Player mode
-  badge.
+- A header shows a back button, the centered Guesser title, and a settings
+  (gear) button. Below it, the Single/Double Player mode badge sits on the
+  left and a gold **SHOW** button (quit and reveal) on the right.
 - The guess board lists numbered rows of three digit tiles plus a remark box.
   Each submitted row has a small gold **i** beside its remark. Tapping the
   remark or the **i** opens an iOS-style popup (zoom/fade in, fade/shrink out) with a one-line
@@ -99,7 +99,7 @@ process and `AppContainer` live.
 - Back (header or system) or a horizontal swipe in either direction during an
   unfinished round asks for confirmation before returning Home and discarding
   the round.
-- Quit (flag) asks for confirmation, then ends the round and shows a popup
+- **SHOW** asks for confirmation, then ends the round and shows a popup
   revealing the secret number; **HOME**, Back, or tapping outside returns Home.
 - Settings opens Settings. Returning resumes the same round, because the Game
   back-stack entry and its `SavedStateHandle` state are kept.

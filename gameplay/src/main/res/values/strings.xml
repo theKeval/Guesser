@@ -33,6 +33,7 @@
     <string name="exit_message">Your current %1$s game will end and its progress will be lost.</string>
     <string name="exit_confirm">LEAVE</string>
     <string name="exit_cancel">STAY</string>
+    <string name="quit_show">SHOW</string>
     <string name="quit_title">Quit this game?</string>
     <string name="quit_message">Your current %1$s game will end and the secret number will be revealed.</string>
     <string name="quit_confirm">QUIT</string>

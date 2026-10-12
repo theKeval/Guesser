@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -213,6 +214,68 @@ fun GameModeBadge(
             maxLines = 1,
         )
         GoldDot(height * 0.14f)
+    }
+}
+
+/**
+ * A text button in the mode badge's style: gold frame, chocolate fill and gold lettering.
+ * The visible pill matches the badge height while the touch target stays at least 48 dp.
+ */
+@Composable
+fun GamePillButton(
+    label: String,
+    contentDescription: String,
+    height: Dp,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        if (isPressed) 0.9f else 1f,
+        spring(dampingRatio = 0.4f, stiffness = 600f),
+        label = "pillScale",
+    )
+    val feedback = rememberTapFeedback()
+    val shape = RoundedCornerShape(percent = 50)
+    val fontSize = with(LocalDensity.current) { (height * 0.46f).toSp() }
+
+    Box(
+        modifier = modifier
+            .heightIn(min = 48.dp)
+            .clickable(interactionSource = interactionSource, indication = null, role = Role.Button) {
+                feedback()
+                onClick()
+            }
+            .semantics { this.contentDescription = contentDescription },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .height(height)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
+                .shadow(6.dp, shape, clip = false)
+                .background(GoldFrameBrush, shape)
+                .padding(2.dp)
+                .background(Brush.verticalGradient(listOf(Color(0xFF6B3E1F), GuesserChocolateDark)), shape)
+                .border(1.dp, GuesserGoldBorder.copy(alpha = 0.6f), shape)
+                .padding(horizontal = height * 0.55f),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = label,
+                color = GuesserGoldBorder,
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Black,
+                fontSize = fontSize,
+                letterSpacing = 1.sp,
+                maxLines = 1,
+                softWrap = false,
+            )
+        }
     }
 }
 
