@@ -81,8 +81,10 @@ process and `AppContainer` live.
   left and a gold **SHOW** button (quit and reveal) on the right.
 - The guess board lists numbered rows of three digit tiles plus a remark box.
   Each submitted row has a small gold **i** beside its remark. Tapping the
-  remark or the **i** opens an iOS-style popup (zoom/fade in, fade/shrink out) with a one-line
-  meaning of that remark; tap **GOT IT**, outside the card, or Back to close.
+  remark or the **i** opens an iOS-style popup (zoom/fade in, fade/shrink out) explaining
+  that remark in the tutorial's terms: each `R`/`W` part ("1R: 1 digit is in the
+  hidden number AND in the RIGHT place."), SMYLE with "Simply Make Your Life
+  Easy", or Winner. Tap **GOT IT**, outside the card, or Back to close.
   Guesses are unlimited; the board scrolls and keeps the active row visible.
 - The custom keypad has digits 0–9, with **DELETE** bottom-left and **ENTER** bottom-right. Digits already
   in the current guess are disabled, so duplicates are impossible. ENTER is
