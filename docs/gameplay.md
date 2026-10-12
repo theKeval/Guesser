@@ -124,7 +124,10 @@ process and `AppContainer` live.
   first step completes onboarding and opens Home; completion is saved across
   restarts. Tutorial remains available from Home. Practice accepts any valid
   guess and displays the latest remark; it is independent of real rounds.
-  Manual Tutorial Back returns through the steps and then to Home. **PLAY NOW**
+  The header back button (beside the TUTORIAL title) leaves the tutorial from
+  any step: to Home, and on first run it also completes onboarding like Skip.
+  The footer **BACK** button and system Back step back through the pages, then
+  leave from the first step. **PLAY NOW**
   clears any friend secret and replaces Tutorial with a new Single Player game.
 - **Gameplay (hidden for now):** `GAMEPLAY_GUIDE_ENABLED` is `false`, so
   Home's GAME PLAY button and the in-game help (`?`) button are not shown; the

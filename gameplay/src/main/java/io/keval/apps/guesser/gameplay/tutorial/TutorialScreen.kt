@@ -91,10 +91,13 @@ fun TutorialScreen(
         }
     }
     BackHandler(onBack = back)
+    // The header back button leaves the tutorial from any page (first run counts as done, like
+    // Skip); the footer BACK button and system Back step through the pages.
+    val exit: () -> Unit = { if (isFirstRun) onCompleteFirstRun() else onBack() }
 
     GuideScaffold(
         title = stringResource(R.string.label_tutorial),
-        onBack = back,
+        onBack = exit,
         modifier = modifier,
         fixedContent = true,
         trailingAction = {

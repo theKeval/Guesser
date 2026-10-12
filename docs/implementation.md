@@ -198,8 +198,10 @@ progress dots and explicit Back/Next actions. Practice state is saved with
 real round state. It shows submitted guesses with
 `GuideGuess(colorFeedbackEnabled = false)`: gray tiles and a remark-only
 announcement, matching real rounds. Gameplay examples keep the default colors. First-run Skip/Get Started/system Back completion is stored
-through `TutorialRepository` and `PreferencesTutorialRepository`. Manual
-Tutorial Back moves through pages and then returns Home. **PLAY NOW** saves a
+through `TutorialRepository` and `PreferencesTutorialRepository`. The header
+back button calls `exit` (complete first run, or `onBack` to Home) from any page;
+the footer BACK button and system Back (`back`) move through pages and then
+exit. **PLAY NOW** saves a
 null friend secret and replaces Tutorial with Game, starting Single Player.
 
 The clue-rules page (step 2) is wrapped in `FitToHeight` (`common/FitToHeight.kt`)
