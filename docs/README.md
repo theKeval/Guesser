@@ -1,8 +1,8 @@
-# Guesser Documentation
+# NumbCrunch Documentation
 
 These documents cover both applications in the repository:
 
-- **Guesser revamp** is the primary `:guesser` Compose application.
+- **NumbCrunch revamp** is the primary `:numbcrunch` Compose application.
 - **Guesser V1** is the complete legacy application in `app/`, registered with
   Gradle as `:guesser_v1`.
 
@@ -27,8 +27,8 @@ credits, runtime version, and source/license links.
 | Concern | Authoritative source |
 | --- | --- |
 | Included modules and V1 alias | `settings.gradle` |
-| App assembly and dependency wiring | `guesser/src/main/java/io/keval/apps/guesser/` |
-| Navigation graph | `guesser/.../GuesserNavHost.kt` |
+| App assembly and dependency wiring | `numbcrunch/src/main/java/io/keval/apps/numbcrunch/` |
+| Navigation graph | `numbcrunch/.../NumbCrunchNavHost.kt` |
 | Home state and validation | `gameplay/.../home/HomeUiState.kt` and `HomeViewModel.kt` |
 | Home Compose UI | `gameplay/.../home/HomeScreen.kt` |
 | Validation, secret generation, and remarks | `domain/.../game/GuessRules.kt` |
@@ -52,4 +52,4 @@ credits, runtime version, and source/license links.
 
 When changing behavior, update the source, tests, player-facing copy, and the
 corresponding document together. Do not describe planned revamp behavior as
-implemented until it exists in `:guesser` or its supporting modules.
+implemented until it exists in `:numbcrunch` or its supporting modules.

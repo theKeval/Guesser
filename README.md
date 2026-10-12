@@ -1,11 +1,11 @@
-# Guesser
+# NumbCrunch
 
-Guesser is an Android number-deduction game in active redevelopment. The
+NumbCrunch is an Android number-deduction game in active redevelopment. The
 repository now contains two independent applications:
 
 | Application | Gradle module | Source | Status |
 | --- | --- | --- | --- |
-| **Guesser revamp** | `:guesser` | `guesser/` | Primary Compose app; home, playable game, interactive tutorial, rules guide, and about implemented |
+| **NumbCrunch revamp** | `:numbcrunch` | `numbcrunch/` | Primary Compose app; home, playable game, interactive tutorial, rules guide, and about implemented |
 | **Guesser V1** | `:guesser_v1` | `app/` | Preserved, fully playable legacy game |
 
 The revamp does not reuse V1 source or resources. Both applications build
@@ -13,7 +13,7 @@ independently from the same Gradle project.
 
 ## Current Revamp
 
-The new app uses the package and application ID `io.keval.apps.guesser`. Its
+The new app uses the package and application ID `io.keval.apps.numbcrunch`. Its
 current implemented experience includes:
 
 - a responsive, scrollable, portrait-first Jetpack Compose home screen;
@@ -35,14 +35,14 @@ it appears on first launch and remains available from Home afterward.
 Gameplay explains rules with scored tile examples, modes, controls, and tips.
 Game-board color feedback is currently disabled to increase difficulty;
 the original green/orange/gray feedback remains available in learning examples.
-About presents Guesser's family origin story, credits, installed version, and
+About presents NumbCrunch's family origin story, credits, installed version, and
 public source/license links. All three reuse the wooden game theme.
 The new app does **not yet implement sound, vibration settings, profiles, or
 scoreboards**.
 
 ## Game Rules
 
-The established Guesser rules, implemented in both applications, are:
+The established NumbCrunch rules, implemented in both applications, are:
 
 - The secret and every guess contain exactly three distinct digits.
 - `R` means a digit is correct and in the correct position.
@@ -59,7 +59,7 @@ rules and a precise distinction between V1 behavior and revamp behavior.
 ## Architecture
 
 ```text
-:guesser (Compose application and navigation)
+:numbcrunch (Compose application and navigation)
 ├── :gameplay (Home and destination UI)
 │   ├── :core-ui (Compose theme)
 │   └── :domain (repository contracts and use cases)
@@ -73,7 +73,7 @@ rules and a precise distinction between V1 behavior and revamp behavior.
 
 | Module | Purpose |
 | --- | --- |
-| `:guesser` | Application entry point, manual dependency container, and Compose navigation |
+| `:numbcrunch` | Application entry point, manual dependency container, and Compose navigation |
 | `:gameplay` | Home state/UI and Game, Tutorial, Gameplay, and About destinations |
 | `:domain` | Pure Kotlin repository contracts and use cases |
 | `:data` | Repository implementations; currently app info and in-memory session data |
@@ -109,7 +109,7 @@ Prerequisites:
 Build both applications and run their JVM tests:
 
 ```bash
-./gradlew :guesser:assembleDebug \
+./gradlew :numbcrunch:assembleDebug \
   :gameplay:testDebugUnitTest \
   :domain:test \
   :guesser_v1:assembleDebug \
@@ -119,14 +119,14 @@ Build both applications and run their JVM tests:
 Build only the primary revamp:
 
 ```bash
-./gradlew :guesser:assembleDebug
+./gradlew :numbcrunch:assembleDebug
 ```
 
 Install and launch the revamp:
 
 ```bash
-./gradlew :guesser:installDebug
-adb shell am start -n io.keval.apps.guesser/.MainActivity
+./gradlew :numbcrunch:installDebug
+adb shell am start -n io.keval.apps.numbcrunch/.MainActivity
 ```
 
 Install and launch V1:
@@ -139,7 +139,7 @@ adb shell am start -n com.thekeval.guesser/.MainActivity
 ## Repository Layout
 
 ```text
-guesser/          # New Compose application
+numbcrunch/       # New Compose application
 gameplay/         # Revamp screens, home state, and navigation route names
 domain/           # Revamp repository contracts and use cases
 data/             # Revamp repository implementations

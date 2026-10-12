@@ -4,8 +4,9 @@
 
 ### 2021: Original Prototype
 
-The original application established the hidden-number game, App and Friend
-modes, `R`/`W`/`SMYLE` scoring, XML navigation, and a RecyclerView guess log.
+The application, originally named Guesser, established the hidden-number game,
+App and Friend modes, `R`/`W`/`SMYLE` scoring, XML navigation, and a RecyclerView
+guess log.
 Most interaction and state logic lived in `GameFragment`, and the build used
 Android 30-era plugins and dependencies.
 
@@ -39,8 +40,8 @@ PR #3, merged as `9288a48`, changed the project boundary rather than
 incrementally rewriting V1. It:
 
 - preserved `app/` as the independent `:guesser_v1` application;
-- introduced the new `:guesser` Compose application with application ID
-  `io.keval.apps.guesser`;
+- introduced the new Compose application, originally named Guesser (now
+  `:numbcrunch`, with application ID `io.keval.apps.numbcrunch`);
 - added `:gameplay`, `:domain`, `:data`, and `:core-ui`;
 - implemented the Compose Home screen and player-mode selection;
 - added masked, validated Double Player secret setup;
@@ -61,7 +62,7 @@ provide resource-backed learning, rules, and project content in the game theme.
 
 The repository therefore has two valid but different baselines:
 
-| Concern | Revamp `:guesser` | V1 `:guesser_v1` |
+| Concern | Revamp `:numbcrunch` | V1 `:guesser_v1` |
 | --- | --- | --- |
 | UI toolkit | Jetpack Compose | XML Views |
 | Architecture | Multi-module, contracts/use cases, manual container | Single app module, MVVM-style |
@@ -70,7 +71,7 @@ The repository therefore has two valid but different baselines:
 | Rules/scoring engine | Implemented (`GuessRules`) | Implemented |
 | Feedback/settings | Sounds, haptics, confetti, background music; music/sound-effect settings | Implemented |
 | Session persistence | Round in `SavedStateHandle`; friend secret in memory; tutorial completion and audio settings in Preferences DataStore | Round in memory; feedback preferences persisted |
-| Package | `io.keval.apps.guesser` | `com.thekeval.guesser` |
+| Package | `io.keval.apps.numbcrunch` | `com.thekeval.guesser` |
 
 ## Current Risks and Gaps
 

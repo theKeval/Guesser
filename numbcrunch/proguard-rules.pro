@@ -1,1 +1,1 @@
-# Revamped Guesser app currently has no custom ProGuard rules.
+# Revamped NumbCrunch app currently has no custom ProGuard rules.

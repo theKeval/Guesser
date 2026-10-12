@@ -2,7 +2,7 @@
 
 ## Product Rule Set
 
-Guesser is a deduction game in which a seeker identifies a hidden
+NumbCrunch is a deduction game in which a seeker identifies a hidden
 three-character digit code. Each guess returns positional information that
 narrows the remaining possibilities.
 
@@ -40,7 +40,7 @@ means Winner," while its scoring engine displays the word `Winner`.
 
 ## Revamp Behavior Today
 
-The new `:guesser` application implements round setup and a complete
+The new `:numbcrunch` application implements round setup and a complete
 guessing round.
 
 ### Single Player
@@ -76,7 +76,7 @@ process and `AppContainer` live.
 
 ### Game Screen
 
-- A header shows a back button, the centered Guesser title, and a settings
+- A header shows a back button, the centered NumbCrunch title, and a settings
   (gear) button. Below it, the Single/Double Player mode badge sits on the
   left and a gold **SHOW** button (quit and reveal) on the right.
 - The guess board lists numbered rows of three digit tiles plus a remark box.
@@ -142,7 +142,7 @@ process and `AppContainer` live.
   default on. A soothing music loop plays only while the app is in the
   foreground and music is enabled.
 - **About:** the family origin story credits Paresh Langalia, the inventor of
-  Guesser, alongside developer Keval Langalia, the Compose revamp, installed
+  NumbCrunch, alongside developer Keval Langalia, the Compose revamp, installed
   app version, and external links to the public repository and Apache 2.0
   license.
 

@@ -14,7 +14,7 @@ sdk.dir=/absolute/path/to/Android/sdk
 
 ## Understand the Module Names
 
-The new application lives in `guesser/` and is Gradle project `:guesser`.
+The new application lives in `numbcrunch/` and is Gradle project `:numbcrunch`.
 The legacy source remains in `app/`, but `settings.gradle` registers that
 directory as `:guesser_v1`; there is no `:app` project.
 
@@ -29,8 +29,8 @@ List the configured projects with:
 Primary revamp:
 
 ```bash
-./gradlew :guesser:assembleDebug
-./gradlew :guesser:lintDebug
+./gradlew :numbcrunch:assembleDebug
+./gradlew :numbcrunch:lintDebug
 ./gradlew :gameplay:testDebugUnitTest
 ./gradlew :domain:test
 ```
@@ -47,8 +47,8 @@ Combined local verification:
 
 ```bash
 ./gradlew --no-daemon \
-  :guesser:assembleDebug \
-  :guesser:lintDebug \
+  :numbcrunch:assembleDebug \
+  :numbcrunch:lintDebug \
   :gameplay:testDebugUnitTest \
   :domain:test \
   :guesser_v1:assembleDebug \
@@ -60,7 +60,7 @@ Connected Android tests require a running emulator or device and can be
 selected per application:
 
 ```bash
-./gradlew :guesser:connectedDebugAndroidTest
+./gradlew :numbcrunch:connectedDebugAndroidTest
 ./gradlew :guesser_v1:connectedDebugAndroidTest
 ```
 
@@ -69,8 +69,8 @@ selected per application:
 Revamp:
 
 ```bash
-./gradlew :guesser:installDebug
-adb shell am start -n io.keval.apps.guesser/.MainActivity
+./gradlew :numbcrunch:installDebug
+adb shell am start -n io.keval.apps.numbcrunch/.MainActivity
 ```
 
 V1:
@@ -88,7 +88,7 @@ The different application IDs allow both builds to be installed together.
 
 - Put platform-independent contracts, models, and use cases in `:domain`.
 - Implement repository contracts in `:data`.
-- Assemble concrete dependencies only at the `:guesser` application boundary.
+- Assemble concrete dependencies only at the `:numbcrunch` application boundary.
 - Keep secrets and domain decisions out of navigation route strings and logs.
 - Add Kotlin/JVM tests for pure logic before wiring UI.
 
@@ -114,8 +114,8 @@ persistence, define:
 - how sensitive values are excluded from logs and navigation arguments.
 
 Preferences DataStore holds tutorial completion and audio settings in one
-`guesser_preferences` file. New preference repositories must reuse the
-`guesserPreferences` delegate in `:data`; a second delegate for the same file
+`numbcrunch_preferences` file. New preference repositories must reuse the
+`numbCrunchPreferences` delegate in `:data`; a second delegate for the same file
 crashes at runtime. Do not store the friend secret there without first
 answering the questions above.
 

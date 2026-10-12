@@ -24,7 +24,7 @@ data class GuessEvaluation(
 }
 
 /**
- * Pure Guesser rules, matching the established V1 scoring and remark format.
+ * Pure NumbCrunch rules, matching the established V1 scoring and remark format.
  */
 object GuessRules {
 
