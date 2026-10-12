@@ -19,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserTheme
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchTheme
 import io.keval.apps.numbcrunch.gameplay.R
 import io.keval.apps.numbcrunch.gameplay.common.GuideAction
 import io.keval.apps.numbcrunch.gameplay.common.GuideBody
@@ -44,7 +44,7 @@ fun AboutScreen(
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
             linkError = false
         } catch (error: ActivityNotFoundException) {
-            Log.w("GuesserAbout", "No application can open the external link", error)
+            Log.w("NumbCrunchAbout", "No application can open the external link", error)
             linkError = true
         }
     }
@@ -86,5 +86,5 @@ fun AboutScreen(
 @Preview(name = "Tablet", widthDp = 800, heightDp = 1280)
 @Composable
 private fun AboutPreview() {
-    GuesserTheme { AboutScreen(onBack = {}) }
+    NumbCrunchTheme { AboutScreen(onBack = {}) }
 }

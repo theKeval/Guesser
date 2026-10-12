@@ -18,7 +18,7 @@ private const val MUSIC_FADE_STEP_MS = 100L
  * App-wide audio: pooled sound effects plus a looping background track that plays only while
  * the app is in the foreground and music is enabled. Call from the main thread.
  */
-class GuesserAudio(context: Context) : GameSoundPlayer {
+class NumbCrunchAudio(context: Context) : GameSoundPlayer {
     private val appContext = context.applicationContext
     private val audioManager = appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private val handler = Handler(Looper.getMainLooper())

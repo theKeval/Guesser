@@ -34,9 +34,9 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldCream
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeTop
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserTheme
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldCream
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeTop
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchTheme
 import io.keval.apps.numbcrunch.domain.game.GuessRules
 import io.keval.apps.numbcrunch.gameplay.R
 import io.keval.apps.numbcrunch.gameplay.common.FitToHeight
@@ -291,5 +291,5 @@ private fun TutorialPage(
 @Preview(name = "Tablet", widthDp = 800, heightDp = 1280)
 @Composable
 private fun TutorialPreview() {
-    GuesserTheme { TutorialScreen(onBack = {}, onPlay = {}) }
+    NumbCrunchTheme { TutorialScreen(onBack = {}, onPlay = {}) }
 }

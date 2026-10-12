@@ -55,11 +55,11 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserChocolateDark
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldCream
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeTop
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserBronzeDark
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldBorder
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchChocolateDark
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldCream
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeTop
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchBronzeDark
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldBorder
 import io.keval.apps.numbcrunch.domain.game.DigitFeedback
 import io.keval.apps.numbcrunch.domain.game.GuessEvaluation
 import io.keval.apps.numbcrunch.gameplay.R
@@ -81,9 +81,9 @@ internal fun GuideScaffold(
     footer: @Composable ColumnScope.() -> Unit = {},
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    GuesserScreenScaffold(modifier) {
+    NumbCrunchScreenScaffold(modifier) {
         Column(
-            Modifier.fillMaxSize().background(GuesserChocolateDark.copy(alpha = 0.3f)),
+            Modifier.fillMaxSize().background(NumbCrunchChocolateDark.copy(alpha = 0.3f)),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
@@ -136,7 +136,7 @@ internal fun GuideSkipAction(
         enabled = enabled,
         modifier = Modifier.heightIn(min = 48.dp),
     ) {
-        Text(text, color = GuesserGoldCream, fontWeight = FontWeight.Bold)
+        Text(text, color = NumbCrunchGoldCream, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -176,16 +176,16 @@ internal fun GuidePageDots(
             ) {
                 Canvas(Modifier.size(if (selected) 14.dp else 12.dp).clip(CircleShape)) {
                     if (selected) {
-                        drawCircle(color = GuesserOrangeTop)
+                        drawCircle(color = NumbCrunchOrangeTop)
                         drawCircle(
-                            color = GuesserBronzeDark,
+                            color = NumbCrunchBronzeDark,
                             radius = size.minDimension * 0.5f,
                             center = Offset(size.width / 2, size.height / 2),
                             style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.dp.toPx()),
                         )
                     } else {
                         drawCircle(
-                            color = GuesserGoldCream.copy(alpha = 0.5f),
+                            color = NumbCrunchGoldCream.copy(alpha = 0.5f),
                             radius = size.minDimension * 0.5f,
                             style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5.dp.toPx()),
                         )
@@ -199,7 +199,7 @@ internal fun GuidePageDots(
 @Composable
 internal fun GuideHeading(text: String, modifier: Modifier = Modifier) {
     Text(
-        text, modifier.semantics { heading() }, color = GuesserOrangeTop,
+        text, modifier.semantics { heading() }, color = NumbCrunchOrangeTop,
         fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold,
         fontSize = 26.sp, lineHeight = 32.sp,
     )
@@ -260,12 +260,12 @@ internal fun highlightGameDetails(text: String): AnnotatedString = highlight(tex
 
 @Composable
 internal fun GuideBody(text: AnnotatedString, modifier: Modifier = Modifier) {
-    Text(text, modifier, color = GuesserGoldCream, fontSize = 16.sp, lineHeight = 24.sp)
+    Text(text, modifier, color = NumbCrunchGoldCream, fontSize = 16.sp, lineHeight = 24.sp)
 }
 
 @Composable
 internal fun GuideBody(text: String, modifier: Modifier = Modifier) {
-    Text(text, modifier, color = GuesserGoldCream, fontSize = 16.sp, lineHeight = 24.sp)
+    Text(text, modifier, color = NumbCrunchGoldCream, fontSize = 16.sp, lineHeight = 24.sp)
 }
 
 /**
@@ -279,8 +279,8 @@ internal fun GuideNumberedRule(number: Int, text: AnnotatedString, modifier: Mod
         modifier
             .fillMaxWidth()
             .semantics(mergeDescendants = true) {}
-            .background(GuesserChocolateDark.copy(alpha = 0.55f), cardShape)
-            .border(1.dp, GuesserGoldBorder.copy(alpha = 0.35f), cardShape)
+            .background(NumbCrunchChocolateDark.copy(alpha = 0.55f), cardShape)
+            .border(1.dp, NumbCrunchGoldBorder.copy(alpha = 0.35f), cardShape)
             .padding(horizontal = 12.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -290,12 +290,12 @@ internal fun GuideNumberedRule(number: Int, text: AnnotatedString, modifier: Mod
                 .shadow(4.dp, CircleShape, clip = false)
                 .background(GoldFrameBrush, CircleShape)
                 .padding(2.dp)
-                .background(Brush.verticalGradient(listOf(GuesserOrangeTop, GuesserBronzeDark)), CircleShape),
+                .background(Brush.verticalGradient(listOf(NumbCrunchOrangeTop, NumbCrunchBronzeDark)), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 number.toString(),
-                color = GuesserChocolateDark,
+                color = NumbCrunchChocolateDark,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Black,
                 fontSize = 17.sp,
@@ -345,9 +345,9 @@ internal fun GuideAction(
         modifier = modifier.heightIn(min = 48.dp),
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = GuesserOrangeTop, contentColor = GuesserChocolateDark,
-            disabledContainerColor = GuesserGoldCream.copy(alpha = 0.2f),
-            disabledContentColor = GuesserGoldCream.copy(alpha = 0.6f),
+            containerColor = NumbCrunchOrangeTop, contentColor = NumbCrunchChocolateDark,
+            disabledContainerColor = NumbCrunchGoldCream.copy(alpha = 0.2f),
+            disabledContentColor = NumbCrunchGoldCream.copy(alpha = 0.6f),
         ),
     ) {
         Text(text, fontWeight = FontWeight.Bold, fontSize = 16.sp)

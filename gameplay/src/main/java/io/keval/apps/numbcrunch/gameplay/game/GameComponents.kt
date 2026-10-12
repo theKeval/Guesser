@@ -67,28 +67,28 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserBronzeDark
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserChocolateDark
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldBorder
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldCream
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeBottom
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeMid
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeTop
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserWoodBottom
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserWoodTop
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchBronzeDark
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchChocolateDark
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldBorder
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldCream
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeBottom
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeMid
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeTop
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchWoodBottom
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchWoodTop
 import io.keval.apps.numbcrunch.domain.game.DigitFeedback
 import io.keval.apps.numbcrunch.domain.game.GuessRules
 import io.keval.apps.numbcrunch.gameplay.audio.GameSound
 import io.keval.apps.numbcrunch.gameplay.audio.rememberTapFeedback
 import kotlinx.coroutines.delay
 
-internal val GoldFrameBrush = Brush.verticalGradient(listOf(GuesserGoldBorder, GuesserBronzeDark, GuesserGoldBorder))
+internal val GoldFrameBrush = Brush.verticalGradient(listOf(NumbCrunchGoldBorder, NumbCrunchBronzeDark, NumbCrunchGoldBorder))
 private val TileEmptyBrush = Brush.verticalGradient(listOf(Color(0xFFE2BC86), Color(0xFFCD9D62), Color(0xFFBE8A50)))
 private val TileExactBrush = Brush.verticalGradient(listOf(Color(0xFF7CC94E), Color(0xFF55A535), Color(0xFF3D8526)))
-private val TileCloseBrush = Brush.verticalGradient(listOf(GuesserOrangeTop, GuesserOrangeMid, GuesserOrangeBottom))
+private val TileCloseBrush = Brush.verticalGradient(listOf(NumbCrunchOrangeTop, NumbCrunchOrangeMid, NumbCrunchOrangeBottom))
 private val TileAbsentBrush = Brush.verticalGradient(listOf(Color(0xFF7A746E), Color(0xFF5E5853), Color(0xFF48433F)))
 private val KeyDeleteBrush = Brush.verticalGradient(listOf(Color(0xFFF2734F), Color(0xFFD9472A), Color(0xFFB2301A)))
-private val KeySecondaryBrush = Brush.verticalGradient(listOf(GuesserWoodTop, GuesserWoodBottom))
+private val KeySecondaryBrush = Brush.verticalGradient(listOf(NumbCrunchWoodTop, NumbCrunchWoodBottom))
 private val RemarkFill = Color(0xE62A170D)
 private val SmyleRemarkFill = Color(0xF0128A84)
 private val SmyleRemarkBorder = Color(0xFF4FD1C5)
@@ -117,7 +117,7 @@ fun WoodPanel(
             .shadow(12.dp, outerShape, clip = false, ambientColor = Color.Black, spotColor = Color.Black)
             .background(GoldFrameBrush, outerShape)
             .padding(3.dp)
-            .background(GuesserChocolateDark, innerShape)
+            .background(NumbCrunchChocolateDark, innerShape)
             .padding(1.dp)
             .clip(innerShape),
     ) {
@@ -131,7 +131,7 @@ fun WoodPanel(
             modifier = Modifier
                 .matchParentSize()
                 .background(overlay)
-                .border(1.dp, GuesserGoldBorder.copy(alpha = 0.35f), innerShape),
+                .border(1.dp, NumbCrunchGoldBorder.copy(alpha = 0.35f), innerShape),
         )
         content()
     }
@@ -170,14 +170,14 @@ fun GameRoundIconButton(
                 .shadow(8.dp, CircleShape, clip = false)
                 .background(GoldFrameBrush, CircleShape)
                 .padding(size * 0.06f)
-                .background(Brush.verticalGradient(listOf(Color(0xFF6B3E1F), GuesserChocolateDark)), CircleShape)
-                .border(1.dp, GuesserGoldBorder.copy(alpha = 0.6f), CircleShape),
+                .background(Brush.verticalGradient(listOf(Color(0xFF6B3E1F), NumbCrunchChocolateDark)), CircleShape)
+                .border(1.dp, NumbCrunchGoldBorder.copy(alpha = 0.6f), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = GuesserGoldBorder,
+                tint = NumbCrunchGoldBorder,
                 modifier = Modifier.size(size * 0.55f),
             )
         }
@@ -198,7 +198,7 @@ fun GameModeBadge(
             .shadow(6.dp, shape, clip = false)
             .background(GoldFrameBrush, shape)
             .padding(2.dp)
-            .background(Brush.verticalGradient(listOf(Color(0xFF5A321A), GuesserChocolateDark)), shape)
+            .background(Brush.verticalGradient(listOf(Color(0xFF5A321A), NumbCrunchChocolateDark)), shape)
             .padding(horizontal = height * 0.45f),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -207,7 +207,7 @@ fun GameModeBadge(
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = height * 0.35f),
-            color = GuesserGoldCream,
+            color = NumbCrunchGoldCream,
             fontFamily = FontFamily.Serif,
             fontWeight = FontWeight.Bold,
             fontSize = fontSize,
@@ -260,14 +260,14 @@ fun GamePillButton(
                 .shadow(6.dp, shape, clip = false)
                 .background(GoldFrameBrush, shape)
                 .padding(2.dp)
-                .background(Brush.verticalGradient(listOf(Color(0xFF6B3E1F), GuesserChocolateDark)), shape)
-                .border(1.dp, GuesserGoldBorder.copy(alpha = 0.6f), shape)
+                .background(Brush.verticalGradient(listOf(Color(0xFF6B3E1F), NumbCrunchChocolateDark)), shape)
+                .border(1.dp, NumbCrunchGoldBorder.copy(alpha = 0.6f), shape)
                 .padding(horizontal = height * 0.55f),
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = label,
-                color = GuesserGoldBorder,
+                color = NumbCrunchGoldBorder,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Black,
                 fontSize = fontSize,
@@ -284,7 +284,7 @@ private fun GoldDot(size: Dp) {
     Box(
         modifier = Modifier
             .size(size)
-            .background(Brush.radialGradient(listOf(GuesserOrangeTop, GuesserBronzeDark)), CircleShape),
+            .background(Brush.radialGradient(listOf(NumbCrunchOrangeTop, NumbCrunchBronzeDark)), CircleShape),
     )
 }
 
@@ -345,7 +345,7 @@ fun DigitTile(
         is TileState.Revealed -> state.digit
     }
     val borderColor = when {
-        isCursor -> GuesserOrangeTop
+        isCursor -> NumbCrunchOrangeTop
         else -> Color(0x99331A0A)
     }
 
@@ -402,7 +402,7 @@ fun RemarkBox(
     revealDelayMs: Long = 0L,
 ) {
     val corner = height * 0.16f
-    val goldDash = GuesserGoldBorder.copy(alpha = 0.55f)
+    val goldDash = NumbCrunchGoldBorder.copy(alpha = 0.55f)
     val beat = remember(remark) { Animatable(1f) }
     // While animating, the remark waits for the tiles to finish flipping, then pops in.
     val appear = remember(remark, animateReveal) { Animatable(if (remark != null && animateReveal) 0f else 1f) }
@@ -457,7 +457,7 @@ fun RemarkBox(
                     scaleX = 0.4f + 0.6f * appear.value
                     scaleY = 0.4f + 0.6f * appear.value
                 },
-                color = if (isWinner) WinnerGreen else GuesserGoldCream,
+                color = if (isWinner) WinnerGreen else NumbCrunchGoldCream,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Bold,
                 fontSize = fontSize,
@@ -492,13 +492,13 @@ fun RemarkInfoIcon(
                 .shadow(4.dp, CircleShape, clip = false)
                 .background(GoldFrameBrush, CircleShape)
                 .padding(size * 0.08f)
-                .background(Brush.verticalGradient(listOf(Color(0xFF6B3E1F), GuesserChocolateDark)), CircleShape),
+                .background(Brush.verticalGradient(listOf(Color(0xFF6B3E1F), NumbCrunchChocolateDark)), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             val fontSize = with(LocalDensity.current) { (size * 0.56f).toSp() }
             Text(
                 text = "i",
-                color = GuesserGoldBorder,
+                color = NumbCrunchGoldBorder,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Black,
                 fontSize = fontSize,
@@ -607,7 +607,7 @@ fun KeypadKey(
                 }
                 .alpha(if (enabled) 1f else 0.45f)
                 .shadow(if (isPressed) 2.dp else 7.dp, shape, clip = false)
-                .background(Brush.verticalGradient(listOf(GuesserBronzeDark, GuesserGoldBorder)), shape)
+                .background(Brush.verticalGradient(listOf(NumbCrunchBronzeDark, NumbCrunchGoldBorder)), shape)
                 .padding(2.dp)
                 .background(brush, shape)
                 .border(1.dp, Color.White.copy(alpha = 0.35f), shape)
@@ -659,7 +659,7 @@ fun KeypadKey(
 }
 
 @Composable
-fun GuesserDialogFrame(
+fun NumbCrunchDialogFrame(
     textureRes: Int,
     title: String,
     message: String,
@@ -680,7 +680,7 @@ fun GuesserDialogFrame(
         ) {
             Text(
                 text = title,
-                color = GuesserOrangeTop,
+                color = NumbCrunchOrangeTop,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Black,
                 fontSize = 24.sp,
@@ -690,7 +690,7 @@ fun GuesserDialogFrame(
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = message,
-                color = GuesserGoldCream,
+                color = NumbCrunchGoldCream,
                 fontFamily = FontFamily.Serif,
                 fontSize = 16.sp,
                 lineHeight = 22.sp,

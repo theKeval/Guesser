@@ -77,7 +77,7 @@ fun RemarkInfoPopup(
             exit = fadeOut(tween(EXIT_MS)) + scaleOut(tween(EXIT_MS), targetScale = 0.92f),
         ) {
             shown?.let { current ->
-                GuesserDialogFrame(
+                NumbCrunchDialogFrame(
                     textureRes = R.drawable.game_keypad_wood,
                     title = current.remark,
                     message = remarkMeaningText(current.remarkMeaning()),

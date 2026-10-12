@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class PreferencesTutorialRepository(context: Context) : TutorialRepository {
-    private val preferences = context.applicationContext.guesserPreferences
+    private val preferences = context.applicationContext.numbCrunchPreferences
 
     override val hasCompletedFirstRun: Flow<Boolean> =
         preferences.data.map { it[HAS_COMPLETED_FIRST_RUN] ?: false }

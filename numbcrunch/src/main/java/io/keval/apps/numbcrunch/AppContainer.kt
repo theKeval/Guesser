@@ -10,7 +10,7 @@ import io.keval.apps.numbcrunch.domain.usecase.ObserveFirstRunTutorialUseCase
 import io.keval.apps.numbcrunch.domain.usecase.SaveFriendSecretUseCase
 import io.keval.apps.numbcrunch.domain.usecase.SetMusicEnabledUseCase
 import io.keval.apps.numbcrunch.domain.usecase.SetSoundEffectsEnabledUseCase
-import io.keval.apps.numbcrunch.gameplay.audio.GuesserAudio
+import io.keval.apps.numbcrunch.gameplay.audio.NumbCrunchAudio
 
 class AppContainer(context: Context) {
     private val appInfoRepository = RepositoryModule.createAppInfoRepository()
@@ -42,5 +42,5 @@ class AppContainer(context: Context) {
     val setSoundEffectsEnabledUseCase: SetSoundEffectsEnabledUseCase =
         SetSoundEffectsEnabledUseCase(settingsRepository)
 
-    val audio: GuesserAudio by lazy { GuesserAudio(context) }
+    val audio: NumbCrunchAudio by lazy { NumbCrunchAudio(context) }
 }

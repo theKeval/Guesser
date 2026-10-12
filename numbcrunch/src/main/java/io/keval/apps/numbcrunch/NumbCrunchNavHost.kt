@@ -28,10 +28,10 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOnWood
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOnWood
 import io.keval.apps.numbcrunch.gameplay.R
 import io.keval.apps.numbcrunch.gameplay.about.AboutScreen
-import io.keval.apps.numbcrunch.gameplay.common.GuesserScreenScaffold
+import io.keval.apps.numbcrunch.gameplay.common.NumbCrunchScreenScaffold
 import io.keval.apps.numbcrunch.gameplay.game.GameRoute
 import io.keval.apps.numbcrunch.gameplay.home.HomeRoute
 import io.keval.apps.numbcrunch.gameplay.info.GameplayInfoScreen
@@ -72,7 +72,7 @@ private fun slideOutToRight(): ExitTransition = slideOutHorizontally(
 )
 
 @Composable
-fun GuesserNavHost(
+fun NumbCrunchNavHost(
     navController: NavHostController,
     appContainer: AppContainer,
     modifier: Modifier = Modifier,
@@ -242,7 +242,7 @@ private fun FirstRunLaunchGate(
             loadFailed = true
         }
     }
-    GuesserScreenScaffold {
+    NumbCrunchScreenScaffold {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -250,7 +250,7 @@ private fun FirstRunLaunchGate(
         ) {
             Text(
                 stringResource(if (loadFailed) R.string.tutorial_load_error else R.string.tutorial_loading),
-                color = GuesserOnWood,
+                color = NumbCrunchOnWood,
             )
             if (loadFailed) {
                 Button(onClick = {

@@ -15,9 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldCream
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeMid
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeTop
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldCream
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeMid
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeTop
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.exp
@@ -32,9 +32,9 @@ private const val GRAVITY = 560f
 private const val DRAG = 2.5f
 
 private val ConfettiColors = listOf(
-    GuesserOrangeTop,
-    GuesserOrangeMid,
-    GuesserGoldCream,
+    NumbCrunchOrangeTop,
+    NumbCrunchOrangeMid,
+    NumbCrunchGoldCream,
     Color(0xFF4FD1C5),
     Color(0xFF9BDC62),
     Color(0xFFF2734F),

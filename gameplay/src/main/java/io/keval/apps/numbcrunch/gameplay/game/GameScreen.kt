@@ -66,7 +66,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserTheme
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchTheme
 import io.keval.apps.numbcrunch.domain.game.CODE_LENGTH
 import io.keval.apps.numbcrunch.domain.game.DigitFeedback
 import io.keval.apps.numbcrunch.domain.game.GuessEvaluation
@@ -687,7 +687,7 @@ private fun ExitConfirmationDialog(
         if (playerMode == PlayerMode.DOUBLE) R.string.game_mode_double else R.string.game_mode_single,
     )
     Dialog(onDismissRequest = onDismiss) {
-        GuesserDialogFrame(
+        NumbCrunchDialogFrame(
             textureRes = R.drawable.game_keypad_wood,
             title = stringResource(R.string.exit_title),
             message = stringResource(R.string.exit_message, modeName),
@@ -712,7 +712,7 @@ private fun QuitConfirmationDialog(
         if (playerMode == PlayerMode.DOUBLE) R.string.game_mode_double else R.string.game_mode_single,
     )
     Dialog(onDismissRequest = onDismiss) {
-        GuesserDialogFrame(
+        NumbCrunchDialogFrame(
             textureRes = R.drawable.game_keypad_wood,
             title = stringResource(R.string.quit_title),
             message = stringResource(R.string.quit_message, modeName),
@@ -743,7 +743,7 @@ private fun QuitRevealDialog(
         }
     }
     Dialog(onDismissRequest = onHome) {
-        GuesserDialogFrame(
+        NumbCrunchDialogFrame(
             textureRes = R.drawable.game_keypad_wood,
             title = stringResource(R.string.quit_reveal_title),
             message = pluralStringResource(R.plurals.quit_reveal_message, guessCount, guessCount),
@@ -823,7 +823,7 @@ private fun WinDialogCard(
 ) {
     val pop = remember { Animatable(0.6f) }
     LaunchedEffect(Unit) { pop.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = 380f)) }
-    GuesserDialogFrame(
+    NumbCrunchDialogFrame(
         textureRes = R.drawable.game_keypad_wood,
         title = stringResource(R.string.win_title),
         message = pluralStringResource(
@@ -907,7 +907,7 @@ private fun previewState(): GameUiState {
 
 @Composable
 private fun GameScreenPreviewContent(uiState: GameUiState) {
-    GuesserTheme {
+    NumbCrunchTheme {
         GameScreen(
             uiState = uiState,
             onBack = {},

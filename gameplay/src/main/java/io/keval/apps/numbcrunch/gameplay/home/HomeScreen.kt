@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldCream
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserTheme
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldCream
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchTheme
 import io.keval.apps.numbcrunch.domain.game.CODE_LENGTH
 import io.keval.apps.numbcrunch.domain.usecase.GetWelcomeMessageUseCase
 import io.keval.apps.numbcrunch.gameplay.R
@@ -300,7 +300,7 @@ private fun ControlsSection(
                 modifier = Modifier
                     .width(toggleWidth)
                     .padding(top = 6.dp),
-                color = GuesserGoldCream,
+                color = NumbCrunchGoldCream,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
@@ -350,7 +350,7 @@ private fun ControlsSection(
 @Preview(showBackground = true, name = "Single mode")
 @Composable
 private fun HomeScreenSinglePreview() {
-    GuesserTheme {
+    NumbCrunchTheme {
         HomeScreen(
             uiState = HomeUiState(playerMode = PlayerMode.SINGLE),
             onPlayerModeSelected = {},
@@ -368,7 +368,7 @@ private fun HomeScreenSinglePreview() {
 @Preview(showBackground = true, name = "Double mode")
 @Composable
 private fun HomeScreenDoublePreview() {
-    GuesserTheme {
+    NumbCrunchTheme {
         HomeScreen(
             uiState = HomeUiState(
                 playerMode = PlayerMode.DOUBLE,
@@ -390,7 +390,7 @@ private fun HomeScreenDoublePreview() {
 @Preview(showBackground = true, widthDp = 320, heightDp = 568, name = "Small phone")
 @Composable
 private fun HomeScreenSmallPreview() {
-    GuesserTheme {
+    NumbCrunchTheme {
         HomeScreen(
             uiState = HomeUiState(playerMode = PlayerMode.DOUBLE, friendSecretNumber = ""),
             onPlayerModeSelected = {},
@@ -408,7 +408,7 @@ private fun HomeScreenSmallPreview() {
 @Preview(showBackground = true, widthDp = 800, heightDp = 1280, name = "Tablet")
 @Composable
 private fun HomeScreenTabletPreview() {
-    GuesserTheme {
+    NumbCrunchTheme {
         HomeScreen(
             uiState = HomeUiState(playerMode = PlayerMode.SINGLE),
             onPlayerModeSelected = {},

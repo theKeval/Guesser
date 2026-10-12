@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import io.keval.apps.numbcrunch.gameplay.R
 
 @Composable
-fun GuesserScreenScaffold(
+fun NumbCrunchScreenScaffold(
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit,
 ) {

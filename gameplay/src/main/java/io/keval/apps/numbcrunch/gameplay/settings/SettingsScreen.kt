@@ -30,14 +30,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserBronzeDark
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserChocolateDark
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldBorder
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldCream
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeMid
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeTop
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserTheme
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserWoodBottom
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchBronzeDark
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchChocolateDark
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldBorder
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldCream
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeMid
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeTop
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchTheme
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchWoodBottom
 import io.keval.apps.numbcrunch.domain.settings.AudioSettings
 import io.keval.apps.numbcrunch.domain.usecase.ObserveAudioSettingsUseCase
 import io.keval.apps.numbcrunch.domain.usecase.SetMusicEnabledUseCase
@@ -112,7 +112,7 @@ fun SettingsScreen(
                 Text(
                     stringResource(R.string.settings_save_error),
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                    color = GuesserOrangeTop,
+                    color = NumbCrunchOrangeTop,
                     fontSize = 14.sp,
                 )
             }
@@ -148,7 +148,7 @@ private fun SettingToggle(
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
                 title,
-                color = GuesserGoldCream,
+                color = NumbCrunchGoldCream,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
@@ -161,13 +161,13 @@ private fun SettingToggle(
             onCheckedChange = null,
             enabled = enabled,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = GuesserGoldCream,
-                checkedTrackColor = GuesserOrangeMid,
-                checkedBorderColor = GuesserGoldBorder,
-                uncheckedThumbColor = GuesserGoldBorder,
-                uncheckedTrackColor = GuesserChocolateDark,
-                uncheckedBorderColor = GuesserBronzeDark,
-                disabledUncheckedTrackColor = GuesserWoodBottom,
+                checkedThumbColor = NumbCrunchGoldCream,
+                checkedTrackColor = NumbCrunchOrangeMid,
+                checkedBorderColor = NumbCrunchGoldBorder,
+                uncheckedThumbColor = NumbCrunchGoldBorder,
+                uncheckedTrackColor = NumbCrunchChocolateDark,
+                uncheckedBorderColor = NumbCrunchBronzeDark,
+                disabledUncheckedTrackColor = NumbCrunchWoodBottom,
             ),
         )
     }
@@ -176,7 +176,7 @@ private fun SettingToggle(
 @Preview(showBackground = true, widthDp = 411, heightDp = 891)
 @Composable
 private fun SettingsScreenPreview() {
-    GuesserTheme {
+    NumbCrunchTheme {
         SettingsScreen(
             settings = AudioSettings(musicEnabled = false, soundEffectsEnabled = true),
             onMusicChange = {},

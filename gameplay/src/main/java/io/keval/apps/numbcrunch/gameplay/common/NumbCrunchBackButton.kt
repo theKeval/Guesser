@@ -14,10 +14,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOnWood
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOnWood
 
 @Composable
-fun GuesserBackButton(
+fun NumbCrunchBackButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -32,7 +32,7 @@ fun GuesserBackButton(
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "Back",
-            tint = GuesserOnWood,
+            tint = NumbCrunchOnWood,
         )
     }
 }

@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
 class PreferencesSettingsRepository(context: Context) : SettingsRepository {
-    private val preferences = context.applicationContext.guesserPreferences
+    private val preferences = context.applicationContext.numbCrunchPreferences
 
     override val audioSettings: Flow<AudioSettings> = preferences.data
         // Unreadable preferences fall back to the defaults rather than silencing the app.

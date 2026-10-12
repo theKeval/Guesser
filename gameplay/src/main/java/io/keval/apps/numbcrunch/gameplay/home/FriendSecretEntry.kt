@@ -54,12 +54,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserBronzeDark
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldBorder
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldCream
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserInputFill
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserInputHint
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeTop
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchBronzeDark
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldBorder
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldCream
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchInputFill
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchInputHint
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeTop
 import io.keval.apps.numbcrunch.domain.game.CODE_LENGTH
 import io.keval.apps.numbcrunch.gameplay.R
 import io.keval.apps.numbcrunch.gameplay.audio.rememberTapFeedback
@@ -97,9 +97,9 @@ fun FriendSecretSlot(
         modifier = modifier
             .heightIn(min = 48.dp)
             .shadow(8.dp, PillShape, clip = false, ambientColor = Color.Black.copy(alpha = 0.3f), spotColor = Color.Black.copy(alpha = 0.3f))
-            .border(2.dp, Brush.verticalGradient(listOf(GuesserBronzeDark, GuesserGoldBorder)), PillShape)
+            .border(2.dp, Brush.verticalGradient(listOf(NumbCrunchBronzeDark, NumbCrunchGoldBorder)), PillShape)
             .padding(2.dp)
-            .background(GuesserInputFill, PillShape)
+            .background(NumbCrunchInputFill, PillShape)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -118,7 +118,7 @@ fun FriendSecretSlot(
             val hintSize = with(androidx.compose.ui.platform.LocalDensity.current) { (maxHeight * 0.28f).toSp() }
             Text(
                 text = placeholder,
-                color = GuesserInputHint,
+                color = NumbCrunchInputHint,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Bold,
                 fontSize = hintSize,
@@ -234,12 +234,12 @@ private fun SheetContent(
             Box(
                 Modifier
                     .size(width = 44.dp, height = 5.dp)
-                    .background(GuesserGoldBorder.copy(alpha = 0.55f), PillShape),
+                    .background(NumbCrunchGoldBorder.copy(alpha = 0.55f), PillShape),
             )
             Spacer(Modifier.size(12.dp))
             Text(
                 text = title,
-                color = GuesserOrangeTop,
+                color = NumbCrunchOrangeTop,
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Black,
                 fontSize = 22.sp,
@@ -248,7 +248,7 @@ private fun SheetContent(
             Spacer(Modifier.size(4.dp))
             Text(
                 text = stringResource(R.string.secret_sheet_body),
-                color = GuesserGoldCream,
+                color = NumbCrunchGoldCream,
                 fontFamily = FontFamily.Serif,
                 style = TextStyle(fontSize = 15.sp, lineHeight = 20.sp),
                 textAlign = TextAlign.Center,

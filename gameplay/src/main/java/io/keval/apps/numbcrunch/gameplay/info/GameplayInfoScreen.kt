@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserTheme
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchTheme
 import io.keval.apps.numbcrunch.gameplay.R
 import io.keval.apps.numbcrunch.gameplay.common.GuideBody
 import io.keval.apps.numbcrunch.gameplay.common.GuideGuess
@@ -54,5 +54,5 @@ fun GameplayInfoScreen(
 @Preview(name = "Tablet", widthDp = 800, heightDp = 1280)
 @Composable
 private fun GameplayInfoPreview() {
-    GuesserTheme { GameplayInfoScreen(onBack = {}) }
+    NumbCrunchTheme { GameplayInfoScreen(onBack = {}) }
 }

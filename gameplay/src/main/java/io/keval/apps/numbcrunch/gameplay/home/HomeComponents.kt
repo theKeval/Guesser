@@ -39,16 +39,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserBronzeDark
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserChocolate
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserChocolateDark
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldBorder
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserGoldCream
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeBottom
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeMid
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserOrangeTop
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserWoodBottom
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserWoodTop
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchBronzeDark
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchChocolate
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchChocolateDark
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldBorder
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchGoldCream
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeBottom
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeMid
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchOrangeTop
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchWoodBottom
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchWoodTop
 import io.keval.apps.numbcrunch.gameplay.audio.rememberTapFeedback
 
 private val PillShape = RoundedCornerShape(percent = 50)
@@ -116,15 +116,15 @@ private fun HomePillButton(
 
     val backgroundBrush = when (style) {
         HomeButtonStyle.Primary -> Brush.verticalGradient(
-            colors = listOf(GuesserOrangeTop, GuesserOrangeMid, GuesserOrangeBottom),
+            colors = listOf(NumbCrunchOrangeTop, NumbCrunchOrangeMid, NumbCrunchOrangeBottom),
         )
 
         HomeButtonStyle.Secondary -> Brush.verticalGradient(
-            colors = listOf(GuesserWoodTop, GuesserWoodBottom),
+            colors = listOf(NumbCrunchWoodTop, NumbCrunchWoodBottom),
         )
     }
 
-    val labelColor = if (style == HomeButtonStyle.Primary) GuesserChocolateDark else GuesserGoldCream
+    val labelColor = if (style == HomeButtonStyle.Primary) NumbCrunchChocolateDark else NumbCrunchGoldCream
 
     BoxWithConstraints(
         modifier = modifier
@@ -155,9 +155,9 @@ private fun HomePillButton(
                     ambientColor = Color.Black.copy(alpha = 0.45f),
                     spotColor = Color.Black.copy(alpha = 0.45f),
                 )
-                .border(width = 2.dp, brush = Brush.verticalGradient(listOf(GuesserBronzeDark, GuesserGoldBorder)), shape = PillShape)
+                .border(width = 2.dp, brush = Brush.verticalGradient(listOf(NumbCrunchBronzeDark, NumbCrunchGoldBorder)), shape = PillShape)
                 .padding(2.dp)
-                .border(width = 1.2.dp, color = GuesserGoldBorder.copy(alpha = 0.95f), shape = PillShape)
+                .border(width = 1.2.dp, color = NumbCrunchGoldBorder.copy(alpha = 0.95f), shape = PillShape)
                 .background(brush = backgroundBrush, shape = PillShape)
                 .graphicsLayer {
                     scaleX = buttonScale
@@ -222,10 +222,10 @@ fun PlayerModeToggle(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .border(width = 2.dp, brush = Brush.verticalGradient(listOf(GuesserBronzeDark, GuesserGoldBorder)), shape = PillShape)
+                .border(width = 2.dp, brush = Brush.verticalGradient(listOf(NumbCrunchBronzeDark, NumbCrunchGoldBorder)), shape = PillShape)
                 .padding(2.dp)
                 .background(
-                    brush = Brush.verticalGradient(listOf(GuesserOrangeTop, GuesserOrangeMid, GuesserOrangeBottom)),
+                    brush = Brush.verticalGradient(listOf(NumbCrunchOrangeTop, NumbCrunchOrangeMid, NumbCrunchOrangeBottom)),
                     shape = PillShape,
                 ),
         ) {
@@ -242,7 +242,7 @@ fun PlayerModeToggle(
                         .padding(end = 1.dp)
                         .offset(x = selectedOffset - selectorPadding)
                         .background(
-                            brush = Brush.verticalGradient(listOf(GuesserChocolate, GuesserChocolateDark)),
+                            brush = Brush.verticalGradient(listOf(NumbCrunchChocolate, NumbCrunchChocolateDark)),
                             shape = PillShape,
                         ),
                 )
@@ -297,7 +297,7 @@ private fun ModeSegment(
     ) {
         Text(
             text = label,
-            color = GuesserGoldCream,
+            color = NumbCrunchGoldCream,
             textAlign = TextAlign.Center,
             fontFamily = FontFamily.Serif,
             fontWeight = FontWeight.Bold,

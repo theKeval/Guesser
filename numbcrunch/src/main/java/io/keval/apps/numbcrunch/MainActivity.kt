@@ -8,14 +8,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import io.keval.apps.numbcrunch.core.ui.theme.GuesserTheme
+import io.keval.apps.numbcrunch.core.ui.theme.NumbCrunchTheme
 import io.keval.apps.numbcrunch.gameplay.audio.LocalGameSoundPlayer
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     private val appContainer: AppContainer
-        get() = (application as GuesserApplication).appContainer
+        get() = (application as NumbCrunchApplication).appContainer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,8 +34,8 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             CompositionLocalProvider(LocalGameSoundPlayer provides audio) {
-                GuesserTheme {
-                    GuesserApp(appContainer = appContainer)
+                NumbCrunchTheme {
+                    NumbCrunchApp(appContainer = appContainer)
                 }
             }
         }

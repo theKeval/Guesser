@@ -11,27 +11,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val LightColorScheme = lightColorScheme(
-    primary = GuesserPrimary,
-    onPrimary = GuesserOnPrimary,
-    primaryContainer = GuesserPrimaryContainer,
-    onPrimaryContainer = GuesserOnPrimaryContainer,
-    background = GuesserBackground,
-    onBackground = GuesserOnBackground,
-    surface = GuesserSurface,
-    onSurface = GuesserOnSurface,
-    surfaceVariant = GuesserSurfaceVariant,
-    onSurfaceVariant = GuesserOnSurfaceVariant,
+    primary = NumbCrunchPrimary,
+    onPrimary = NumbCrunchOnPrimary,
+    primaryContainer = NumbCrunchPrimaryContainer,
+    onPrimaryContainer = NumbCrunchOnPrimaryContainer,
+    background = NumbCrunchBackground,
+    onBackground = NumbCrunchOnBackground,
+    surface = NumbCrunchSurface,
+    onSurface = NumbCrunchOnSurface,
+    surfaceVariant = NumbCrunchSurfaceVariant,
+    onSurfaceVariant = NumbCrunchOnSurfaceVariant,
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = GuesserPrimaryContainer,
-    onPrimary = GuesserOnPrimaryContainer,
-    primaryContainer = GuesserPrimary,
-    onPrimaryContainer = GuesserOnPrimary,
+    primary = NumbCrunchPrimaryContainer,
+    onPrimary = NumbCrunchOnPrimaryContainer,
+    primaryContainer = NumbCrunchPrimary,
+    onPrimaryContainer = NumbCrunchOnPrimary,
 )
 
 @Composable
-fun GuesserTheme(
+fun NumbCrunchTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
@@ -48,7 +48,7 @@ fun GuesserTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = GuesserTypography,
+        typography = NumbCrunchTypography,
         content = content,
     )
 }
