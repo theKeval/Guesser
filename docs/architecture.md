@@ -79,7 +79,7 @@ No dependency-injection framework is used.
 | `home` | `HomeRoute` | Implemented |
 | `game` | `GameRoute` | Implemented: keypad, guess board, scoring, leave/quit-reveal/win dialogs, help, settings, sound and confetti |
 | `tutorial?firstRun={firstRun}` | `TutorialScreen` | Three swipeable steps, isolated practice, onboarding or manual entry |
-| `gameplay_info` | `GameplayInfoScreen` | Visual rules, examples, modes, controls, strategy |
+| `gameplay_info` | `GameplayInfoScreen` | Visual rules, examples, modes, controls, strategy; entry points hidden by `GAMEPLAY_GUIDE_ENABLED = false` |
 | `about` | `AboutScreen` | Story, credits, runtime version, public source/license links |
 
 Forward and backward navigation use 320 ms horizontal slide transitions. The

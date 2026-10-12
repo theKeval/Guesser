@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -76,6 +77,7 @@ import io.keval.apps.guesser.gameplay.audio.GameSound
 import io.keval.apps.guesser.gameplay.audio.LocalGameSoundPlayer
 import io.keval.apps.guesser.gameplay.audio.digitKeyPitch
 import io.keval.apps.guesser.gameplay.home.PlayerMode
+import io.keval.apps.guesser.gameplay.navigation.GAMEPLAY_GUIDE_ENABLED
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -359,12 +361,17 @@ private fun GameHeader(
                 contentScale = ContentScale.Fit,
             )
         }
-        GameRoundIconButton(
-            icon = Icons.Filled.QuestionMark,
-            contentDescription = stringResource(R.string.cd_help),
-            size = metrics.iconSize,
-            onClick = onHelp,
-        )
+        if (GAMEPLAY_GUIDE_ENABLED) {
+            GameRoundIconButton(
+                icon = Icons.Filled.QuestionMark,
+                contentDescription = stringResource(R.string.cd_help),
+                size = metrics.iconSize,
+                onClick = onHelp,
+            )
+        } else {
+            // Hold the help button's slot so the title stays centered above the mode badge.
+            Spacer(modifier = Modifier.size(metrics.iconSize.coerceAtLeast(48.dp)))
+        }
         GameRoundIconButton(
             icon = Icons.Filled.Settings,
             contentDescription = stringResource(R.string.cd_settings),
