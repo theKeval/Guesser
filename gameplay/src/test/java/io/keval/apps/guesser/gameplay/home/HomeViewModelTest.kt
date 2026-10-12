@@ -61,4 +61,28 @@ class HomeViewModelTest {
         assertEquals("", viewModel.uiState.value.friendSecretNumber)
         assertEquals(null, viewModel.uiState.value.secretValidationMessage)
     }
+
+    @Test
+    fun `keypad digits always apply to the latest secret`() {
+        viewModel.onPlayerModeSelected(PlayerMode.DOUBLE)
+        // Back-to-back taps with no recomposition in between must all land.
+        viewModel.onFriendSecretDigit('5')
+        viewModel.onFriendSecretDigit('7')
+        viewModel.onFriendSecretDigit('5')
+        viewModel.onFriendSecretDigit('3')
+        viewModel.onFriendSecretDigit('1')
+
+        assertEquals("573", viewModel.uiState.value.friendSecretNumber)
+        assertEquals(null, viewModel.uiState.value.secretValidationMessage)
+
+        viewModel.onFriendSecretDelete()
+        viewModel.onFriendSecretDelete()
+        assertEquals("5", viewModel.uiState.value.friendSecretNumber)
+        assertEquals("Enter exactly 3 digits", viewModel.uiState.value.secretValidationMessage)
+
+        viewModel.onFriendSecretDelete()
+        viewModel.onFriendSecretDelete()
+        assertEquals("", viewModel.uiState.value.friendSecretNumber)
+        assertEquals(null, viewModel.uiState.value.secretValidationMessage)
+    }
 }

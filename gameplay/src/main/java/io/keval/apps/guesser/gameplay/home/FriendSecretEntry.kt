@@ -34,7 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,7 +61,6 @@ import io.keval.apps.guesser.core.ui.theme.GuesserInputFill
 import io.keval.apps.guesser.core.ui.theme.GuesserInputHint
 import io.keval.apps.guesser.core.ui.theme.GuesserOrangeTop
 import io.keval.apps.guesser.domain.game.CODE_LENGTH
-import io.keval.apps.guesser.domain.game.isCodeDigit
 import io.keval.apps.guesser.gameplay.R
 import io.keval.apps.guesser.gameplay.audio.rememberTapFeedback
 import io.keval.apps.guesser.gameplay.game.DigitTile
@@ -78,10 +76,6 @@ private const val SHEET_EXIT_MS = 220
 private val PillShape = RoundedCornerShape(percent = 50)
 private val SheetMaxWidth = 520.dp
 private val ScrimColor = Color(0x99000000)
-
-/** True when [digit] can be added: the secret is not full and the digit is not used yet. */
-internal fun canAddSecretDigit(secret: String, digit: Char): Boolean =
-    isCodeDigit(digit) && secret.length < CODE_LENGTH && digit !in secret
 
 private fun tileState(secret: String, index: Int, revealed: Boolean): TileState =
     secret.getOrNull(index)?.let { TileState.Pending(if (revealed) it else MASK) } ?: TileState.Empty
@@ -157,11 +151,13 @@ fun FriendSecretSlot(
 fun FriendSecretSheet(
     visible: Boolean,
     secret: String,
-    onSecretChange: (String) -> Unit,
+    onDigit: (Char) -> Unit,
+    onDelete: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var revealed by rememberSaveable { mutableStateOf(false) }
+    // Not saveable: after any recreation the secret starts hidden again.
+    var revealed by remember { mutableStateOf(false) }
     // Always start hidden so the secret is never left on show.
     if (!visible && revealed) revealed = false
     BackHandler(enabled = visible, onBack = onDismiss)
@@ -205,7 +201,8 @@ fun FriendSecretSheet(
                     secret = secret,
                     revealed = revealed,
                     onToggleReveal = { revealed = !revealed },
-                    onSecretChange = onSecretChange,
+                    onDigit = onDigit,
+                    onDelete = onDelete,
                     onDone = onDismiss,
                 )
             }
@@ -219,7 +216,8 @@ private fun SheetContent(
     secret: String,
     revealed: Boolean,
     onToggleReveal: () -> Unit,
-    onSecretChange: (String) -> Unit,
+    onDigit: (Char) -> Unit,
+    onDelete: () -> Unit,
     onDone: () -> Unit,
 ) {
     BoxWithConstraints(Modifier.fillMaxWidth()) {
@@ -258,7 +256,7 @@ private fun SheetContent(
             Spacer(Modifier.size(16.dp))
             SecretTiles(secret, revealed, tileSize, onToggleReveal)
             Spacer(Modifier.size(18.dp))
-            SecretKeypad(secret, keyHeight, onSecretChange, onDone)
+            SecretKeypad(secret, keyHeight, onDigit, onDelete, onDone)
         }
     }
 }
@@ -307,7 +305,8 @@ private fun SecretTiles(
 private fun SecretKeypad(
     secret: String,
     keyHeight: Dp,
-    onSecretChange: (String) -> Unit,
+    onDigit: (Char) -> Unit,
+    onDelete: () -> Unit,
     onDone: () -> Unit,
 ) {
     val rows = listOf("123", "456", "789")
@@ -315,7 +314,7 @@ private fun SecretKeypad(
     Column(verticalArrangement = Arrangement.spacedBy(keyHeight * 0.22f)) {
         rows.forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
-                row.forEach { digit -> SecretDigitKey(digit, secret, keyHeight, onSecretChange, Modifier.weight(1f)) }
+                row.forEach { digit -> SecretDigitKey(digit, secret, keyHeight, onDigit, Modifier.weight(1f)) }
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
@@ -326,9 +325,9 @@ private fun SecretKeypad(
                 enabled = secret.isNotEmpty(),
                 height = keyHeight,
                 modifier = Modifier.weight(1f),
-                onClick = { onSecretChange(secret.dropLast(1)) },
+                onClick = onDelete,
             )
-            SecretDigitKey('0', secret, keyHeight, onSecretChange, Modifier.weight(1f))
+            SecretDigitKey('0', secret, keyHeight, onDigit, Modifier.weight(1f))
             KeypadKey(
                 label = stringResource(R.string.secret_done),
                 contentDescription = stringResource(R.string.cd_secret_done),
@@ -347,7 +346,7 @@ private fun SecretDigitKey(
     digit: Char,
     secret: String,
     keyHeight: Dp,
-    onSecretChange: (String) -> Unit,
+    onDigit: (Char) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     KeypadKey(
@@ -359,6 +358,7 @@ private fun SecretDigitKey(
         modifier = modifier,
         // One shared note for every digit, unlike the game's per-digit notes.
         soundPitch = 1f,
-        onClick = { if (canAddSecretDigit(secret, digit)) onSecretChange(secret + digit) },
+        // The view model applies the digit to its latest secret, so rapid taps are never lost.
+        onClick = { onDigit(digit) },
     )
 }

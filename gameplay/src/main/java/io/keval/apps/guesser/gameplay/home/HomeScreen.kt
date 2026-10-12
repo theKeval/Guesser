@@ -1,6 +1,7 @@
 package io.keval.apps.guesser.gameplay.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -64,7 +65,8 @@ fun HomeRoute(
     HomeScreen(
         uiState = uiState,
         onPlayerModeSelected = viewModel::onPlayerModeSelected,
-        onFriendSecretNumberChanged = viewModel::onFriendSecretNumberChanged,
+        onFriendSecretDigit = viewModel::onFriendSecretDigit,
+        onFriendSecretDelete = viewModel::onFriendSecretDelete,
         onStartClick = {
             if (viewModel.canStartGame()) {
                 onStartClick(uiState)
@@ -83,7 +85,8 @@ fun HomeRoute(
 fun HomeScreen(
     uiState: HomeUiState,
     onPlayerModeSelected: (PlayerMode) -> Unit,
-    onFriendSecretNumberChanged: (String) -> Unit,
+    onFriendSecretDigit: (Char) -> Unit,
+    onFriendSecretDelete: () -> Unit,
     onStartClick: () -> Unit,
     onTutorialClick: () -> Unit,
     onGameplayClick: () -> Unit,
@@ -179,64 +182,71 @@ fun HomeScreen(
                 contentScale = ContentScale.Crop,
             )
 
-            Column(
+            // While the keypad sheet is open, only the sheet is exposed to accessibility services:
+            // the whole Home background, including Settings, is hidden from them.
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    // While the keypad sheet is open, only the sheet is exposed to accessibility services.
-                    .then(if (showSecretSheet) Modifier.clearAndSetSemantics {} else Modifier)
-                    .verticalScroll(scrollState)
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .padding(horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .then(if (showSecretSheet) Modifier.clearAndSetSemantics {} else Modifier),
             ) {
-                Spacer(modifier = Modifier.height(gapBeforeTitle))
-
-                Image(
-                    painter = titlePainter,
-                    contentDescription = null,
+                Column(
                     modifier = Modifier
-                        .width(titleWidth)
-                        .height(titleHeight),
-                    contentScale = ContentScale.Fit,
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .statusBarsPadding()
+                        .navigationBarsPadding()
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Spacer(modifier = Modifier.height(gapBeforeTitle))
+
+                    Image(
+                        painter = titlePainter,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(titleWidth)
+                            .height(titleHeight),
+                        contentScale = ContentScale.Fit,
+                    )
+
+                    Spacer(modifier = Modifier.height(gapAfterTitle))
+
+                    ControlsSection(
+                        uiState = uiState,
+                        toggleWidth = toggleWidth,
+                        inputHeight = inputHeight,
+                        startWidth = startWidth,
+                        secondaryWidth = secondaryWidth,
+                        controlSpacing = controlSpacing,
+                        betweenControls = betweenControls,
+                        onPlayerModeSelected = selectPlayerMode,
+                        onSecretSlotClick = { secretSheetOpen = true },
+                        onStartClick = startGame,
+                        onTutorialClick = onTutorialClick,
+                        onGameplayClick = onGameplayClick,
+                        onAboutClick = onAboutClick,
+                    )
+
+                    Spacer(modifier = Modifier.height(gapAfterControls))
+                }
+
+                GameRoundIconButton(
+                    icon = Icons.Filled.Settings,
+                    contentDescription = stringResource(R.string.cd_settings),
+                    size = 44.dp,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .statusBarsPadding()
+                        .padding(top = 4.dp, end = 8.dp),
+                    onClick = onSettingsClick,
                 )
-
-                Spacer(modifier = Modifier.height(gapAfterTitle))
-
-                ControlsSection(
-                    uiState = uiState,
-                    toggleWidth = toggleWidth,
-                    inputHeight = inputHeight,
-                    startWidth = startWidth,
-                    secondaryWidth = secondaryWidth,
-                    controlSpacing = controlSpacing,
-                    betweenControls = betweenControls,
-                    onPlayerModeSelected = selectPlayerMode,
-                    onSecretSlotClick = { secretSheetOpen = true },
-                    onStartClick = startGame,
-                    onTutorialClick = onTutorialClick,
-                    onGameplayClick = onGameplayClick,
-                    onAboutClick = onAboutClick,
-                )
-
-                Spacer(modifier = Modifier.height(gapAfterControls))
             }
-
-            GameRoundIconButton(
-                icon = Icons.Filled.Settings,
-                contentDescription = stringResource(R.string.cd_settings),
-                size = 44.dp,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .statusBarsPadding()
-                    .padding(top = 4.dp, end = 8.dp),
-                onClick = onSettingsClick,
-            )
 
             FriendSecretSheet(
                 visible = showSecretSheet,
                 secret = uiState.friendSecretNumber,
-                onSecretChange = onFriendSecretNumberChanged,
+                onDigit = onFriendSecretDigit,
+                onDelete = onFriendSecretDelete,
                 onDismiss = { secretSheetOpen = false },
             )
         }
@@ -344,7 +354,8 @@ private fun HomeScreenSinglePreview() {
         HomeScreen(
             uiState = HomeUiState(playerMode = PlayerMode.SINGLE),
             onPlayerModeSelected = {},
-            onFriendSecretNumberChanged = {},
+            onFriendSecretDigit = {},
+            onFriendSecretDelete = {},
             onStartClick = {},
             onTutorialClick = {},
             onGameplayClick = {},
@@ -365,7 +376,8 @@ private fun HomeScreenDoublePreview() {
                 secretValidationMessage = "Digits must be unique",
             ),
             onPlayerModeSelected = {},
-            onFriendSecretNumberChanged = {},
+            onFriendSecretDigit = {},
+            onFriendSecretDelete = {},
             onStartClick = {},
             onTutorialClick = {},
             onGameplayClick = {},
@@ -382,7 +394,8 @@ private fun HomeScreenSmallPreview() {
         HomeScreen(
             uiState = HomeUiState(playerMode = PlayerMode.DOUBLE, friendSecretNumber = ""),
             onPlayerModeSelected = {},
-            onFriendSecretNumberChanged = {},
+            onFriendSecretDigit = {},
+            onFriendSecretDelete = {},
             onStartClick = {},
             onTutorialClick = {},
             onGameplayClick = {},
@@ -399,7 +412,8 @@ private fun HomeScreenTabletPreview() {
         HomeScreen(
             uiState = HomeUiState(playerMode = PlayerMode.SINGLE),
             onPlayerModeSelected = {},
-            onFriendSecretNumberChanged = {},
+            onFriendSecretDigit = {},
+            onFriendSecretDelete = {},
             onStartClick = {},
             onTutorialClick = {},
             onGameplayClick = {},
