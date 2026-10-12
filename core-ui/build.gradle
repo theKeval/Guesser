@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "io.keval.apps.guesser.core.ui"
+    namespace = "io.keval.apps.numbcrunch.core.ui"
     compileSdk = 36
 
     defaultConfig {

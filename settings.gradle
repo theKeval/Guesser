@@ -1,9 +1,9 @@
-rootProject.name = "Guesser"
+rootProject.name = "NumbCrunch"
 
 include ':guesser_v1'
 project(':guesser_v1').projectDir = file('app')
 
-include ':guesser'
+include ':numbcrunch'
 include ':core-ui'
 include ':domain'
 include ':data'

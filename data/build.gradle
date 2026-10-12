@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "io.keval.apps.guesser.data"
+    namespace = "io.keval.apps.numbcrunch.data"
     compileSdk = 36
 
     defaultConfig {
