@@ -1,18 +1,18 @@
 package io.keval.apps.guesser.gameplay.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,11 +22,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.keval.apps.guesser.core.ui.theme.GuesserGoldCream
 import io.keval.apps.guesser.core.ui.theme.GuesserTheme
+import io.keval.apps.guesser.domain.game.CODE_LENGTH
 import io.keval.apps.guesser.domain.usecase.GetWelcomeMessageUseCase
 import io.keval.apps.guesser.gameplay.R
 import io.keval.apps.guesser.gameplay.game.GameRoundIconButton
@@ -60,7 +65,8 @@ fun HomeRoute(
     HomeScreen(
         uiState = uiState,
         onPlayerModeSelected = viewModel::onPlayerModeSelected,
-        onFriendSecretNumberChanged = viewModel::onFriendSecretNumberChanged,
+        onFriendSecretDigit = viewModel::onFriendSecretDigit,
+        onFriendSecretDelete = viewModel::onFriendSecretDelete,
         onStartClick = {
             if (viewModel.canStartGame()) {
                 onStartClick(uiState)
@@ -79,7 +85,8 @@ fun HomeRoute(
 fun HomeScreen(
     uiState: HomeUiState,
     onPlayerModeSelected: (PlayerMode) -> Unit,
-    onFriendSecretNumberChanged: (String) -> Unit,
+    onFriendSecretDigit: (Char) -> Unit,
+    onFriendSecretDelete: () -> Unit,
     onStartClick: () -> Unit,
     onTutorialClick: () -> Unit,
     onGameplayClick: () -> Unit,
@@ -87,6 +94,25 @@ fun HomeScreen(
     onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // The friend-secret keypad sheet; it opens by itself when Double Player is chosen.
+    var secretSheetOpen by rememberSaveable { mutableStateOf(false) }
+    val showSecretSheet = secretSheetOpen && uiState.playerMode == PlayerMode.DOUBLE
+    val selectPlayerMode: (PlayerMode) -> Unit = { mode ->
+        if (mode == PlayerMode.DOUBLE && uiState.playerMode != PlayerMode.DOUBLE &&
+            uiState.friendSecretNumber.length < CODE_LENGTH
+        ) {
+            secretSheetOpen = true
+        }
+        onPlayerModeSelected(mode)
+    }
+    val startGame: () -> Unit = {
+        // An incomplete secret reopens the keypad rather than only showing an error.
+        if (uiState.playerMode == PlayerMode.DOUBLE && uiState.friendSecretNumber.length < CODE_LENGTH) {
+            secretSheetOpen = true
+        }
+        onStartClick()
+    }
+
     Surface(modifier = modifier.fillMaxSize()) {
         val scrollState = rememberScrollState()
         val titlePainter = painterResource(id = R.drawable.home_title)
@@ -156,57 +182,72 @@ fun HomeScreen(
                 contentScale = ContentScale.Crop,
             )
 
-            Column(
+            // While the keypad sheet is open, only the sheet is exposed to accessibility services:
+            // the whole Home background, including Settings, is hidden from them.
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .imePadding()
-                    .padding(horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    .then(if (showSecretSheet) Modifier.clearAndSetSemantics {} else Modifier),
             ) {
-                Spacer(modifier = Modifier.height(gapBeforeTitle))
-
-                Image(
-                    painter = titlePainter,
-                    contentDescription = null,
+                Column(
                     modifier = Modifier
-                        .width(titleWidth)
-                        .height(titleHeight),
-                    contentScale = ContentScale.Fit,
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .statusBarsPadding()
+                        .navigationBarsPadding()
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Spacer(modifier = Modifier.height(gapBeforeTitle))
+
+                    Image(
+                        painter = titlePainter,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(titleWidth)
+                            .height(titleHeight),
+                        contentScale = ContentScale.Fit,
+                    )
+
+                    Spacer(modifier = Modifier.height(gapAfterTitle))
+
+                    ControlsSection(
+                        uiState = uiState,
+                        toggleWidth = toggleWidth,
+                        inputHeight = inputHeight,
+                        startWidth = startWidth,
+                        secondaryWidth = secondaryWidth,
+                        controlSpacing = controlSpacing,
+                        betweenControls = betweenControls,
+                        onPlayerModeSelected = selectPlayerMode,
+                        onSecretSlotClick = { secretSheetOpen = true },
+                        onStartClick = startGame,
+                        onTutorialClick = onTutorialClick,
+                        onGameplayClick = onGameplayClick,
+                        onAboutClick = onAboutClick,
+                    )
+
+                    Spacer(modifier = Modifier.height(gapAfterControls))
+                }
+
+                GameRoundIconButton(
+                    icon = Icons.Filled.Settings,
+                    contentDescription = stringResource(R.string.cd_settings),
+                    size = 44.dp,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .statusBarsPadding()
+                        .padding(top = 4.dp, end = 8.dp),
+                    onClick = onSettingsClick,
                 )
-
-                Spacer(modifier = Modifier.height(gapAfterTitle))
-
-                ControlsSection(
-                    uiState = uiState,
-                    toggleWidth = toggleWidth,
-                    inputHeight = inputHeight,
-                    startWidth = startWidth,
-                    secondaryWidth = secondaryWidth,
-                    controlSpacing = controlSpacing,
-                    betweenControls = betweenControls,
-                    onPlayerModeSelected = onPlayerModeSelected,
-                    onFriendSecretNumberChanged = onFriendSecretNumberChanged,
-                    onStartClick = onStartClick,
-                    onTutorialClick = onTutorialClick,
-                    onGameplayClick = onGameplayClick,
-                    onAboutClick = onAboutClick,
-                )
-
-                Spacer(modifier = Modifier.height(gapAfterControls))
             }
 
-            GameRoundIconButton(
-                icon = Icons.Filled.Settings,
-                contentDescription = stringResource(R.string.cd_settings),
-                size = 44.dp,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .statusBarsPadding()
-                    .padding(top = 4.dp, end = 8.dp),
-                onClick = onSettingsClick,
+            FriendSecretSheet(
+                visible = showSecretSheet,
+                secret = uiState.friendSecretNumber,
+                onDigit = onFriendSecretDigit,
+                onDelete = onFriendSecretDelete,
+                onDismiss = { secretSheetOpen = false },
             )
         }
     }
@@ -222,7 +263,7 @@ private fun ControlsSection(
     controlSpacing: Dp,
     betweenControls: Dp,
     onPlayerModeSelected: (PlayerMode) -> Unit,
-    onFriendSecretNumberChanged: (String) -> Unit,
+    onSecretSlotClick: () -> Unit,
     onStartClick: () -> Unit,
     onTutorialClick: () -> Unit,
     onGameplayClick: () -> Unit,
@@ -244,13 +285,13 @@ private fun ControlsSection(
     Spacer(modifier = Modifier.height(betweenControls))
 
     if (uiState.playerMode == PlayerMode.DOUBLE) {
-        FriendSecretInput(
-            value = uiState.friendSecretNumber,
+        FriendSecretSlot(
+            secret = uiState.friendSecretNumber,
             placeholder = stringResource(R.string.friend_secret_hint),
+            onClick = onSecretSlotClick,
             modifier = Modifier
                 .width(toggleWidth)
                 .height(inputHeight),
-            onValueChange = onFriendSecretNumberChanged,
         )
 
         if (uiState.secretValidationMessage != null) {
@@ -313,7 +354,8 @@ private fun HomeScreenSinglePreview() {
         HomeScreen(
             uiState = HomeUiState(playerMode = PlayerMode.SINGLE),
             onPlayerModeSelected = {},
-            onFriendSecretNumberChanged = {},
+            onFriendSecretDigit = {},
+            onFriendSecretDelete = {},
             onStartClick = {},
             onTutorialClick = {},
             onGameplayClick = {},
@@ -334,7 +376,8 @@ private fun HomeScreenDoublePreview() {
                 secretValidationMessage = "Digits must be unique",
             ),
             onPlayerModeSelected = {},
-            onFriendSecretNumberChanged = {},
+            onFriendSecretDigit = {},
+            onFriendSecretDelete = {},
             onStartClick = {},
             onTutorialClick = {},
             onGameplayClick = {},
@@ -351,7 +394,8 @@ private fun HomeScreenSmallPreview() {
         HomeScreen(
             uiState = HomeUiState(playerMode = PlayerMode.DOUBLE, friendSecretNumber = ""),
             onPlayerModeSelected = {},
-            onFriendSecretNumberChanged = {},
+            onFriendSecretDigit = {},
+            onFriendSecretDelete = {},
             onStartClick = {},
             onTutorialClick = {},
             onGameplayClick = {},
@@ -368,7 +412,8 @@ private fun HomeScreenTabletPreview() {
         HomeScreen(
             uiState = HomeUiState(playerMode = PlayerMode.SINGLE),
             onPlayerModeSelected = {},
-            onFriendSecretNumberChanged = {},
+            onFriendSecretDigit = {},
+            onFriendSecretDelete = {},
             onStartClick = {},
             onTutorialClick = {},
             onGameplayClick = {},

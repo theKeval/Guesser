@@ -156,8 +156,8 @@ depend on the V1 application module.
   navigation.
 - Use V1 JVM tests for its existing `GameRules` and ViewModel behavior.
 - Test compact screens because the Compose Home screen still relies on
-  proportional scaling, scrolling fallback, and IME padding for tight heights.
-  responds to the IME.
+  proportional scaling and a scrolling fallback for tight heights; the
+  friend-secret keypad sheet overlays Home rather than resizing it.
 
 ## Documentation Maintenance
 

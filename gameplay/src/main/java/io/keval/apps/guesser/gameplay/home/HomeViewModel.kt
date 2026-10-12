@@ -43,6 +43,16 @@ class HomeViewModel(
         _uiState.value = _uiState.value.copy(friendSecretNumber = "", secretValidationMessage = null)
     }
 
+    /** Adds [digit] to the current secret; used or extra digits are ignored. */
+    fun onFriendSecretDigit(digit: Char) {
+        val secret = _uiState.value.friendSecretNumber
+        if (canAddSecretDigit(secret, digit)) onFriendSecretNumberChanged(secret + digit)
+    }
+
+    fun onFriendSecretDelete() {
+        onFriendSecretNumberChanged(_uiState.value.friendSecretNumber.dropLast(1))
+    }
+
     fun canStartGame(): Boolean {
         val currentState = _uiState.value
         if (currentState.playerMode == PlayerMode.SINGLE) {

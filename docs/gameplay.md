@@ -52,12 +52,18 @@ guessing round.
 
 ### Double Player
 
-1. Selecting Double Player reveals a masked friend-secret field.
-2. Input is filtered to digit characters and truncated to three characters.
-3. Duplicate digits show `Digits must be unique`.
-4. A non-empty short value shows `Enter exactly 3 digits`.
-5. An empty field remains quiet while typing but shows the length message when
-   Start is pressed.
+1. Selecting Double Player shows a secret slot (three small game tiles) and
+   slides up a game-styled keypad sheet: three large digit tiles, an eye
+   button to peek, and the game keypad with DELETE and DONE. No system
+   keyboard is used.
+2. Digits are masked as dots. Digits already used are disabled, so the code is
+   always three unique digits; DONE enables at three digits and closes the
+   sheet. Back or tapping outside also closes it.
+3. Every key plays the same note while hiding the secret, so the guesser cannot
+   hear which digits were chosen (in the game each digit has its own note).
+4. Tapping the slot reopens the sheet. A short secret shows `Enter exactly 3
+   digits`, and pressing Start with an incomplete secret reopens the sheet.
+5. An empty slot remains quiet until Start is pressed.
 6. A three-unique-digit value is saved to an in-memory repository.
 7. Navigation opens the Game destination, which uses the friend's secret
    without displaying it.
@@ -75,8 +81,10 @@ process and `AppContainer` live.
   left and a gold **SHOW** button (quit and reveal) on the right.
 - The guess board lists numbered rows of three digit tiles plus a remark box.
   Each submitted row has a small gold **i** beside its remark. Tapping the
-  remark or the **i** opens an iOS-style popup (zoom/fade in, fade/shrink out) with a one-line
-  meaning of that remark; tap **GOT IT**, outside the card, or Back to close.
+  remark or the **i** opens an iOS-style popup (zoom/fade in, fade/shrink out) explaining
+  that remark in the tutorial's terms: each `R`/`W` part ("1R: 1 digit is in the
+  hidden number AND in the RIGHT place."), SMYLE with "Simply Make Your Life
+  Easy", or Winner. Tap **GOT IT**, outside the card, or Back to close.
   Guesses are unlimited; the board scrolls and keeps the active row visible.
 - The custom keypad has digits 0–9, with **DELETE** bottom-left and **ENTER** bottom-right. Digits already
   in the current guess are disabled, so duplicates are impossible. ENTER is
@@ -116,7 +124,10 @@ process and `AppContainer` live.
   first step completes onboarding and opens Home; completion is saved across
   restarts. Tutorial remains available from Home. Practice accepts any valid
   guess and displays the latest remark; it is independent of real rounds.
-  Manual Tutorial Back returns through the steps and then to Home. **PLAY NOW**
+  The header back button (beside the TUTORIAL title) leaves the tutorial from
+  any step: to Home, and on first run it also completes onboarding like Skip.
+  The footer **BACK** button and system Back step back through the pages, then
+  leave from the first step. **PLAY NOW**
   clears any friend secret and replaces Tutorial with a new Single Player game.
 - **Gameplay (hidden for now):** `GAMEPLAY_GUIDE_ENABLED` is `false`, so
   Home's GAME PLAY button and the in-game help (`?`) button are not shown; the
