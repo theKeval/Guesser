@@ -120,7 +120,7 @@ fun HomeScreen(
         val titleAspectRatio = if (intrinsicSize.height > 0f) {
             intrinsicSize.width / intrinsicSize.height
         } else {
-            450f / 107f
+            2125f / 472f
         }
 
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {

@@ -307,7 +307,7 @@ private data class GameMetrics(
     val sectionGap: Dp,
 ) {
     companion object {
-        private const val TITLE_ASPECT = 450f / 107f
+        private const val TITLE_ASPECT = 2125f / 472f
 
         // Keypad height = 4 key rows + 3 row gaps (0.22 key) + vertical padding (2 x 0.28 key).
         private const val KEYPAD_HEIGHT_IN_KEYS = 4f + 3 * 0.22f + 2 * 0.28f
