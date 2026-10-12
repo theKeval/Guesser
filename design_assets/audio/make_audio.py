@@ -1,4 +1,4 @@
-"""Synthesizes Guesser's sound effects and background music (pure stdlib)."""
+"""Synthesizes NumbCrunch's sound effects and background music (pure stdlib)."""
 import math
 import os
 import random

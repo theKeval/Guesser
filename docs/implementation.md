@@ -4,10 +4,10 @@
 
 The new application starts through four small composition layers:
 
-1. Android creates `GuesserApplication`.
+1. Android creates `NumbCrunchApplication`.
 2. Its lazy `AppContainer` creates repository implementations and use cases.
-3. `MainActivity` enables edge-to-edge rendering and applies `GuesserTheme`.
-4. `GuesserApp` creates a `NavHostController` and calls `GuesserNavHost`.
+3. `MainActivity` enables edge-to-edge rendering and applies `NumbCrunchTheme`.
+4. `NumbCrunchApp` creates a `NavHostController` and calls `NumbCrunchNavHost`.
 
 The application layer depends on all four support modules and is the only
 place that assembles concrete `:data` repositories with `:domain` use cases.
@@ -97,7 +97,7 @@ The home destination does not pass a secret in a navigation route:
 ```mermaid
 sequenceDiagram
     participant Home as HomeRoute
-    participant Nav as GuesserNavHost
+    participant Nav as NumbCrunchNavHost
     participant Save as SaveFriendSecretUseCase
     participant Repo as InMemoryGameSessionRepository
     participant Game as GameRoute
@@ -143,7 +143,7 @@ the round is won. The repository is process-memory only.
   520 dp on tablets.
 - `GameComponents` provides the `WoodPanel` (gold frame over a cropped wood
   texture), `DigitTile` with a staggered flip reveal, `RemarkBox`, `KeypadKey`,
-  and `GuesserDialogFrame`. These reuse the Home palette.
+  and `NumbCrunchDialogFrame`. These reuse the Home palette.
   `DigitTile` retains the original feedback-to-color mapping behind
   `colorFeedbackEnabled` (true by default for learning examples).
   `GameScreen` passes false: tile fronts (empty, typed, and the first half
@@ -168,14 +168,14 @@ the round is won. The repository is process-memory only.
 
 ## Navigation and Learning Screens
 
-`GuesserNavHost` starts at a launch gate that reads the first-run tutorial
+`NumbCrunchNavHost` starts at a launch gate that reads the first-run tutorial
 completion flag from Preferences DataStore, then routes to Tutorial or Home.
 Skip, Get Started, and first-step system Back complete onboarding before
 opening Home; the persisted flag prevents it from returning on later launches.
 Home can still open Tutorial manually. The host declares Home, Game, Tutorial,
 Gameplay, and About routes with horizontal slide transitions. These learning
 destinations use
-`GuideScaffold`, built on `GuesserScreenScaffold` with a gold-framed back
+`GuideScaffold`, built on `NumbCrunchScreenScaffold` with a gold-framed back
 control, scrollable content, and 520 dp maximum width.
 
 Game exits by popping back to Home. Its help button, shown only when
@@ -225,7 +225,7 @@ in `gameplay/src/main/res/values/strings.xml`; each screen has a Compose preview
 
 ## Theme and Assets
 
-`:core-ui` defines `GuesserTheme`, colors, and default Material typography.
+`:core-ui` defines `NumbCrunchTheme`, colors, and default Material typography.
 Android 12+ dynamic color is enabled unless a caller opts out. The wood-screen
 learning-screen foreground colors use explicit cream/gold over dark wood
 panels so content remains legible regardless of the dynamic scheme.

@@ -25,7 +25,7 @@
     <!-- Game screen -->
     <string name="game_mode_single">Single Player</string>
     <string name="game_mode_double">Double Player</string>
-    <string name="cd_game_title">Guesser</string>
+    <string name="cd_game_title">NumbCrunch</string>
     <string name="cd_back_home">Back to home</string>
     <string name="cd_help">How to play</string>
     <string name="cd_quit_game">Quit and reveal the secret number</string>
@@ -75,7 +75,7 @@
     <string name="settings_title">Settings</string>
     <string name="settings_sound_title">Sound</string>
     <string name="settings_music">Background music</string>
-    <string name="settings_music_body">A soothing tune that plays while Guesser is open.</string>
+    <string name="settings_music_body">A soothing tune that plays while NumbCrunch is open.</string>
     <string name="settings_effects">Sound effects</string>
     <string name="settings_effects_body">Keypad notes, button taps, clue chimes, SMYLE and winner applause.</string>
     <string name="settings_save_error">Couldn\'t save that setting. Check your device storage and try again.</string>
@@ -131,13 +131,13 @@
     <string name="tutorial_dot_description">Step %1$d of %2$d</string>
     <string name="tutorial_completion_error">Couldn\'t save that choice. Check your device storage and try again.</string>
     <string name="tutorial_loading">Getting your first game ready…</string>
-    <string name="tutorial_load_error">Guesser couldn\'t read your first-run setup.</string>
+    <string name="tutorial_load_error">NumbCrunch couldn\'t read your first-run setup.</string>
     <string name="tutorial_retry">TRY AGAIN</string>
     <!-- About -->
     <string name="about_tagline">Nurture curiosity</string>
-    <string name="about_intro">Guesser is simple to learn, but every round invites another thoughtful deduction. Like tic-tac-toe, a small set of rules can open the door to strategy. Notice patterns, remember clues and test possibilities—practice helps you find the code with more confidence, one reasoned step at a time.</string>
-    <string name="about_story_title">Story of Guesser</string>
-    <string name="about_story_body">In our family, the story of Guesser began long before Wordle became a household name. Its inventor, Paresh Langalia—Keval\'s elder brother and mentor—created the game to play with his children and nurture their curiosity and reasoning.\n\nKeval began the Android project on May 11, 2021. The rules are simple; the challenge is in connecting each clue. Compare your guesses, rule out what cannot fit and let each new hint guide the next. With practice, players can solve more efficiently—not by memorizing a shortcut, but by reasoning through the code.</string>
+    <string name="about_intro">NumbCrunch is simple to learn, but every round invites another thoughtful deduction. Like tic-tac-toe, a small set of rules can open the door to strategy. Notice patterns, remember clues and test possibilities—practice helps you find the code with more confidence, one reasoned step at a time.</string>
+    <string name="about_story_title">Story of NumbCrunch</string>
+    <string name="about_story_body">In our family, the story of NumbCrunch began long before Wordle became a household name. Its inventor, Paresh Langalia—Keval\'s elder brother and mentor—created the game to play with his children and nurture their curiosity and reasoning.\n\nKeval began the Android project on May 11, 2021. The rules are simple; the challenge is in connecting each clue. Compare your guesses, rule out what cannot fit and let each new hint guide the next. With practice, players can solve more efficiently—not by memorizing a shortcut, but by reasoning through the code.</string>
     <string name="about_mind_title">A little room for reasoning</string>
     <string name="about_mind_body">A quick puzzle to share or solve solo. Each round rewards curiosity, attention and the satisfaction of making a clue click.</string>
     <string name="about_credits_title">Made with care</string>
@@ -145,7 +145,7 @@
     <string name="about_version">Version %1$s</string>
     <string name="about_version_unknown">unavailable</string>
     <string name="about_source_title">An open-source puzzle</string>
-    <string name="about_source_body">Guesser is shared under the Apache License 2.0. Explore its code and development history on GitHub. These links open outside the game.</string>
+    <string name="about_source_body">NumbCrunch is shared under the Apache License 2.0. Explore its code and development history on GitHub. These links open outside the game.</string>
     <string name="about_source_action">VIEW ON GITHUB</string>
     <string name="about_license_action">APACHE 2.0 LICENSE</string>
     <string name="about_link_error">No app can open this link. Enable or install a web browser, then try again.</string>
