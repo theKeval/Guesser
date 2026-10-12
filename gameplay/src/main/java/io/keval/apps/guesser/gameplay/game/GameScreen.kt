@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -31,7 +32,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
@@ -76,6 +76,7 @@ import io.keval.apps.guesser.gameplay.audio.GameSound
 import io.keval.apps.guesser.gameplay.audio.LocalGameSoundPlayer
 import io.keval.apps.guesser.gameplay.audio.digitKeyPitch
 import io.keval.apps.guesser.gameplay.home.PlayerMode
+import io.keval.apps.guesser.gameplay.navigation.GAMEPLAY_GUIDE_ENABLED
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -206,17 +207,28 @@ fun GameScreen(
                 GameHeader(
                     metrics = metrics,
                     onBack = onBack,
-                    onQuit = onQuit,
                     onHelp = onHelp,
                     onSettings = onSettings,
                 )
                 Spacer(modifier = Modifier.height(metrics.sectionGap * 0.6f))
-                GameModeBadge(
-                    text = stringResource(
-                        if (uiState.playerMode == PlayerMode.DOUBLE) R.string.game_mode_double else R.string.game_mode_single,
-                    ),
-                    height = metrics.badgeHeight,
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    GameModeBadge(
+                        text = stringResource(
+                            if (uiState.playerMode == PlayerMode.DOUBLE) R.string.game_mode_double else R.string.game_mode_single,
+                        ),
+                        height = metrics.badgeHeight,
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    GamePillButton(
+                        label = stringResource(R.string.quit_show),
+                        contentDescription = stringResource(R.string.cd_quit_game),
+                        height = metrics.badgeHeight,
+                        onClick = onQuit,
+                    )
+                }
                 Spacer(modifier = Modifier.height(metrics.sectionGap))
                 GuessBoard(
                     uiState = uiState,
@@ -324,7 +336,6 @@ private data class GameMetrics(
 private fun GameHeader(
     metrics: GameMetrics,
     onBack: () -> Unit,
-    onQuit: () -> Unit,
     onHelp: () -> Unit,
     onSettings: () -> Unit,
 ) {
@@ -338,12 +349,10 @@ private fun GameHeader(
             size = metrics.iconSize,
             onClick = onBack,
         )
-        GameRoundIconButton(
-            icon = Icons.Filled.Flag,
-            contentDescription = stringResource(R.string.cd_quit_game),
-            size = metrics.iconSize,
-            onClick = onQuit,
-        )
+        if (GAMEPLAY_GUIDE_ENABLED) {
+            // Balance the help button so the title stays centered.
+            Spacer(modifier = Modifier.size(metrics.iconSize.coerceAtLeast(48.dp)))
+        }
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -359,12 +368,14 @@ private fun GameHeader(
                 contentScale = ContentScale.Fit,
             )
         }
-        GameRoundIconButton(
-            icon = Icons.Filled.QuestionMark,
-            contentDescription = stringResource(R.string.cd_help),
-            size = metrics.iconSize,
-            onClick = onHelp,
-        )
+        if (GAMEPLAY_GUIDE_ENABLED) {
+            GameRoundIconButton(
+                icon = Icons.Filled.QuestionMark,
+                contentDescription = stringResource(R.string.cd_help),
+                size = metrics.iconSize,
+                onClick = onHelp,
+            )
+        }
         GameRoundIconButton(
             icon = Icons.Filled.Settings,
             contentDescription = stringResource(R.string.cd_settings),

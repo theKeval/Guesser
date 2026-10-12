@@ -40,6 +40,7 @@ import io.keval.apps.guesser.core.ui.theme.GuesserTheme
 import io.keval.apps.guesser.domain.usecase.GetWelcomeMessageUseCase
 import io.keval.apps.guesser.gameplay.R
 import io.keval.apps.guesser.gameplay.game.GameRoundIconButton
+import io.keval.apps.guesser.gameplay.navigation.GAMEPLAY_GUIDE_ENABLED
 
 @Composable
 fun HomeRoute(
@@ -122,13 +123,15 @@ fun HomeScreen(
                 0.dp
             }
 
+            // Tutorial and About, plus Gameplay when its guide is enabled.
+            val secondaryButtonCount = if (GAMEPLAY_GUIDE_ENABLED) 3f else 2f
             val controlsHeightBase =
                 toggleHeightBase +
                     betweenControlsBase +
                     inputSectionHeight +
                     startHeightBase +
-                    (secondaryHeightBase * 3f) +
-                    (controlSpacingBase * 4f)
+                    (secondaryHeightBase * secondaryButtonCount) +
+                    (controlSpacingBase * (secondaryButtonCount + 1))
 
             val staticHeight = topGapBase + titleHeightBase + bottomPaddingBase + controlsHeightBase
             val verticalHeadroom = (availableHeight - staticHeight).coerceAtLeast(0.dp)
@@ -282,14 +285,16 @@ private fun ControlsSection(
         onClick = onTutorialClick,
     )
 
-    Spacer(modifier = Modifier.height(controlSpacing))
+    if (GAMEPLAY_GUIDE_ENABLED) {
+        Spacer(modifier = Modifier.height(controlSpacing))
 
-    HomeSecondaryButton(
-        text = stringResource(R.string.label_gameplay),
-        contentDescription = stringResource(R.string.cd_gameplay),
-        modifier = Modifier.width(secondaryWidth),
-        onClick = onGameplayClick,
-    )
+        HomeSecondaryButton(
+            text = stringResource(R.string.label_gameplay),
+            contentDescription = stringResource(R.string.cd_gameplay),
+            modifier = Modifier.width(secondaryWidth),
+            onClick = onGameplayClick,
+        )
+    }
 
     Spacer(modifier = Modifier.height(controlSpacing))
 

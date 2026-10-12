@@ -174,8 +174,13 @@ destinations use
 `GuideScaffold`, built on `GuesserScreenScaffold` with a gold-framed back
 control, scrollable content, and 520 dp maximum width.
 
-Game exits by popping back to Home. Its help button navigates to Gameplay
-(`launchSingleTop`) and leaves Game on the back stack.
+Game exits by popping back to Home. Its help button, shown only when
+`GAMEPLAY_GUIDE_ENABLED` (`navigation/GameplayRoutes.kt`) is true, navigates
+to Gameplay (`launchSingleTop`) and leaves Game on the back stack. The flag is
+currently false, which also hides Home's GAME PLAY button. When enabled, a
+matching spacer on the left keeps the title centered. Quit is the `GamePillButton`
+**SHOW** in the mode-badge row, styled like `GameModeBadge` with a 48 dp touch
+target.
 
 `GuideComponents` shares wood panels, readable headings/body text, wrapping
 Material buttons, and scored digit/remark examples. Example rows announce
@@ -192,6 +197,15 @@ announcement, matching real rounds. Gameplay examples keep the default colors. F
 through `TutorialRepository` and `PreferencesTutorialRepository`. Manual
 Tutorial Back moves through pages and then returns Home. **PLAY NOW** saves a
 null friend secret and replaces Tutorial with Game, starting Single Player.
+
+The clue-rules page (step 2) is wrapped in `FitToHeight` (`common/FitToHeight.kt`)
+so it shows without scrolling. A `SubcomposeLayout` measures the page at its natural
+size and, if it overflows, binary-searches the largest zoom that fits; text,
+spacing and badges shrink together and text re-wraps. The zoom never takes body
+text below 13 sp or removes more than a quarter of the player's font size. If the
+page cannot fit at that floor (very small screens or large accessibility font
+sizes), it keeps its natural size and scrolls, so nothing is clipped. It is used
+only for non-interactive content because zooming also shrinks touch targets.
 
 The practice keypad switches to three columns on narrow panels to keep digit
 targets at least 48 dp wide. Submitted clues use a polite live-region

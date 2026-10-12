@@ -70,9 +70,9 @@ process and `AppContainer` live.
 
 ### Game Screen
 
-- A header shows back and quit (flag) buttons, the Guesser title, and help
-  (`?`) and settings (gear) buttons, followed by a Single/Double Player mode
-  badge.
+- A header shows a back button, the centered Guesser title, and a settings
+  (gear) button. Below it, the Single/Double Player mode badge sits on the
+  left and a gold **SHOW** button (quit and reveal) on the right.
 - The guess board lists numbered rows of three digit tiles plus a remark box.
   Each submitted row has a small gold **i** beside its remark. Tapping the
   remark or the **i** opens an iOS-style popup (zoom/fade in, fade/shrink out) with a one-line
@@ -99,11 +99,10 @@ process and `AppContainer` live.
 - Back (header or system) or a horizontal swipe in either direction during an
   unfinished round asks for confirmation before returning Home and discarding
   the round.
-- Quit (flag) asks for confirmation, then ends the round and shows a popup
+- **SHOW** asks for confirmation, then ends the round and shows a popup
   revealing the secret number; **HOME**, Back, or tapping outside returns Home.
-- Help opens the Gameplay destination and Settings opens Settings. Returning
-  resumes the same round, because the Game back-stack entry and its
-  `SavedStateHandle` state are kept.
+- Settings opens Settings. Returning resumes the same round, because the Game
+  back-stack entry and its `SavedStateHandle` state are kept.
 
 ### Other Destinations
 
@@ -119,7 +118,9 @@ process and `AppContainer` live.
   guess and displays the latest remark; it is independent of real rounds.
   Manual Tutorial Back returns through the steps and then to Home. **PLAY NOW**
   clears any friend secret and replaces Tutorial with a new Single Player game.
-- **Gameplay:** a scrollable reference explains code constraints (including
+- **Gameplay (hidden for now):** `GAMEPLAY_GUIDE_ENABLED` is `false`, so
+  Home's GAME PLAY button and the in-game help (`?`) button are not shown; the
+  screen and route remain. When enabled, help keeps the round, and a scrollable reference explains code constraints (including
   leading zero), unlimited guesses, tile colors, R/W/SMYLE/Winner, both modes,
   controls, and strategy. Four examples use `GuessRules` against secret `245`.
   Gameplay examples retain per-digit colors for teaching; the guide

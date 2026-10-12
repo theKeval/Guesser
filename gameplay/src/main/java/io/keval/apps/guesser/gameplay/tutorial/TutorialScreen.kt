@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,7 @@ import io.keval.apps.guesser.core.ui.theme.GuesserOrangeTop
 import io.keval.apps.guesser.core.ui.theme.GuesserTheme
 import io.keval.apps.guesser.domain.game.GuessRules
 import io.keval.apps.guesser.gameplay.R
+import io.keval.apps.guesser.gameplay.common.FitToHeight
 import io.keval.apps.guesser.gameplay.common.GuideAction
 import io.keval.apps.guesser.gameplay.common.GuideBody
 import io.keval.apps.guesser.gameplay.common.GuideGuess
@@ -47,6 +49,7 @@ import io.keval.apps.guesser.gameplay.common.GuidePanel
 import io.keval.apps.guesser.gameplay.common.GuideScaffold
 import io.keval.apps.guesser.gameplay.common.GuideSkipAction
 import io.keval.apps.guesser.gameplay.common.highlightClueWords
+import io.keval.apps.guesser.gameplay.common.highlightGameDetails
 import io.keval.apps.guesser.gameplay.game.DigitTile
 import io.keval.apps.guesser.gameplay.game.KeyStyle
 import io.keval.apps.guesser.gameplay.game.KeypadKey
@@ -55,6 +58,7 @@ import io.keval.apps.guesser.gameplay.info.LearningExamples
 import kotlinx.coroutines.launch
 
 private const val TUTORIAL_PAGE_COUNT = 3
+private const val CLUES_PAGE = 1
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
@@ -158,10 +162,7 @@ fun TutorialScreen(
             modifier = Modifier.fillMaxSize(),
             key = { it },
         ) { pageIndex ->
-            Column(
-                Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
+            val pageContent: @Composable ColumnScope.() -> Unit = {
                 TutorialPage(
                     pageIndex,
                     input,
@@ -171,6 +172,16 @@ fun TutorialScreen(
                         input = ""
                     },
                     evaluation = evaluation,
+                )
+            }
+            if (pageIndex == CLUES_PAGE) {
+                // The clue rules are read-only, so they zoom to fit the screen instead of scrolling.
+                FitToHeight(Modifier.fillMaxSize(), content = pageContent)
+            } else {
+                Column(
+                    Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    content = pageContent,
                 )
             }
         }
@@ -187,7 +198,7 @@ private fun TutorialPage(
 ) {
     when (page) {
         0 -> GuidePanel(stringResource(R.string.tutorial_goal_title)) {
-            GuideBody(stringResource(R.string.tutorial_goal_body))
+            GuideBody(highlightGameDetails(stringResource(R.string.tutorial_goal_body)))
 //            Row(
 //                Modifier.fillMaxWidth(),
 //                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
@@ -198,7 +209,7 @@ private fun TutorialPage(
 //            }
 //            GuideBody(stringResource(R.string.rules_code_body))
         }
-        1 -> GuidePanel(stringResource(R.string.tutorial_clues_title)) {
+        CLUES_PAGE -> GuidePanel(stringResource(R.string.tutorial_clues_title)) {
             GuideBody(stringResource(R.string.rules_clues_title_main_1))
             GuideNumberedRule(1, highlightClueWords(stringResource(R.string.rules_clues_title_main_2)))
             GuideNumberedRule(2, highlightClueWords(stringResource(R.string.rules_clues_title_main_3)))
