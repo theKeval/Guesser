@@ -74,14 +74,18 @@ Notable implementation details:
 
 - `BoxWithConstraints` drives width fractions, tablet caps, and proportional
   down-scaling for short-height screens;
-- `verticalScroll`, status/navigation bar padding, and `imePadding` support
-  compact layouts;
+- `verticalScroll` and status/navigation bar padding support compact layouts;
 - player mode, Start, and secondary buttons are drawn in Compose with gradients
   and rounded-pill borders (only background/title remain image assets);
 - the mode selector uses an animated selected segment and two `selectable`
   radio-button regions;
-- the friend secret uses `BasicTextField`, numeric-password keyboard options,
-  and `PasswordVisualTransformation`;
+- the friend secret uses `FriendSecretSlot` (masked mini tiles in the input
+  pill) and `FriendSecretSheet` (`home/FriendSecretEntry.kt`), an in-window
+  bottom sheet with the game's `DigitTile`s, an eye toggle, and `KeypadKey`s.
+  `canAddSecretDigit` disables used digits; keys use one shared pitch. Home
+  holds the sheet's open state and opens it when Double Player is chosen, when
+  the slot is tapped, or when Start finds an incomplete secret. While open, the
+  Home content is hidden from accessibility services;
 - buttons collect press state and scale/darken to pressed feedback without a
   ripple;
 - accessibility descriptions for home controls come from string resources.

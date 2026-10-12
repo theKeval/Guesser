@@ -21,9 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,11 +34,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,14 +44,11 @@ import io.keval.apps.guesser.core.ui.theme.GuesserChocolate
 import io.keval.apps.guesser.core.ui.theme.GuesserChocolateDark
 import io.keval.apps.guesser.core.ui.theme.GuesserGoldBorder
 import io.keval.apps.guesser.core.ui.theme.GuesserGoldCream
-import io.keval.apps.guesser.core.ui.theme.GuesserInputFill
-import io.keval.apps.guesser.core.ui.theme.GuesserInputHint
 import io.keval.apps.guesser.core.ui.theme.GuesserOrangeBottom
 import io.keval.apps.guesser.core.ui.theme.GuesserOrangeMid
 import io.keval.apps.guesser.core.ui.theme.GuesserOrangeTop
 import io.keval.apps.guesser.core.ui.theme.GuesserWoodBottom
 import io.keval.apps.guesser.core.ui.theme.GuesserWoodTop
-import io.keval.apps.guesser.domain.game.isCodeDigit
 import io.keval.apps.guesser.gameplay.audio.rememberTapFeedback
 
 private val PillShape = RoundedCornerShape(percent = 50)
@@ -314,79 +305,5 @@ private fun ModeSegment(
             lineHeight = textSize * 0.95f,
             maxLines = 2,
         )
-    }
-}
-
-@Composable
-fun FriendSecretInput(
-    value: String,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-    onValueChange: (String) -> Unit,
-) {
-    BoxWithConstraints(
-        modifier = modifier
-            .heightIn(min = 48.dp)
-            .shadow(
-                elevation = 8.dp,
-                shape = PillShape,
-                clip = false,
-                ambientColor = Color.Black.copy(alpha = 0.3f),
-                spotColor = Color.Black.copy(alpha = 0.3f),
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        val textSize = with(androidx.compose.ui.platform.LocalDensity.current) { (maxHeight * 0.36f).toSp() }
-        val hintSize = with(androidx.compose.ui.platform.LocalDensity.current) { (maxHeight * 0.28f).toSp() }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .border(width = 2.dp, brush = Brush.verticalGradient(listOf(GuesserBronzeDark, GuesserGoldBorder)), shape = PillShape)
-                .padding(2.dp)
-                .background(GuesserInputFill, PillShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            BasicTextField(
-                value = value,
-                onValueChange = { onValueChange(it.filter(::isCodeDigit)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                visualTransformation = PasswordVisualTransformation(),
-                textStyle = TextStyle(
-                    color = GuesserChocolate,
-                    fontFamily = FontFamily.Serif,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = textSize,
-                    textAlign = TextAlign.Center,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                decorationBox = { innerTextField ->
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        if (value.isEmpty()) {
-                            Text(
-                                text = placeholder,
-                                style = LocalTextStyle.current.copy(
-                                    color = GuesserInputHint,
-                                    fontFamily = FontFamily.Serif,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = hintSize,
-                                    textAlign = TextAlign.Center,
-                                ),
-                                textAlign = TextAlign.Center,
-                                maxLines = 1,
-                                softWrap = false,
-                            )
-                        }
-                        innerTextField()
-                    }
-                },
-            )
-        }
     }
 }

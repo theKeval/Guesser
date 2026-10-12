@@ -131,9 +131,9 @@ The home screen:
 - keeps only the wood background and title as drawable assets;
 - draws buttons, mode toggle, and secret input with Compose gradients/borders;
 - uses `BoxWithConstraints` width fractions with tablet caps and height scaling;
-- scrolls vertically and applies IME padding for compact displays;
+- scrolls vertically for compact displays;
 - constrains mode interaction to two selectable radio-button regions;
-- masks Double Player secret input;
+- enters the Double Player secret with a game-styled keypad sheet and masked tiles;
 - uses pressed scale/darken feedback at runtime.
 
 Original design files are preserved under `design_assets/raw_assets`. Runtime

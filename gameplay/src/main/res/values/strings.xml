@@ -7,6 +7,15 @@
     <string name="cd_single_player">Single player mode</string>
     <string name="cd_double_player">Double player mode</string>
     <string name="friend_secret_hint">enter 3 digit number</string>
+    <string name="cd_secret_slot">Secret number, %1$d of 3 digits entered. Opens the secret keypad.</string>
+    <string name="secret_sheet_title">Hide your secret number</string>
+    <string name="secret_sheet_body">Pick 3 different digits, then hand the phone to the guesser.</string>
+    <string name="secret_done">DONE</string>
+    <string name="cd_secret_done">Done, use this secret number</string>
+    <string name="cd_secret_tiles">Secret number hidden, %1$d of 3 digits entered</string>
+    <string name="cd_secret_tiles_revealed">Secret number %1$s, %2$d of 3 digits entered</string>
+    <string name="cd_show_secret">Show secret number</string>
+    <string name="cd_hide_secret">Hide secret number</string>
     <string name="label_start">Start</string>
     <string name="label_tutorial">TUTORIAL</string>
     <string name="label_gameplay">GAME PLAY</string>

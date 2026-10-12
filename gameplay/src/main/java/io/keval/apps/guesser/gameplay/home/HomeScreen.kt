@@ -2,17 +2,16 @@ package io.keval.apps.guesser.gameplay.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,11 +21,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.keval.apps.guesser.core.ui.theme.GuesserGoldCream
 import io.keval.apps.guesser.core.ui.theme.GuesserTheme
+import io.keval.apps.guesser.domain.game.CODE_LENGTH
 import io.keval.apps.guesser.domain.usecase.GetWelcomeMessageUseCase
 import io.keval.apps.guesser.gameplay.R
 import io.keval.apps.guesser.gameplay.game.GameRoundIconButton
@@ -87,6 +91,25 @@ fun HomeScreen(
     onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // The friend-secret keypad sheet; it opens by itself when Double Player is chosen.
+    var secretSheetOpen by rememberSaveable { mutableStateOf(false) }
+    val showSecretSheet = secretSheetOpen && uiState.playerMode == PlayerMode.DOUBLE
+    val selectPlayerMode: (PlayerMode) -> Unit = { mode ->
+        if (mode == PlayerMode.DOUBLE && uiState.playerMode != PlayerMode.DOUBLE &&
+            uiState.friendSecretNumber.length < CODE_LENGTH
+        ) {
+            secretSheetOpen = true
+        }
+        onPlayerModeSelected(mode)
+    }
+    val startGame: () -> Unit = {
+        // An incomplete secret reopens the keypad rather than only showing an error.
+        if (uiState.playerMode == PlayerMode.DOUBLE && uiState.friendSecretNumber.length < CODE_LENGTH) {
+            secretSheetOpen = true
+        }
+        onStartClick()
+    }
+
     Surface(modifier = modifier.fillMaxSize()) {
         val scrollState = rememberScrollState()
         val titlePainter = painterResource(id = R.drawable.home_title)
@@ -159,10 +182,11 @@ fun HomeScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    // While the keypad sheet is open, only the sheet is exposed to accessibility services.
+                    .then(if (showSecretSheet) Modifier.clearAndSetSemantics {} else Modifier)
                     .verticalScroll(scrollState)
                     .statusBarsPadding()
                     .navigationBarsPadding()
-                    .imePadding()
                     .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -187,9 +211,9 @@ fun HomeScreen(
                     secondaryWidth = secondaryWidth,
                     controlSpacing = controlSpacing,
                     betweenControls = betweenControls,
-                    onPlayerModeSelected = onPlayerModeSelected,
-                    onFriendSecretNumberChanged = onFriendSecretNumberChanged,
-                    onStartClick = onStartClick,
+                    onPlayerModeSelected = selectPlayerMode,
+                    onSecretSlotClick = { secretSheetOpen = true },
+                    onStartClick = startGame,
                     onTutorialClick = onTutorialClick,
                     onGameplayClick = onGameplayClick,
                     onAboutClick = onAboutClick,
@@ -208,6 +232,13 @@ fun HomeScreen(
                     .padding(top = 4.dp, end = 8.dp),
                 onClick = onSettingsClick,
             )
+
+            FriendSecretSheet(
+                visible = showSecretSheet,
+                secret = uiState.friendSecretNumber,
+                onSecretChange = onFriendSecretNumberChanged,
+                onDismiss = { secretSheetOpen = false },
+            )
         }
     }
 }
@@ -222,7 +253,7 @@ private fun ControlsSection(
     controlSpacing: Dp,
     betweenControls: Dp,
     onPlayerModeSelected: (PlayerMode) -> Unit,
-    onFriendSecretNumberChanged: (String) -> Unit,
+    onSecretSlotClick: () -> Unit,
     onStartClick: () -> Unit,
     onTutorialClick: () -> Unit,
     onGameplayClick: () -> Unit,
@@ -244,13 +275,13 @@ private fun ControlsSection(
     Spacer(modifier = Modifier.height(betweenControls))
 
     if (uiState.playerMode == PlayerMode.DOUBLE) {
-        FriendSecretInput(
-            value = uiState.friendSecretNumber,
+        FriendSecretSlot(
+            secret = uiState.friendSecretNumber,
             placeholder = stringResource(R.string.friend_secret_hint),
+            onClick = onSecretSlotClick,
             modifier = Modifier
                 .width(toggleWidth)
                 .height(inputHeight),
-            onValueChange = onFriendSecretNumberChanged,
         )
 
         if (uiState.secretValidationMessage != null) {

@@ -52,12 +52,18 @@ guessing round.
 
 ### Double Player
 
-1. Selecting Double Player reveals a masked friend-secret field.
-2. Input is filtered to digit characters and truncated to three characters.
-3. Duplicate digits show `Digits must be unique`.
-4. A non-empty short value shows `Enter exactly 3 digits`.
-5. An empty field remains quiet while typing but shows the length message when
-   Start is pressed.
+1. Selecting Double Player shows a secret slot (three small game tiles) and
+   slides up a game-styled keypad sheet: three large digit tiles, an eye
+   button to peek, and the game keypad with DELETE and DONE. No system
+   keyboard is used.
+2. Digits are masked as dots. Digits already used are disabled, so the code is
+   always three unique digits; DONE enables at three digits and closes the
+   sheet. Back or tapping outside also closes it.
+3. Every key plays the same note while hiding the secret, so the guesser cannot
+   hear which digits were chosen (in the game each digit has its own note).
+4. Tapping the slot reopens the sheet. A short secret shows `Enter exactly 3
+   digits`, and pressing Start with an incomplete secret reopens the sheet.
+5. An empty slot remains quiet until Start is pressed.
 6. A three-unique-digit value is saved to an in-memory repository.
 7. Navigation opens the Game destination, which uses the friend's secret
    without displaying it.
