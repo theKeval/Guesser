@@ -97,15 +97,22 @@ NUMBCRUNCH_UPLOAD_STORE_PASSWORD_FILE=~/data/projects/vault/numbcrunch-release/k
 
 Paths may be absolute or start with `~/`.
 
-Supported properties, which can also be environment variables (for CI) or `-P`
-flags:
+Supported properties. Each can also be an environment variable, for example a
+CI secret:
 
 | Property | Required | Default |
 | --- | --- | --- |
 | `NUMBCRUNCH_UPLOAD_STORE_FILE` | Yes | none |
-| `NUMBCRUNCH_UPLOAD_STORE_PASSWORD` or `NUMBCRUNCH_UPLOAD_STORE_PASSWORD_FILE` | Yes | none |
+| `NUMBCRUNCH_UPLOAD_STORE_PASSWORD_FILE` (preferred) or `NUMBCRUNCH_UPLOAD_STORE_PASSWORD` | Yes | none |
 | `NUMBCRUNCH_UPLOAD_KEY_ALIAS` | No | `numbcrunch-upload` |
-| `NUMBCRUNCH_UPLOAD_KEY_PASSWORD` | No | the store password |
+| `NUMBCRUNCH_UPLOAD_KEY_PASSWORD_FILE` (preferred) or `NUMBCRUNCH_UPLOAD_KEY_PASSWORD` | No | the store password |
+
+**Keep passwords off the command line.** Never pass a password value as a `-P`
+flag or an inline environment assignment: it is kept in shell history and is
+visible in process listings and CI logs. Use the `*_PASSWORD_FILE` properties,
+which take a path to a private file (`chmod 600`). Put the plain `*_PASSWORD`
+properties only in `~/.gradle/gradle.properties` or a CI secret store. Paths
+and the key alias are safe to pass as `-P` flags.
 
 Confirm with `./gradlew -q :numbcrunch:printReleaseVersion`, which should report
 `uploadSigning=configured`. Without these properties, release builds still

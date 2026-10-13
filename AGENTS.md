@@ -37,8 +37,9 @@ and releases, where mistakes are expensive or irreversible.
   properties in `~/.gradle/gradle.properties`; see
   [docs/releasing.md](docs/releasing.md).
 - **Never** read, print, copy, or commit the keystore password, the keystore,
-  or `~/.gradle/gradle.properties` values. Reference the password only through
-  `NUMBCRUNCH_UPLOAD_STORE_PASSWORD_FILE`.
+  or `~/.gradle/gradle.properties` values. Reference passwords only through
+  the `NUMBCRUNCH_UPLOAD_*_PASSWORD_FILE` properties, and never put a password
+  value in a `-P` flag, an inline environment assignment, or any command.
 - **Never generate a new upload key** or change the key alias. Play accepts
   only bundles signed by the registered key, whose SHA-256 fingerprint is
   `9D:5C:30:17:D5:EB:63:34:3B:E5:DC:06:2B:99:D8:DB:FE:67:58:14:26:8D:60:A0:C4:6F:D5:78:73:FB:75:81`.

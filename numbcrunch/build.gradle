@@ -15,9 +15,10 @@ if (!(releaseVersionName ==~ /\d+\.\d+\.\d+/)) {
     throw new GradleException("version.properties: VERSION_NAME must be MAJOR.MINOR.PATCH, was '$releaseVersionName'")
 }
 
-// Play upload-key signing. Values come from ~/.gradle/gradle.properties, -P
-// flags, or environment variables, never from this repository. Without them,
-// release builds are unsigned. See docs/releasing.md.
+// Play upload-key signing. Values come from ~/.gradle/gradle.properties or
+// environment variables, never from this repository. Passwords should be given
+// as *_PASSWORD_FILE paths so they never appear on a command line. Without
+// these values, release builds are unsigned. See docs/releasing.md.
 def signingValue = { String name ->
     providers.gradleProperty(name).orElse(providers.environmentVariable(name)).getOrNull()
 }
@@ -31,7 +32,12 @@ if (!uploadStorePassword && uploadStorePasswordFile) {
     uploadStorePassword = file(uploadStorePasswordFile).text.trim()
 }
 def uploadKeyAlias = signingValue('NUMBCRUNCH_UPLOAD_KEY_ALIAS') ?: 'numbcrunch-upload'
-def uploadKeyPassword = signingValue('NUMBCRUNCH_UPLOAD_KEY_PASSWORD') ?: uploadStorePassword
+def uploadKeyPassword = signingValue('NUMBCRUNCH_UPLOAD_KEY_PASSWORD')
+def uploadKeyPasswordFile = expandHome(signingValue('NUMBCRUNCH_UPLOAD_KEY_PASSWORD_FILE'))
+if (!uploadKeyPassword && uploadKeyPasswordFile) {
+    uploadKeyPassword = file(uploadKeyPasswordFile).text.trim()
+}
+uploadKeyPassword = uploadKeyPassword ?: uploadStorePassword
 def hasUploadSigning = uploadStoreFile && uploadStorePassword
 
 base {
