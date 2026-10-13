@@ -70,7 +70,7 @@ Revamp:
 
 ```bash
 ./gradlew :numbcrunch:installDebug
-adb shell am start -n io.keval.apps.numbcrunch/.MainActivity
+adb shell am start -n io.keval.apps.numbcrunch.debug/io.keval.apps.numbcrunch.MainActivity
 ```
 
 V1:
@@ -80,7 +80,9 @@ V1:
 adb shell am start -n com.thekeval.guesser/.MainActivity
 ```
 
-The different application IDs allow both builds to be installed together.
+The different application IDs allow both builds to be installed together. The
+revamp's debug build is `io.keval.apps.numbcrunch.debug`, labelled
+"NumbCrunch Debug", so it also installs beside the Play version.
 
 ## Changing the Revamp
 
@@ -171,7 +173,9 @@ Keep these documents synchronized:
 - versioning, signing, and publishing: `docs/releasing.md`, `AGENTS.md`, and
   `CHANGELOG.md`.
 
-Feature and fix changes do not edit `version.properties`; the version is bumped
-only when preparing a release.
+After a release is tagged, the first change that affects the app moves
+`version.properties` to the next version; run `scripts/check-version-bump.sh`
+before opening a pull request. See the
+[version lifecycle](releasing.md#version-lifecycle).
 
 Always state whether behavior belongs to the revamp or V1.

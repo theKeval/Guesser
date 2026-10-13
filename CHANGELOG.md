@@ -5,6 +5,14 @@ Each entry records the version name, the version code Play consumed, and where
 it shipped. The version comes from [`version.properties`](version.properties);
 see [docs/releasing.md](docs/releasing.md) for the release process.
 
+## 1.0.2 (versionCode 3) — unreleased
+
+- No player-visible changes.
+- Debug builds install as a separate app, `io.keval.apps.numbcrunch.debug`
+  ("NumbCrunch Debug"), so they no longer block installing the Play version.
+- A version guard fails pull requests and `bundleRelease` when app files
+  change after a release tag without moving to the next version.
+
 ## 1.0.1 (versionCode 2) — 2026-10-12, internal testing
 
 - No player-visible changes.

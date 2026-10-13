@@ -158,8 +158,9 @@ Gameplay help only pops back to the existing round.
 
 ## Application Boundaries
 
-The revamp application ID is `io.keval.apps.numbcrunch`; the V1 application ID is
-`com.thekeval.guesser`. Both target SDK 36, require API 21 or later, use Java
+The revamp application ID is `io.keval.apps.numbcrunch`, with debug builds
+suffixed `.debug` so they install beside the Play release; the V1 application
+ID is `com.thekeval.guesser`. Both target SDK 36, require API 21 or later, use Java
 17, and are locked to portrait orientation.
 
 ## Guesser V1 Architecture

@@ -13,8 +13,9 @@ independently from the same Gradle project.
 
 ## Current Revamp
 
-The new app uses the package and application ID `io.keval.apps.numbcrunch`. Its
-current implemented experience includes:
+The new app uses the package and application ID `io.keval.apps.numbcrunch`;
+debug builds install separately as `io.keval.apps.numbcrunch.debug`
+("NumbCrunch Debug"). Its current implemented experience includes:
 
 - a responsive, scrollable, portrait-first Jetpack Compose home screen;
 - Compose-drawn, resolution-independent controls for Single Player and Double
@@ -126,7 +127,7 @@ Install and launch the revamp:
 
 ```bash
 ./gradlew :numbcrunch:installDebug
-adb shell am start -n io.keval.apps.numbcrunch/.MainActivity
+adb shell am start -n io.keval.apps.numbcrunch.debug/io.keval.apps.numbcrunch.MainActivity
 ```
 
 Install and launch V1:

@@ -29,6 +29,7 @@ credits, runtime version, and source/license links.
 | --- | --- |
 | Included modules and V1 alias | `settings.gradle` |
 | App version name and code | `version.properties` |
+| Version bump enforcement | `scripts/check-version-bump.sh` and `.github/workflows/version-guard.yml` |
 | Release signing and bundle naming | `numbcrunch/build.gradle` |
 | Shipped versions | `CHANGELOG.md` |
 | App assembly and dependency wiring | `numbcrunch/src/main/java/io/keval/apps/numbcrunch/` |
