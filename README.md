@@ -136,6 +136,19 @@ Install and launch V1:
 adb shell am start -n com.thekeval.guesser/.MainActivity
 ```
 
+## Release
+
+The app version lives in `version.properties` and is read by
+`numbcrunch/build.gradle`. Signed Play bundles are built with:
+
+```bash
+./gradlew :numbcrunch:bundleRelease
+```
+
+Signing requires one-time setup outside the repository. See the
+[release guide](docs/releasing.md) for versioning rules, signing, and the Play
+Console process, and [`CHANGELOG.md`](CHANGELOG.md) for shipped versions.
+
 ## Repository Layout
 
 ```text
@@ -157,6 +170,9 @@ docs/             # Architecture, gameplay, implementation, and revamp docs
 - [Implementation guide](docs/implementation.md)
 - [Revamp history and roadmap](docs/revamp.md)
 - [Development guide](docs/development.md)
+- [Versioning and release guide](docs/releasing.md)
+- [Changelog](CHANGELOG.md)
+- [Agent guide](AGENTS.md) for AI coding agents
 
 ## License
 

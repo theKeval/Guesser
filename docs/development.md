@@ -167,6 +167,11 @@ Keep these documents synchronized:
 - modules, dependencies, state, or navigation: `docs/architecture.md`;
 - code-level runtime flow: `docs/implementation.md`;
 - completed phases and future direction: `docs/revamp.md`;
-- setup and commands: this guide and the root `README.md`.
+- setup and commands: this guide and the root `README.md`;
+- versioning, signing, and publishing: `docs/releasing.md`, `AGENTS.md`, and
+  `CHANGELOG.md`.
+
+Feature and fix changes do not edit `version.properties`; the version is bumped
+only when preparing a release.
 
 Always state whether behavior belongs to the revamp or V1.

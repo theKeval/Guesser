@@ -19,6 +19,7 @@ credits, runtime version, and source/license links.
 | [Implementation guide](implementation.md) | Code walkthrough for the Compose foundation and legacy game |
 | [Revamp history and roadmap](revamp.md) | Project eras, PR #3 scope, current gaps, and recommended next phases |
 | [Development guide](development.md) | Setup, module-specific commands, testing, and change conventions |
+| [Versioning and release guide](releasing.md) | Version numbers, upload-key signing, release checklist, and Play Console steps |
 
 ## Sources of Truth
 
@@ -27,6 +28,9 @@ credits, runtime version, and source/license links.
 | Concern | Authoritative source |
 | --- | --- |
 | Included modules and V1 alias | `settings.gradle` |
+| App version name and code | `version.properties` |
+| Release signing and bundle naming | `numbcrunch/build.gradle` |
+| Shipped versions | `CHANGELOG.md` |
 | App assembly and dependency wiring | `numbcrunch/src/main/java/io/keval/apps/numbcrunch/` |
 | Navigation graph | `numbcrunch/.../NumbCrunchNavHost.kt` |
 | Home state and validation | `gameplay/.../home/HomeUiState.kt` and `HomeViewModel.kt` |
