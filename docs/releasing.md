@@ -249,8 +249,8 @@ vitals for crashes and ANRs before widening it.
 Before the first production release, Play requires:
 
 - *Policy → App content*: privacy policy URL
-  (`https://github.com/theKeval/NumbCrunch/blob/main/PRIVACY.md`), Data
-  safety, content rating, target audience, and ads declaration.
+  (`https://keval.io/apps/numbcrunch/privacy`, published from `PRIVACY.md`),
+  Data safety, content rating, target audience, and ads declaration.
 - *Grow → Store presence → Main store listing*: 512×512 icon, 1024×500
   feature graphic, phone screenshots, and descriptions.
 - For personal developer accounts created after November 2023: a closed test

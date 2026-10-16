@@ -63,8 +63,8 @@ not identify you.
 
 ## External Links
 
-The About screen contains two links: the game's public source code on GitHub
-and its open-source license. They open only when tapped, in your device's web
+The About screen contains two links: the game's source code page on GitHub
+and its software license. They open only when tapped, in your device's web
 browser, which takes you out of the app to a website with its own privacy
 policy that we do not control. The game screens contain no links. Parents may
 wish to supervise young children's use of the About screen.
@@ -92,12 +92,12 @@ with questions can contact us using the details below.
 ## Changes to This Policy
 
 If the app's handling of information changes, we will update this policy and
-its effective date before the change is released. Previous versions are
-available in the
-[history of this file](https://github.com/theKeval/NumbCrunch/commits/main/PRIVACY.md).
+its effective date before the change is released. The current version is
+always available at
+[keval.io/apps/numbcrunch/privacy](https://keval.io/apps/numbcrunch/privacy).
 
 ## Contact
 
-If you have questions about this privacy policy, open an issue at
-[github.com/theKeval/NumbCrunch/issues](https://github.com/theKeval/NumbCrunch/issues)
-or use the developer email address shown on NumbCrunch's Google Play page.
+If you have questions about this privacy policy or NumbCrunch, including
+questions from parents and guardians, email us at
+[hello@keval.io](mailto:hello@keval.io).
