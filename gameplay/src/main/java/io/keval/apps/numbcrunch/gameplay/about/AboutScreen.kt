@@ -1,17 +1,10 @@
 package io.keval.apps.numbcrunch.gameplay.about
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -29,6 +22,7 @@ import io.keval.apps.numbcrunch.gameplay.common.GuideScaffold
 @Composable
 fun AboutScreen(
     onBack: () -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -36,16 +30,6 @@ fun AboutScreen(
     val version = remember(context, preview) {
         if (preview) "1.0" else {
             context.packageManager.getPackageInfo(context.packageName, 0).versionName
-        }
-    }
-    var linkError by remember { mutableStateOf(false) }
-    val openLink: (String) -> Unit = { url ->
-        try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-            linkError = false
-        } catch (error: ActivityNotFoundException) {
-            Log.w("NumbCrunchAbout", "No application can open the external link", error)
-            linkError = true
         }
     }
     GuideScaffold(stringResource(R.string.label_about), onBack, modifier) {
@@ -66,17 +50,9 @@ fun AboutScreen(
             GuideBody(stringResource(R.string.about_credits_body))
             GuideBody(stringResource(R.string.about_version, version ?: stringResource(R.string.about_version_unknown)))
         }
-        GuidePanel(stringResource(R.string.about_source_title)) {
-            GuideBody(stringResource(R.string.about_source_body))
-            GuideAction(stringResource(R.string.about_source_action), {
-                openLink("https://github.com/theKeval/Guesser")
-            }, Modifier.fillMaxWidth())
-            GuideAction(stringResource(R.string.about_license_action), {
-                openLink("https://www.apache.org/licenses/LICENSE-2.0")
-            }, Modifier.fillMaxWidth())
-            if (linkError) {
-                GuideBody(stringResource(R.string.about_link_error))
-            }
+        GuidePanel(stringResource(R.string.about_privacy_title)) {
+            GuideBody(stringResource(R.string.about_privacy_body))
+            GuideAction(stringResource(R.string.about_privacy_action), onPrivacyPolicyClick, Modifier.fillMaxWidth())
         }
     }
 }
@@ -86,5 +62,5 @@ fun AboutScreen(
 @Preview(name = "Tablet", widthDp = 800, heightDp = 1280)
 @Composable
 private fun AboutPreview() {
-    NumbCrunchTheme { AboutScreen(onBack = {}) }
+    NumbCrunchTheme { AboutScreen(onBack = {}, onPrivacyPolicyClick = {}) }
 }

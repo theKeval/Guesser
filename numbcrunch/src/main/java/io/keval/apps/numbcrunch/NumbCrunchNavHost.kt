@@ -42,7 +42,9 @@ import io.keval.apps.numbcrunch.gameplay.navigation.GAME_ROUTE
 import io.keval.apps.numbcrunch.gameplay.navigation.HOME_ROUTE
 import io.keval.apps.numbcrunch.gameplay.navigation.LAUNCH_GATE_ROUTE
 import io.keval.apps.numbcrunch.gameplay.navigation.MANUAL_TUTORIAL_ROUTE
+import io.keval.apps.numbcrunch.gameplay.navigation.PRIVACY_POLICY_ROUTE
 import io.keval.apps.numbcrunch.gameplay.navigation.SETTINGS_ROUTE
+import io.keval.apps.numbcrunch.gameplay.privacy.PrivacyPolicyScreen
 import io.keval.apps.numbcrunch.gameplay.settings.SettingsRoute
 import io.keval.apps.numbcrunch.gameplay.navigation.TUTORIAL_ROUTE
 import io.keval.apps.numbcrunch.gameplay.tutorial.TutorialScreen
@@ -184,7 +186,20 @@ fun NumbCrunchNavHost(
             popEnterTransition = { slideInFromLeft() },
             popExitTransition = { slideOutToRight() },
         ) {
-            AboutScreen(onBack = navController::navigateUp)
+            AboutScreen(
+                onBack = navController::navigateUp,
+                onPrivacyPolicyClick = { navController.navigate(PRIVACY_POLICY_ROUTE) { launchSingleTop = true } },
+            )
+        }
+
+        composable(
+            route = PRIVACY_POLICY_ROUTE,
+            enterTransition = { slideInFromRight() },
+            exitTransition = { slideOutToLeft() },
+            popEnterTransition = { slideInFromLeft() },
+            popExitTransition = { slideOutToRight() },
+        ) {
+            PrivacyPolicyScreen(onBack = navController::navigateUp)
         }
 
         composable(

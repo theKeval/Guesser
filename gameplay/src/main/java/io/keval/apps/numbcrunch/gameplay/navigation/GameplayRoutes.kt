@@ -13,5 +13,6 @@ const val GAMEPLAY_INFO_ROUTE = "gameplay_info"
  */
 const val GAMEPLAY_GUIDE_ENABLED = false
 const val ABOUT_ROUTE = "about"
+const val PRIVACY_POLICY_ROUTE = "privacy_policy"
 const val GAME_ROUTE = "game"
 const val SETTINGS_ROUTE = "settings"

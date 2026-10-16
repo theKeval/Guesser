@@ -10,7 +10,7 @@ The revamp currently implements its home, navigation, dependency boundaries,
 Double Player setup handoff, and a playable Game screen. Tutorial is shown on
 first launch, with persistent completion and an option to revisit it from Home;
 Gameplay is the visual rules reference; About contains the family-origin story,
-credits, runtime version, and source/license links.
+credits, runtime version, and an in-game privacy policy.
 
 | Document | Purpose |
 | --- | --- |
@@ -29,6 +29,7 @@ credits, runtime version, and source/license links.
 | --- | --- |
 | Included modules and V1 alias | `settings.gradle` |
 | App version name and code | `version.properties` |
+| Privacy policy text (website and in-game) | `PRIVACY.md`, bundled by `gameplay/build.gradle` |
 | Version bump enforcement | `scripts/check-version-bump.sh` and `.github/workflows/version-guard.yml` |
 | Release signing and bundle naming | `numbcrunch/build.gradle` |
 | Shipped versions | `CHANGELOG.md` |

@@ -47,3 +47,30 @@ dependencies {
 
     debugImplementation "androidx.compose.ui:ui-tooling:$version_compose_ui"
 }
+
+// Bundles the repository's PRIVACY.md as the "privacy_policy.md" asset shown by the in-game
+// Privacy policy screen, so the app and the published policy never drift apart.
+abstract class BundlePrivacyPolicy extends DefaultTask {
+    @InputFile
+    @PathSensitive(PathSensitivity.NONE)
+    abstract RegularFileProperty getPolicy()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDirectory()
+
+    @TaskAction
+    void bundle() {
+        def target = outputDirectory.file('privacy_policy.md').get().asFile
+        target.text = policy.get().asFile.getText('UTF-8')
+    }
+}
+
+def bundlePrivacyPolicy = tasks.register('bundlePrivacyPolicy', BundlePrivacyPolicy) {
+    policy = rootProject.layout.projectDirectory.file('PRIVACY.md')
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(bundlePrivacyPolicy) { it.outputDirectory }
+    }
+}

@@ -80,7 +80,8 @@ No dependency-injection framework is used.
 | `game` | `GameRoute` | Implemented: keypad, guess board, scoring, leave/quit-reveal/win dialogs, help, settings, sound and confetti |
 | `tutorial?firstRun={firstRun}` | `TutorialScreen` | Three swipeable steps, isolated practice, onboarding or manual entry |
 | `gameplay_info` | `GameplayInfoScreen` | Visual rules, examples, modes, controls, strategy; entry points hidden by `GAMEPLAY_GUIDE_ENABLED = false` |
-| `about` | `AboutScreen` | Story, credits, runtime version, public source/license links |
+| `about` | `AboutScreen` | Story, credits, runtime version, Privacy policy button |
+| `privacy_policy` | `PrivacyPolicyScreen` | The bundled `PRIVACY.md`, rendered in wood panels; no external links |
 
 Forward and backward navigation use 320 ms horizontal slide transitions. The
 home Start handler saves either the valid Double Player secret or `null` for

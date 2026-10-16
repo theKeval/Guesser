@@ -61,13 +61,12 @@ as install counts, and anonymized crash and performance reports from users who
 have chosen to share usage and diagnostics data with Google. These reports do
 not identify you.
 
-## External Links
+## No External Links
 
-The About screen contains two links: the game's source code page on GitHub
-and its software license. They open only when tapped, in your device's web
-browser, which takes you out of the app to a website with its own privacy
-policy that we do not control. The game screens contain no links. Parents may
-wish to supervise young children's use of the About screen.
+NumbCrunch contains no links to websites, and nothing in the game takes you
+out of the app. This privacy policy can be read inside the game: open
+**About**, then tap **Privacy policy**. Web addresses mentioned in this policy
+are shown there as plain text.
 
 ## Children's Privacy
 
@@ -93,7 +92,7 @@ with questions can contact us using the details below.
 
 If the app's handling of information changes, we will update this policy and
 its effective date before the change is released. The current version is
-always available at
+always available in the game and at
 [keval.io/apps/numbcrunch/privacy](https://keval.io/apps/numbcrunch/privacy).
 
 ## Contact

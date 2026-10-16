@@ -44,7 +44,9 @@ and releases, where mistakes are expensive or irreversible.
 ## Privacy Policy
 
 [`PRIVACY.md`](PRIVACY.md) is the source of the privacy policy published at
-`https://keval.io/apps/numbcrunch/privacy`, the URL in Play Console. It states that the app collects and shares no data, has no
+`https://keval.io/apps/numbcrunch/privacy`, the URL in Play Console. The game
+also bundles it and shows it on the in-game Privacy policy screen (About →
+Privacy policy). It states that the app collects and shares no data, has no
 internet permission, ads, analytics, or accounts, and stores only settings,
 tutorial progress, and the current round on the device.
 
@@ -55,6 +57,12 @@ tutorial progress, and the current round on the device.
   `https://keval.io/apps/numbcrunch/privacy`; the website is not updated
   automatically.
 - Never put personal contact details in it beyond what the user provides.
+- Use only the Markdown the in-game renderer supports: a `#` title, `##`
+  sections, paragraphs, `- ` bullets, `**bold**`, `` `code` `` and
+  `[text](url)`. `PrivacyPolicyDocumentTest` fails on anything else.
+- The app must never open a website or external link; players should never
+  have to leave the game. The repository is private: do not add open-source,
+  license, or GitHub references to the app, its store copy, or the docs.
 
 ## Signing and Secrets
 
