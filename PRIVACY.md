@@ -8,16 +8,25 @@ This privacy policy explains how the NumbCrunch game for Android (package
 
 ## Summary
 
-NumbCrunch does not collect, store on any server, sell, or share any personal
-information. The app has no accounts, no advertising, no analytics, no in-app
-purchases, and no internet access. Everything it remembers stays on your device.
+NumbCrunch is a game for players of all ages, including young children. It
+does not collect, store on any server, sell, or share any personal information,
+from anyone. The app has no accounts, no advertising, no analytics, no chat or
+social features, no in-app purchases, and no internet access. Everything it
+remembers stays on your device.
 
 ## Information the App Collects
 
 **None.** NumbCrunch does not request the Android internet permission, so it
 cannot send any information from your device to us or to anyone else. It does
-not access your contacts, location, camera, microphone, photos, files, device
-identifiers, or advertising ID.
+not ask for your name, age, email address, or any other personal details, and
+it does not access your contacts, location, camera, microphone, photos, files,
+device identifiers, or advertising ID.
+
+## Third-Party Services
+
+NumbCrunch contains no third-party advertising, analytics, crash-reporting,
+social, or sign-in services. It is built only with standard Android and Jetpack
+libraries, which run entirely on your device.
 
 ## Information Stored Only on Your Device
 
@@ -54,15 +63,31 @@ not identify you.
 
 ## External Links
 
-The About screen contains links to the game's public source code on GitHub and
-to its open-source license. Opening a link takes you out of the app to a
-website that has its own privacy policy, which we do not control.
+The About screen contains two links: the game's public source code on GitHub
+and its open-source license. They open only when tapped, in your device's web
+browser, which takes you out of the app to a website with its own privacy
+policy that we do not control. The game screens contain no links. Parents may
+wish to supervise young children's use of the About screen.
 
 ## Children's Privacy
 
-NumbCrunch is a family game that can be enjoyed by children. Because the app
-collects no personal information from anyone, it does not collect personal
-information from children of any age.
+NumbCrunch is designed for everyone, including children under 13 and
+children under 5. We do not knowingly collect personal information from
+children, and because the app collects no personal information from anyone,
+no child's personal information is collected, used, or disclosed. In
+particular, the app:
+
+- does not ask children for any personal details or let them share any;
+- does not use persistent identifiers, such as the advertising ID, and shows
+  no advertising, including personalized or interest-based advertising;
+- has no accounts, chat, social features, or purchases; and
+- does not send any information off the device.
+
+Because we hold no personal information about any child, there is nothing for
+a parent or guardian to review or delete with us. A parent or guardian can
+remove the game's on-device settings and tutorial progress at any time by
+clearing the app's storage or uninstalling the app. Parents and guardians
+with questions can contact us using the details below.
 
 ## Changes to This Policy
 
