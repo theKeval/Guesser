@@ -76,6 +76,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Debug builds are a separate app, so they never block installing
+            // the Play-signed release on the same device.
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
         release {
             if (hasUploadSigning) {
                 signingConfig = signingConfigs.upload
@@ -127,6 +133,17 @@ tasks.register('printReleaseVersion') {
     def summary = "versionCode=$releaseVersionCode versionName=$releaseVersionName " +
             "uploadSigning=${hasUploadSigning ? 'configured' : 'missing'}"
     doLast { println summary }
+}
+
+def checkVersionBump = tasks.register('checkVersionBump', Exec) {
+    group = 'release'
+    description = 'Fails if app files changed since the latest release tag without a version bump.'
+    workingDir = rootProject.projectDir
+    commandLine 'bash', rootProject.file('scripts/check-version-bump.sh').absolutePath
+}
+
+tasks.matching { it.name == 'bundleRelease' }.configureEach {
+    dependsOn checkVersionBump
 }
 
 tasks.matching { it.name in ['bundleRelease', 'assembleRelease'] }.configureEach {

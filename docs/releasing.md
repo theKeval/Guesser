@@ -12,8 +12,8 @@ AI agents should also read the rules in the root [`AGENTS.md`](../AGENTS.md).
 The version lives in one file, [`version.properties`](../version.properties):
 
 ```properties
-VERSION_CODE=2
-VERSION_NAME=1.0.1
+VERSION_CODE=3
+VERSION_NAME=1.0.2
 ```
 
 `numbcrunch/build.gradle` reads it into `defaultConfig`, and the in-app About
@@ -42,12 +42,57 @@ Check the configured version and signing status at any time:
 ./gradlew -q :numbcrunch:printReleaseVersion
 ```
 
-### When to Bump
+### Version Lifecycle
 
-Bump the version only in a dedicated release change, immediately before
-building the bundle you will upload. Feature and fix pull requests do not touch
-`version.properties`. Any number of merged pull requests ship together in the
-next release.
+`main` always describes the next version to ship. Once a version code has been
+released, no app change may be built under it again.
+
+1. **A release is tagged** `v<name>` on `main`, for example `v1.0.1` for
+   versionCode 2. That code is now consumed.
+2. **The first pull request after the tag that changes the app** moves
+   `version.properties` to the next version: `VERSION_CODE` + 1 and the next
+   PATCH `VERSION_NAME`. It also adds a
+   `## <name> (versionCode <code>) — unreleased` section at the top of
+   [`CHANGELOG.md`](../CHANGELOG.md).
+3. **Later pull requests before the next release keep that code.** They add
+   bullets to the unreleased section and raise `VERSION_NAME` if their change
+   calls for it, renaming the changelog heading to match. For example, a new
+   feature turns an unreleased `1.0.2` into `1.1.0`.
+4. **The next release is uploaded and tagged**, which starts the cycle again.
+   Any number of merged pull requests ship together in one release.
+
+"Changes the app" means changing any file outside these exempt paths:
+`docs/`, `*.md`, `.github/`, `scripts/`, `app/` (Guesser V1),
+`design_assets/`, `.idea/`, `LICENSE`, `.gitignore`, and `.gitattributes`.
+Documentation-only pull requests never need a bump.
+
+### Version Guard
+
+[`scripts/check-version-bump.sh`](../scripts/check-version-bump.sh) enforces
+the lifecycle. It compares the working tree with the latest `v*` tag and fails
+when:
+
+- app files changed but `VERSION_CODE` still equals the released code;
+- `VERSION_CODE` is lower than the released code;
+- the code moved but `VERSION_NAME` is not higher than the released name; or
+- `CHANGELOG.md` has no `## <name> (versionCode <code>)` heading for the
+  current version.
+
+The guard runs:
+
+- on every pull request to `main` and every push to `main`, in the
+  *Version guard* GitHub Actions workflow;
+- before every `:numbcrunch:bundleRelease`, including Android Studio's
+  *Generate Signed App Bundle*, through the `checkVersionBump` task; and
+- on demand:
+
+  ```bash
+  scripts/check-version-bump.sh
+  ```
+
+The guard needs release tags locally; run `git fetch --tags` if it reports
+that none were found. To make the workflow block merging, mark the
+`version-guard` check as required in the repository's branch rules on GitHub.
 
 ## Signing
 
@@ -135,14 +180,17 @@ bundle.
 
 Use this for every Play upload, starting from an up-to-date `main`.
 
-1. **Check the last uploaded version code.** Use the top entry in
-   [`CHANGELOG.md`](../CHANGELOG.md), and confirm in Play Console under
-   *App bundle explorer*.
-2. **Open a release branch and bump the version** in `version.properties`:
-   `VERSION_CODE` + 1, and the appropriate `VERSION_NAME`.
-3. **Update [`CHANGELOG.md`](../CHANGELOG.md)** with a section for the new
-   version: its code, date, and player-visible changes. Keep the first bullets
-   short enough to paste as Play release notes (500 characters per language).
+1. **Confirm the version.** `version.properties` should already hold the next
+   version, set by the first app change after the last release (see
+   [Version Lifecycle](#version-lifecycle)). Its code must be exactly one
+   higher than the last uploaded code: check the newest released entry in
+   [`CHANGELOG.md`](../CHANGELOG.md) and Play Console's *App bundle explorer*.
+2. **Adjust if needed.** If the release scope calls for a higher
+   `VERSION_NAME` (for example, it now contains a new feature), change it on a
+   release branch along with the changelog heading.
+3. **Finish the unreleased [`CHANGELOG.md`](../CHANGELOG.md) section.** Keep
+   the first bullets player-facing and short enough to paste as Play release
+   notes (500 characters per language).
 4. **Verify:**
 
    ```bash
@@ -178,7 +226,8 @@ Use this for every Play upload, starting from an up-to-date `main`.
 
 8. **Upload to internal testing** (next section), then install the build from
    the Play testing link on a real device and smoke-test it.
-9. **Record the upload** in `CHANGELOG.md`: the date and track.
+9. **Record the upload** in `CHANGELOG.md`: replace `unreleased` with the
+   date and track.
 
 ## Publishing in Play Console
 
@@ -210,6 +259,26 @@ Before the first production release, Play requires:
 Production releases are reviewed by Google, which can take from hours to
 several days.
 
+## Debug Builds
+
+Debug builds use their own application ID, so they install beside the Play
+version instead of replacing it:
+
+| Build | Application ID | Launcher name | About shows |
+| --- | --- | --- | --- |
+| Release (Play) | `io.keval.apps.numbcrunch` | NumbCrunch | `1.0.2` |
+| Debug (Android Studio, `installDebug`) | `io.keval.apps.numbcrunch.debug` | NumbCrunch Debug | `1.0.2-debug` |
+
+Debug builds made before 1.0.2 used the release application ID with the debug
+key. A leftover copy like that, even one installed only in another user profile
+such as a guest profile, blocks Play from installing the app. Find it and
+remove it from every profile:
+
+```bash
+adb shell pm list packages -u | grep numbcrunch
+adb shell pm uninstall io.keval.apps.numbcrunch
+```
+
 ## Troubleshooting
 
 | Problem | Cause and fix |
@@ -219,3 +288,5 @@ several days.
 | *You uploaded an APK or App Bundle that was not signed* / `jarsigner` prints `no manifest.` | Upload signing is not configured; see *One-Time Gradle Setup*. |
 | Build fails with `version.properties: ...` | Fix the reported value: a positive integer code and a `MAJOR.MINOR.PATCH` name. |
 | About screen shows an old version | You installed an older build; reinstall from Play or rebuild. |
+| Play shows *Can't install* or *App not installed* for a tester | A copy of the release application ID signed by another key (usually an old debug build) is on the device, possibly in another user profile. See [Debug Builds](#debug-builds). |
+| `version-guard:` error in CI or `bundleRelease` | App files changed since the last release tag without moving to the next version. Follow the printed instructions and [Version Lifecycle](#version-lifecycle). |

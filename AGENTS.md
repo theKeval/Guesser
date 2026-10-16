@@ -8,7 +8,9 @@ and releases, where mistakes are expensive or irreversible.
 ## Applications
 
 - `:numbcrunch` (`numbcrunch/`) is the published NumbCrunch app, application
-  ID `io.keval.apps.numbcrunch`. All release rules below apply to it.
+  ID `io.keval.apps.numbcrunch`. All release rules below apply to it. Debug
+  builds install as `io.keval.apps.numbcrunch.debug` so they never conflict
+  with the Play-signed app; keep that suffix.
 - `:guesser_v1` (`app/`) is the unpublished legacy app. Leave its version in
   `app/build.gradle` alone.
 
@@ -17,17 +19,27 @@ and releases, where mistakes are expensive or irreversible.
 - The single source of truth is [`version.properties`](version.properties):
   `VERSION_CODE` (integer) and `VERSION_NAME` (`MAJOR.MINOR.PATCH`). Never set
   `versionCode` or `versionName` in a `build.gradle` file.
-- **Do not change `version.properties` in feature or fix work.** Bump it only
-  when the user asks you to prepare a release.
-- When bumping, increase `VERSION_CODE` by exactly 1 from the highest code
-  already uploaded to Play (the top released entry in
-  [`CHANGELOG.md`](CHANGELOG.md)). Never lower or reuse a code; Play rejects
-  it permanently, even for discarded releases.
+- A released version code is never built again. `main` always holds the
+  **next** version once the app has changed after the latest `v*` release tag.
+  Details: [Version Lifecycle](docs/releasing.md#version-lifecycle).
+- Before finishing any change that touches app files (anything outside
+  `docs/`, `*.md`, `.github/`, `scripts/`, `app/`, `design_assets/`, `.idea/`),
+  run `scripts/check-version-bump.sh` (after `git fetch --tags`):
+  - If `version.properties` still holds the released code, this change starts
+    the next version: increase `VERSION_CODE` by exactly 1, set the next PATCH
+    `VERSION_NAME`, and add
+    `## <name> (versionCode <code>) — unreleased` at the top of
+    `CHANGELOG.md`.
+  - If an unreleased version is already in progress, keep its code. Add your
+    change to its changelog section, and raise `VERSION_NAME` only if your
+    change warrants it (renaming the heading to match).
+- Never lower or reuse a code, and never increase it by more than 1 per
+  release; Play rejects reused codes permanently, even for discarded releases.
 - Choose `VERSION_NAME` by semantic versioning: PATCH for fixes, polish, and
   tooling; MINOR for new player-visible features; MAJOR for redesigns or
   breaking changes. Ask the user if the choice is unclear.
-- Every bump adds a `CHANGELOG.md` section with the version name, code, and
-  player-visible changes.
+- The guard also runs in CI and before `:numbcrunch:bundleRelease`. Never
+  bypass, weaken, or edit it to make a change pass.
 
 ## Signing and Secrets
 
@@ -51,8 +63,9 @@ and releases, where mistakes are expensive or irreversible.
 When the user asks for a release, follow the checklist in
 [docs/releasing.md](docs/releasing.md#release-checklist). In short:
 
-1. Branch from an up-to-date `main`.
-2. Bump `version.properties` and add the `CHANGELOG.md` section.
+1. Branch from an up-to-date `main` and run `git fetch --tags`.
+2. Confirm `version.properties` holds the next version (one code above the
+   last release) and finish its `CHANGELOG.md` section.
 3. Verify:
 
    ```bash

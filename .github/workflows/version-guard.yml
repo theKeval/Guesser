@@ -1,0 +1,21 @@
+# Fails a pull request that changes the NumbCrunch app after a release tag
+# without moving version.properties to the next version. See
+# docs/releasing.md#version-lifecycle and scripts/check-version-bump.sh.
+name: Version guard
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  version-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history and tags, so the script can find the latest release.
+          fetch-depth: 0
+      - name: Check version bump since the latest release tag
+        run: bash scripts/check-version-bump.sh
