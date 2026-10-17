@@ -41,6 +41,21 @@ and releases, where mistakes are expensive or irreversible.
 - The guard also runs in CI and before `:numbcrunch:bundleRelease`. Never
   bypass, weaken, or edit it to make a change pass.
 
+## Privacy Policy
+
+[`PRIVACY.md`](PRIVACY.md) is the source of the privacy policy published at
+`https://keval.io/apps/numbcrunch/privacy`, the URL in Play Console. It states that the app collects and shares no data, has no
+internet permission, ads, analytics, or accounts, and stores only settings,
+tutorial progress, and the current round on the device.
+
+- Any change that adds a permission, SDK, network access, or new stored data
+  must update `PRIVACY.md` (and its effective date) in the same pull request,
+  and tell the user that Play Console's Data safety form must be updated too.
+- After any `PRIVACY.md` change merges, remind the user to republish it to
+  `https://keval.io/apps/numbcrunch/privacy`; the website is not updated
+  automatically.
+- Never put personal contact details in it beyond what the user provides.
+
 ## Signing and Secrets
 
 - The upload key lives outside the repository in

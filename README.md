@@ -174,6 +174,7 @@ docs/             # Architecture, gameplay, implementation, and revamp docs
 - [Versioning and release guide](docs/releasing.md)
 - [Changelog](CHANGELOG.md)
 - [Agent guide](AGENTS.md) for AI coding agents
+- [Privacy policy](PRIVACY.md) for the published app
 
 ## License
 
