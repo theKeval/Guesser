@@ -143,8 +143,10 @@ process and `AppContainer` live.
   foreground and music is enabled.
 - **About:** the family origin story credits Paresh Langalia, the inventor of
   NumbCrunch, alongside developer Keval Langalia, the Compose revamp, installed
-  app version, and external links to the public repository and Apache 2.0
-  license.
+  app version, and a Privacy policy button.
+- **Privacy policy:** opened from About. Shows the full privacy policy in the
+  same wood-panel style, one panel per section, with selectable text. Web
+  addresses appear as plain text; the app never opens a website.
 
 All of these use resource-backed copy, safe-area padding, dark wood panels, and
 a 520 dp maximum reading width. Example rows expose spoken per-digit feedback

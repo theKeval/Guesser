@@ -219,9 +219,21 @@ announcement. Compact, large-text, and tablet previews are included.
 
 `GameplayInfoScreen` is a rules reference with examples, controls, modes, and
 strategy. `AboutScreen` reads the installed version through PackageManager and
-opens the public repository and Apache license externally, with an explicit
-message when no link-handling application is installed. All screen copy is
-in `gameplay/src/main/res/values/strings.xml`; each screen has a Compose preview.
+opens `PrivacyPolicyScreen`. Nothing in the app opens an external link.
+
+`PrivacyPolicyScreen` shows the repository's `PRIVACY.md`. The
+`bundlePrivacyPolicy` task in `gameplay/build.gradle` copies it into every
+variant's assets as `privacy_policy.md`, so the in-game text always matches the
+published policy. `PrivacyPolicyDocument` parses the small Markdown subset the
+policy uses: a `#` title, `##` sections, paragraphs, `- ` bullets, `**bold**`,
+`` `code` `` and `[text](url)`. Links become plain text such as
+"Google's Privacy Policy (policies.google.com/privacy)". Each section renders in
+a `GuidePanel` inside a `SelectionContainer`, so players can copy the contact
+email. `PrivacyPolicyDocumentTest` parses the real `PRIVACY.md` and fails if any
+Markdown is left unrendered.
+
+All screen copy is in `gameplay/src/main/res/values/strings.xml`; each screen
+has a Compose preview.
 
 ## Theme and Assets
 

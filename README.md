@@ -37,7 +37,8 @@ Gameplay explains rules with scored tile examples, modes, controls, and tips.
 Game-board color feedback is currently disabled to increase difficulty;
 the original green/orange/gray feedback remains available in learning examples.
 About presents NumbCrunch's family origin story, credits, installed version, and
-public source/license links. All three reuse the wooden game theme.
+a Privacy policy button that opens the full policy inside the game; nothing in
+the app links out to a website. All three reuse the wooden game theme.
 The new app does **not yet implement sound, vibration settings, profiles, or
 scoreboards**.
 
@@ -175,7 +176,3 @@ docs/             # Architecture, gameplay, implementation, and revamp docs
 - [Changelog](CHANGELOG.md)
 - [Agent guide](AGENTS.md) for AI coding agents
 - [Privacy policy](PRIVACY.md) for the published app
-
-## License
-
-Licensed under the [Apache License 2.0](LICENSE).
